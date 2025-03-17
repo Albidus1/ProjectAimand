@@ -112,9 +112,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        SetGravityScale(data.gravity_scale);
+        SetGravityScale(data.gravityScale);
 
-        isFacingRight = true;        
+        isFacingRight = true;   
     }
 
     private void Update()
@@ -175,8 +175,8 @@ public class PlayerMovement : MonoBehaviour
         {         
             if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
-                lastOnGroundTime = data.coyote_time;
-                lastOnGrabTime = data.grab_stamina;
+                lastOnGroundTime = data.coyoteTime;
+                lastOnGrabTime = data.grabStamina;
             }
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight) 
@@ -184,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
                 false == isWallJumping)
             {
                 //Debug.Log("오른쪽 벽 확인");
-                lastOnWallRightTime = data.coyote_time;
+                lastOnWallRightTime = data.coyoteTime;
             }
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight) 
@@ -192,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
                 false == isWallJumping)
             {
                 //Debug.Log("왼쪽 벽 확인");
-                lastOnWallLeftTime = data.coyote_time;
+                lastOnWallLeftTime = data.coyoteTime;
             }
 
             lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);    
@@ -211,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (true == isWallJumping && 
-            Time.time - wallJumpStartTime > data.wall_jump_time)
+            Time.time - wallJumpStartTime > data.wallJumpTime)
         {
             isWallJumping = false;
         }
@@ -236,16 +236,16 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (true == isWallGrabbing)
                 {
-                    lastOnGrabTime -= (data.grab_stamina * 0.25f);
+                    lastOnGrabTime -= (data.grabStamina * 0.25f);
                 }
 
                 if (true == isJumpingOnMovingPlatform)
                 {
-                    Jump(data.jump_force, platformDirection);
+                    Jump(data.jumpForce, platformDirection);
                 }
                 else
                 {
-                    Jump(data.jump_force);
+                    Jump(data.jumpForce);
                 }               
             }
             // 벽 점프
@@ -264,17 +264,17 @@ public class PlayerMovement : MonoBehaviour
             {
                 StartCoroutine(nameof(RefillDash), 1);
 
-                lastOnJumpPadTime = data.jump_input_buffer_time;
+                lastOnJumpPadTime = data.jumpInputBufferTime;
 
                 rb.linearVelocity = moveInput;
 
-                Jump(data.jump_force * padForce);
+                Jump(data.jumpForce * padForce);
             }
             else
             {
                 StartCoroutine(nameof(RefillDash), 1);
 
-                lastOnJumpPadTime = data.jump_input_buffer_time;
+                lastOnJumpPadTime = data.jumpInputBufferTime;
 
                 lastWallJumpDirection = (padDirection == Vector2.right) ? 1 : -1;
 
@@ -347,7 +347,7 @@ public class PlayerMovement : MonoBehaviour
                 lastGrabDirection = 0;
             }
 
-            Sleep(data.dash_sleep_time);
+            Sleep(data.dashSleepTime);
 
             if (moveInput != Vector2.zero)
             {
@@ -375,33 +375,33 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (rb.linearVelocity.y < 0 && moveInput.y < 0)
             {
-                SetGravityScale(data.gravity_scale * data.fast_fall_gravity_mult);
+                SetGravityScale(data.gravityScale * data.fastFallGravityMult);
 
                 rb.linearVelocity =
-                    new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.max_fast_fall_speed));
+                    new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFastFallSpeed));
             }
             else if (true == isJumpCut)
             {
-                SetGravityScale(data.gravity_scale * data.jump_cut_gravity_mult);
+                SetGravityScale(data.gravityScale * data.jumpCutGravityMult);
 
                 rb.linearVelocity =
-                    new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.max_fall_speed));
+                    new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFallSpeed));
             }
             else if ((true == isJumping || true == isWallJumping || true == isJumpFalling) &&
-                Mathf.Abs(rb.linearVelocity.y) < data.jump_hang_time_threshold)
+                Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
             {
-                SetGravityScale(data.gravity_scale * data.jump_hang_gravity_mult);
+                SetGravityScale(data.gravityScale * data.jumpHangGravityMult);
             }
             else if (rb.linearVelocity.y < 0)
             {
-                SetGravityScale(data.gravity_scale * data.fall_gravity_mult);
+                SetGravityScale(data.gravityScale * data.fallGravityMult);
 
                 rb.linearVelocity =
-                    new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.max_fall_speed));
+                    new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFallSpeed));
             }
             else
             {
-                SetGravityScale(data.gravity_scale);
+                SetGravityScale(data.gravityScale);
             }
         }
         else
@@ -417,7 +417,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (true == isWallJumping)
             {
-                Run(data.wall_jump_run_lerp);
+                Run(data.wallJumpRunLerp);
             }
             else if (true == isWallGrabbing && 0 < lastOnGrabTime)
             {
@@ -430,7 +430,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (false == isDashAttacking)
         {
-            Run(data.dash_end_run_lerp);
+            Run(data.dashEndRunLerp);
         }
 
         if (true == isOnMovingPlatform)
@@ -447,7 +447,7 @@ public class PlayerMovement : MonoBehaviour
     #region INPUT CALLBACKS
     public void OnJumpInput()
     {
-        lastPressedJumpTime = data.jump_input_buffer_time;
+        lastPressedJumpTime = data.jumpInputBufferTime;
     }
 
     public void OnJumpUpInput()
@@ -460,12 +460,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnDashInput()
     {
-        lastPressedDashTime = data.dash_input_buffer_time;
+        lastPressedDashTime = data.dashInputBufferTime;
     }
 
     public void OnGrabInput()
     {
-        lastPressedGrabTime = data.grab_input_buffer_time;
+        lastPressedGrabTime = data.grabInputBufferTime;
     }
     #endregion
 
@@ -517,7 +517,7 @@ public class PlayerMovement : MonoBehaviour
     private void Run(float _lerp_amount)
     {
         // 이동하고자 하는 방향과 원하는 속도 계산
-        float target_speed = moveInput.x * data.run_max_speed;
+        float target_speed = moveInput.x * data.runMaxSpeed;
 
         // 방향과 속도로 부드럽게 조절
         target_speed = Mathf.Lerp(rb.linearVelocity.x, target_speed, _lerp_amount);
@@ -529,20 +529,20 @@ public class PlayerMovement : MonoBehaviour
         // 감속 포함
         if (lastOnGroundTime > 0)
         {
-            accelerate = (Mathf.Abs(target_speed) > 0.01f) ? data.run_accel_amount : data.run_deccel_amount;
+            accelerate = (Mathf.Abs(target_speed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
         }
         else
         {
             accelerate = (Mathf.Abs(target_speed) > 0.01f) ? 
-                data.run_accel_amount * data.accel_in_air : data.run_deccel_amount * data.deccel_in_air;
+                data.runAccelAmount * data.accelInAir : data.runDeccelAmount * data.deccelInAir;
         }
 
         // 점프의 정점에 도달하면 가속도와 최대 속도가 증가
         if ((true == isJumping || true == isWallJumping || true == isJumpFalling) &&
-            Mathf.Abs(rb.linearVelocity.y) < data.jump_hang_time_threshold)
+            Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
         {
-            accelerate *= data.jump_hang_acceleration_mult;
-            target_speed *= data.jump_hang_max_speed_mult;
+            accelerate *= data.jumpHangAccelerationMult;
+            target_speed *= data.jumpHangMaxSpeedMult;
         }
 
         // 속도 제어
@@ -636,7 +636,7 @@ public class PlayerMovement : MonoBehaviour
 
         float addforce = (true == isOnJumpPad) ? 1.5f * padForce : 1;
 
-        Vector2 force = new Vector2(data.wall_jump_force.x * addforce, data.wall_jump_force.y);
+        Vector2 force = new Vector2(data.wallJumpForce.x * addforce, data.wallJumpForce.y);
         force.x *= _dir;
 
         if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(force.x))
@@ -679,12 +679,12 @@ public class PlayerMovement : MonoBehaviour
         {
             if (moveInput.y > 0 && false == isLookingOther && false == isJumping)
             {
-                rb.linearVelocity = new Vector2(0, moveInput.y * data.climb_up_speed);
+                rb.linearVelocity = new Vector2(0, moveInput.y * data.climbUpSpeed);
                 stamina_consume = 4.75f;
             }
             else if (moveInput.y < 0 && false == isLookingOther)
             {
-                rb.linearVelocity = new Vector2(0, moveInput.y * data.slide_speed);
+                rb.linearVelocity = new Vector2(0, moveInput.y * data.slideSpeed);
             }
             else
             {
@@ -694,7 +694,7 @@ public class PlayerMovement : MonoBehaviour
         }      
         else
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -data.slide_speed);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -data.slideSpeed);
         }
 
         lastOnGrabTime -= (stamina_consume * Time.deltaTime);
@@ -752,9 +752,9 @@ public class PlayerMovement : MonoBehaviour
 
         SetGravityScale(0);
 
-        while (Time.time - start_time <= data.dash_attack_time)
+        while (Time.time - start_time <= data.dashAttackTime)
         {
-            rb.linearVelocity = _dir.normalized * data.dash_speed;
+            rb.linearVelocity = _dir.normalized * data.dashSpeed;
 
             if (rb.linearVelocity.y > 0 &&
                 Physics2D.OverlapBox(headCheckPoint.position, headCheckSize, 0, groundLayer & ~onewayPlatform))
@@ -769,10 +769,10 @@ public class PlayerMovement : MonoBehaviour
 
         isDashAttacking = false;
 
-        SetGravityScale(data.gravity_scale);
-        rb.linearVelocity = _dir.normalized * data.dash_end_speed;
+        SetGravityScale(data.gravityScale);
+        rb.linearVelocity = _dir.normalized * data.dashEndSpeed;
 
-        while (Time.time - start_time <= data.dash_end_time)
+        while (Time.time - start_time <= data.dashEndTime)
         {
             yield return null;
         }
@@ -783,15 +783,15 @@ public class PlayerMovement : MonoBehaviour
     {
         dashRefilling = true;
 
-        yield return new WaitForSeconds(data.dash_refill_time);
+        yield return new WaitForSeconds(data.dashRefillTime);
 
         dashRefilling = false;
-        dashesLeft = Mathf.Min(data.dash_amount, dashesLeft + 1);
+        dashesLeft = Mathf.Min(data.dashAmount, dashesLeft + 1);
     }
 
     public void BonusDash()
     {
-        dashesLeft = data.dash_amount;
+        dashesLeft = data.dashAmount;
     }
     #endregion
 
@@ -865,7 +865,7 @@ public class PlayerMovement : MonoBehaviour
     private bool CanDash()
     {
         if (false == isDashing &&
-            dashesLeft < data.dash_amount &&
+            dashesLeft < data.dashAmount &&
             lastOnGroundTime > 0 &&
             false == dashRefilling)
         {

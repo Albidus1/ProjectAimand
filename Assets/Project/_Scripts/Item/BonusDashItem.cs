@@ -26,7 +26,7 @@ public class BonusDashItem : MonoBehaviour
         {
             var player = collision.gameObject.GetComponent<PlayerMovement>();
 
-            if (player.dashesLeft < player.data.dash_amount &&
+            if (player.dashesLeft < player.data.dashAmount &&
                 false == isRefilling)
             {
                 Debug.Log("BonusDash");

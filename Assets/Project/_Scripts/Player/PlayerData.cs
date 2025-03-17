@@ -5,100 +5,100 @@ using UnityEngine;
 public class PlayerData : ScriptableObject
 {
     [Header("중력")]
-    [HideInInspector] public float gravity_strength;
-    [HideInInspector] public float gravity_scale;
+    [HideInInspector] public float gravityStrength;
+    [HideInInspector] public float gravityScale;
     [Space(5)]
 
-    public float fall_gravity_mult;
-    public float max_fall_speed;
+    public float fallGravityMult;
+    public float maxFallSpeed;
     [Space(5)]
 
-    public float fast_fall_gravity_mult;
-    public float max_fast_fall_speed;
+    public float fastFallGravityMult;
+    public float maxFastFallSpeed;
     [Space(20)]
 
     [Header("이동")]
-    public float run_max_speed;
-    public float run_acceleration;
-    [HideInInspector] public float run_accel_amount;
+    public float runMaxSpeed;
+    public float runAcceleration;
+    [HideInInspector] public float runAccelAmount;
     public float run_decceleration;
-    [HideInInspector] public float run_deccel_amount;
+    [HideInInspector] public float runDeccelAmount;
     [Space(5)]
 
-    [Range(0f, 1f)] public float accel_in_air;
-    [Range(0f, 1f)] public float deccel_in_air;
+    [Range(0f, 1f)] public float accelInAir;
+    [Range(0f, 1f)] public float deccelInAir;
     [Space(5)]
 
     public bool doConserveMomentum = true;
     [Space(20)]
 
     [Header("점프")]
-    public float jump_height;
-    public float jump_time_to_apex;
-    [HideInInspector] public float jump_force;
+    public float jumpHeight;
+    public float jumpTimeToApex;
+    [HideInInspector] public float jumpForce;
     [Space(5)]
 
-    public float jump_cut_gravity_mult;
-    [Range(0f, 1.0f)] public float jump_hang_gravity_mult;
-    public float jump_hang_time_threshold;
-    public float jump_hang_acceleration_mult;
-    public float jump_hang_max_speed_mult;
+    public float jumpCutGravityMult;
+    [Range(0f, 1.0f)] public float jumpHangGravityMult;
+    public float jumpHangTimeThreshold;
+    public float jumpHangAccelerationMult;
+    public float jumpHangMaxSpeedMult;
     [Space(20)]
 
     [Header("벽 점프")]
-    public Vector2 wall_jump_force;
+    public Vector2 wallJumpForce;
     [Space(5)]
 
-    [Range(0f, 1f)] public float wall_jump_run_lerp;
-    [Range(0f, 1.5f)] public float wall_jump_time;
-    public bool do_turn_on_wall_jump;
+    [Range(0f, 1f)] public float wallJumpRunLerp;
+    [Range(0f, 1.5f)] public float wallJumpTime;
+    public bool doTurnOnWallJump;
     [Space(20)]
 
     [Header("슬라이드")]
-    public float slide_speed;
-    public float slide_accel;
+    public float slideSpeed;
+    public float slideAccel;
     [Space(20)]
 
     [Header("벽 붙잡기")]
-    public float grab_stamina;
-    public float climb_up_speed;
+    public float grabStamina;
+    public float climbUpSpeed;
 
     [Header("대쉬")]
-    public int dash_amount;
-    public float dash_speed;
-    public float dash_sleep_time;
+    public int dashAmount;
+    public float dashSpeed;
+    public float dashSleepTime;
     [Space(5)]
 
-    public float dash_attack_time;
+    public float dashAttackTime;
     [Space(5)]
 
-    public float dash_end_time;
-    public Vector2 dash_end_speed;
-    [Range(0f, 1f)] public float dash_end_run_lerp;
+    public float dashEndTime;
+    public Vector2 dashEndSpeed;
+    [Range(0f, 1f)] public float dashEndRunLerp;
     [Space(5)]
 
-    public float dash_refill_time;
+    public float dashRefillTime;
 
     [Header("어시스트")]
-    [Range(0.01f, 0.5f)] public float coyote_time;
-    [Range(0.01f, 0.5f)] public float jump_input_buffer_time;
-    [Range(0.01f, 0.5f)] public float dash_input_buffer_time;
-    [Range(0.01f, 0.5f)] public float grab_input_buffer_time;
+    [Range(0.01f, 0.5f)] public float coyoteTime;
+    [Range(0.01f, 0.5f)] public float jumpInputBufferTime;
+    [Range(0.01f, 0.5f)] public float dashInputBufferTime;
+    [Range(0.01f, 0.5f)] public float grabInputBufferTime;
 
 
     private void OnValidate()
     {
-        gravity_strength = -(2 * jump_height) / (jump_time_to_apex * jump_time_to_apex);
+        gravityStrength = -(2 * jumpHeight) / (jumpTimeToApex * jumpTimeToApex);
 
-        gravity_scale = gravity_strength / Physics2D.gravity.y;
+        gravityScale = gravityStrength / Physics2D.gravity.y;
 
-        run_accel_amount = (50 * run_acceleration) / run_max_speed;
-        run_deccel_amount = (50 * run_decceleration) / run_max_speed;
+        runAccelAmount = (50 * runAcceleration) / runMaxSpeed;
+        runDeccelAmount = (50 * run_decceleration) / runMaxSpeed;
 
-        jump_force = Mathf.Abs(gravity_strength) * jump_time_to_apex;
+        jumpForce = Mathf.Abs(gravityStrength) * jumpTimeToApex;
 
-        run_acceleration = Mathf.Clamp(run_acceleration, 0.01f, run_max_speed);
-        run_decceleration = Mathf.Clamp(run_decceleration, 0.01f, run_max_speed);
+        runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
+        run_decceleration = Mathf.Clamp(run_decceleration, 0.01f, runMaxSpeed);
     }
 }
 
