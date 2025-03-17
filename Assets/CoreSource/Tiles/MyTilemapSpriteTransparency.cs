@@ -3,7 +3,7 @@ using UnityEngine.Tilemaps;
 
 
 
-public class TilemapSpriteTransparency : MonoBehaviour
+public class MyTilemapSpriteTransparency : MonoBehaviour
 {
     private Tilemap tilemap;
     public MyTiles transparentTile;

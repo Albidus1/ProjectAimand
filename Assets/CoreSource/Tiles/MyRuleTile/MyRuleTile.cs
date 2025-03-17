@@ -16,26 +16,12 @@ public class MyRuleTile : RuleTile<MyRuleTile.Neighbor>
         public const int Empty = 5;
     }
 
-
-    [ContextMenu("[abc]")]
-    void TestCallFN()
-    {
-        foreach (TileBase tile in tilesToConnect)
-        {
-           
-        }
-
-        //this.m_DefaultSprite;
-    }
-
     public override bool RuleMatch(int neighbor, TileBase other)
     {
-
         //var tilemaplist = GameObject.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         //tilemaplist[0].GetTile()
 
         
-
         switch (neighbor)
         {
             case Neighbor.This:
