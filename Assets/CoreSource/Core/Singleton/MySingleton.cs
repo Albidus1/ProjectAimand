@@ -2,48 +2,45 @@ using UnityEngine;
 
 
 
-namespace MyCustoms.Tools
+public class MySingleton<T> : MonoBehaviour where T : Component
 {
-    public class MySingleton<T> : MonoBehaviour where T : Component
-    {
-        protected static T instance;
-        public static bool HasInstance => instance != null;
-        public static T TryGetInstance() => HasInstance ? instance : null;
-        public static T Current => instance;
+    protected static T instance;
+    public static bool HasInstance => instance != null;
+    public static T TryGetInstance() => HasInstance ? instance : null;
+    public static T Current => instance;
 
-        public static T Instance
+    public static T Instance
+    {
+        get
         {
-            get
+            if (instance == null)
             {
+                instance = FindFirstObjectByType<T>();
+
                 if (instance == null)
                 {
-                    instance = FindFirstObjectByType<T>();
-
-                    if (instance == null)
-                    {
-                        GameObject obj = new GameObject();
-                        obj.name = typeof(T).Name + "_AutoCreated";
-                        instance = obj.AddComponent<T>();
-                    }
+                    GameObject obj = new GameObject();
+                    obj.name = typeof(T).Name + "_AutoCreated";
+                    instance = obj.AddComponent<T>();
                 }
-
-                return instance;
-            }
-        }
-
-        protected virtual void Awake()
-        {
-            InitializeSingleton();
-        }
-
-        protected virtual void InitializeSingleton()
-        {
-            if (!Application.isPlaying)
-            {
-                return;
             }
 
-            instance = this as T;
+            return instance;
         }
+    }
+
+    protected virtual void Awake()
+    {
+        InitializeSingleton();
+    }
+
+    protected virtual void InitializeSingleton()
+    {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
+        instance = this as T;
     }
 }

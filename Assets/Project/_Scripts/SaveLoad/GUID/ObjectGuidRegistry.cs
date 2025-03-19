@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+
+
 public class ObjectGuidRegistry : MySingleton<ObjectGuidRegistry>
 {
     [System.Serializable]
@@ -61,7 +63,7 @@ public class ObjectGuidRegistry : MySingleton<ObjectGuidRegistry>
         {
             string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
             TileBase tile = UnityEditor.AssetDatabase.LoadAssetAtPath<TileBase>(path);
-            objectMapping.Add(new GuidMapping{ objectToSave = tile, guid = guid, });
+            objectMapping.Add(new GuidMapping { objectToSave = tile, guid = guid, });
         }
     }
 #endif

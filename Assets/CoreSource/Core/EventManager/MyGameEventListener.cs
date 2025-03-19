@@ -2,10 +2,8 @@ using UnityEngine;
 
 
 
-namespace MyCustoms.Tools
-{
-    public class MyGameEventListener : MonoBehaviour
-    {
 
-    }
+public class MyGameEventListener : MonoBehaviour
+{
+
 }

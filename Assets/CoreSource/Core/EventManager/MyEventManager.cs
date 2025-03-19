@@ -4,98 +4,137 @@ using UnityEngine;
 
 
 
-namespace MyCustoms.Tools
-{
-    public struct GameEvent
-    {
-        private static GameEvent e;
-        public string eventName;
 
-        public GameEvent(string _newName)
+public struct GameEvent
+{
+    private static GameEvent e;
+    public string eventName;
+
+    public GameEvent(string _newName)
+    {
+        eventName = _newName;
+    }
+
+    public static void Trigger(string _newName)
+    {
+        e.eventName = _newName;
+        EventManager.TriggerEvent(e);
+    }
+}
+
+[ExecuteAlways]
+public static class EventManager
+{
+    private static Dictionary<Type, List<IEventListenerBase>> subscribersList;
+
+    private static void InitializeStatics()
+    {
+        subscribersList = new Dictionary<Type, List<IEventListenerBase>>();
+    }
+
+    static EventManager()
+    {
+        subscribersList = new Dictionary<Type, List<IEventListenerBase>>();
+    }
+
+    public static void AddListener<Event>(IEventListener<Event> _listener) where Event : struct
+    {
+        Type eventType = typeof(Event);
+
+        if (false == subscribersList.ContainsKey(eventType))
         {
-            eventName = _newName;
+            subscribersList[eventType] = new List<IEventListenerBase>();
         }
 
-        public static void Trigger(string _newName)
+        if (false == SubscriptionExits(eventType, _listener))
         {
-            e.eventName = _newName;
-            EventManager.TriggerEvent(e);
+            subscribersList[eventType].Add(_listener);
         }
     }
 
-    [ExecuteAlways]
-    public static class EventManager
+    public static void RemoveListener<Event>(IEventListener<Event> _listener) where Event : struct
     {
-        private static Dictionary<Type, List<IEventListenerBase>> subscribersList;
+        Type eventType = typeof(Event);
 
-        private static void InitializeStatics()
+        if (false == subscribersList.ContainsKey(eventType))
         {
-            subscribersList = new Dictionary<Type, List<IEventListenerBase>>();
+            return;
         }
 
-        static EventManager()
+        List<IEventListenerBase> subsList = subscribersList[eventType];
+
+        for(int i = subsList.Count - 1; i >= 0; i--)
         {
-            subscribersList = new Dictionary<Type, List<IEventListenerBase>>();
-        }
-
-        public static void AddListener<Event>(IEventListener<Event> _listener) where Event : struct
-        {
-            Type eventType = typeof(Event);
-
-            if (false == subscribersList.ContainsKey(eventType))
+            if (subsList[i] == _listener)
             {
-                subscribersList[eventType] = new List<IEventListenerBase>();
-            }
+                subsList.Remove(subsList[i]);
 
-            if (false == SubscriptionExits(eventType, _listener))
-            {
-                subscribersList[eventType].Add(_listener);
-            }
-        }
+                if (subsList.Count == 0)
+                {
+                    subscribersList.Remove(eventType);
+                }
 
-        public static void RemoveListener<Event>(IEventListener<Event> _listener) where Event : struct
-        {
-            Type eventType = typeof(Event);
-
-            if (false == subscribersList.ContainsKey(eventType))
-            {
                 return;
             }
         }
-
-        public static void TriggerEvent<Event>(Event _newEvent) where Event : struct
-        {
-
-        }
-
-        public static bool SubscriptionExits(Type _type, IEventListenerBase _receiver)
-        {
-            List<IEventListenerBase> receivers;
-
-            if (false == subscribersList.TryGetValue(_type, out receivers))
-            {
-                return false;
-            }
-
-            bool exits = false;
-
-            for (int i = receivers.Count - 1; i >= 0; i--)
-            {
-                if (receivers[i] == _receiver)
-                {
-                    exits = true;
-                    break;
-                }
-            }
-
-            return exits;
-        }
     }
 
-
-    public interface IEventListenerBase { }
-    public interface IEventListener<T> : IEventListenerBase
+    public static void TriggerEvent<Event>(Event _newEvent) where Event : struct
     {
-        void OnEvent(T _eventType);
+        List<IEventListenerBase> subsList;
+
+        if (false == subscribersList.TryGetValue(typeof(Event), out subsList))
+        {
+            return;
+        }
+
+        for (int i = subsList.Count - 1; i >= 0; i--)
+        {
+            (subsList[i] as IEventListener<Event>).OnEvent(_newEvent);
+        }
     }
+
+    public static bool SubscriptionExits(Type _type, IEventListenerBase _receiver)
+    {
+        List<IEventListenerBase> receivers;
+
+        if (false == subscribersList.TryGetValue(_type, out receivers))
+        {
+            return false;
+        }
+
+        bool exits = false;
+
+        for (int i = receivers.Count - 1; i >= 0; i--)
+        {
+            if (receivers[i] == _receiver)
+            {
+                exits = true;
+                break;
+            }
+        }
+
+        return exits;
+    }
+}
+
+public static class EventRegister
+{
+    public delegate void Delegate<T> (T eventType);
+
+    public static void EventStartListening<EventType>(IEventListener<EventType> _caller) where EventType : struct
+    {
+        EventManager.AddListener<EventType>(_caller);
+    }
+
+    public static void EventStopListening<EventType>(IEventListener<EventType> _caller) where EventType : struct
+    {
+        EventManager.RemoveListener<EventType>(_caller);
+    }
+}
+
+public interface IEventListenerBase { }
+public interface IEventListener<T> : IEventListenerBase
+{
+    void OnEvent(T _eventType);
 }

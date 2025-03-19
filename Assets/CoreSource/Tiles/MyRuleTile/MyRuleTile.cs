@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
 
+
+
 [CreateAssetMenu(menuName = "Tiles/MyRuleTile")]
 public class MyRuleTile : RuleTile<MyRuleTile.Neighbor>
 {
