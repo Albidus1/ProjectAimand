@@ -1,6 +1,7 @@
 using UnityEngine;
 
 
+
 public class MySingleton<T> : MonoBehaviour where T : Component
 {
     protected static T instance;
