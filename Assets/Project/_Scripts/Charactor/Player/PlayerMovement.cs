@@ -4,12 +4,27 @@ using UnityEngine;
 
 
 
+public class PlayerStates
+{
+    public enum MovementStates 
+    { 
+        Idle, 
+        Running, 
+        Jumping, 
+        Falling, 
+        Sliding, 
+        Grabbing, 
+        Dashing 
+    }
+}
+
 public class PlayerMovement : MonoBehaviour
 {
-    public enum PlayerState { Idle, Run, Jumping, Falling, Sliding, Grabbing, Dashing }
     [MyReadOnly] 
-    public PlayerState State;
+    public PlayerStates playerState { get; protected set; }
     [Space(10)]
+    public MyStateManager<PlayerStates.MovementStates> movementState;
+    public bool SendStateChangeEvents = true;
 
     public PlayerData data;
 
@@ -104,6 +119,11 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
+        movementState.StateChange(PlayerStates.MovementStates.Idle);
+
+        playerState = new PlayerStates();
 
         groundLayer |= platform;
         groundLayer |= movingPlatform;
@@ -516,6 +536,8 @@ public class PlayerMovement : MonoBehaviour
     #region RUN METHODS
     private void Run(float _lerp_amount)
     {
+        movementState.StateChange(PlayerStates.MovementStates.Running);
+
         // 이동하고자 하는 방향과 원하는 속도 계산
         float target_speed = moveInput.x * data.runMaxSpeed;
 
