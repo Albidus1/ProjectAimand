@@ -20,11 +20,8 @@ public class PlayerStates
 
 public class PlayerMovement : MonoBehaviour
 {
-    [MyReadOnly] 
     public PlayerStates playerState { get; protected set; }
-    [Space(10)]
     public MyStateManager<PlayerStates.MovementStates> movementState;
-    public bool SendStateChangeEvents = true;
 
     public PlayerData data;
 
@@ -82,7 +79,6 @@ public class PlayerMovement : MonoBehaviour
     public float lastPressedGrabTime { get; private set; }
     public float lastPressedDashTime { get; private set; }
 
-    // 확인
     [Header("콜라이더 확인")]
     [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private Vector2 groundCheckSize = new Vector2(0.49f, 0.03f);
@@ -107,14 +103,14 @@ public class PlayerMovement : MonoBehaviour
     //private bool isAtEdge = false;
     public float climbForce { get; private set; } = 12f;
 
-    // 레이어
     [Header("레이어")]
     public LayerMask platform;
     public LayerMask movingPlatform;
     public LayerMask onewayPlatform;
     [SerializeField] private LayerMask groundLayer;
 
-
+    [Header("이벤트")]
+    public bool SendStateChangeEvents = true;
 
     private void Awake()
     {
@@ -161,6 +157,10 @@ public class PlayerMovement : MonoBehaviour
             if (moveInput.x != 0)
             {
                 CheckDirectionToFace(moveInput.x > 0);
+            }
+            else if (moveInput.x == 0)
+            {
+                movementState.StateChange(PlayerStates.MovementStates.Idle);
             }
 
             if (true == isWallGrabbing && false == isLookingOther)
