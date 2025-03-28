@@ -4,12 +4,24 @@ using UnityEngine;
 
 
 
+public class PlayerStates
+{
+    public enum MovementStates 
+    { 
+        Idle, 
+        Running, 
+        Jumping, 
+        Falling, 
+        Sliding, 
+        Grabbing, 
+        Dashing 
+    }
+}
+
 public class PlayerMovement : MonoBehaviour
 {
-    public enum PlayerState { Idle, Run, Jumping, Falling, Sliding, Grabbing, Dashing }
-    [MyReadOnly] 
-    public PlayerState State;
-    [Space(10)]
+    public PlayerStates playerState { get; protected set; }
+    public MyStateManager<PlayerStates.MovementStates> movementState;
 
     public PlayerData data;
 
@@ -67,7 +79,6 @@ public class PlayerMovement : MonoBehaviour
     public float lastPressedGrabTime { get; private set; }
     public float lastPressedDashTime { get; private set; }
 
-    // 확인
     [Header("콜라이더 확인")]
     [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private Vector2 groundCheckSize = new Vector2(0.49f, 0.03f);
@@ -92,18 +103,23 @@ public class PlayerMovement : MonoBehaviour
     //private bool isAtEdge = false;
     public float climbForce { get; private set; } = 12f;
 
-    // 레이어
     [Header("레이어")]
     public LayerMask platform;
     public LayerMask movingPlatform;
     public LayerMask onewayPlatform;
     [SerializeField] private LayerMask groundLayer;
 
-
+    [Header("이벤트")]
+    public bool SendStateChangeEvents = true;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
+        movementState.StateChange(PlayerStates.MovementStates.Idle);
+
+        playerState = new PlayerStates();
 
         groundLayer |= platform;
         groundLayer |= movingPlatform;
@@ -141,6 +157,10 @@ public class PlayerMovement : MonoBehaviour
             if (moveInput.x != 0)
             {
                 CheckDirectionToFace(moveInput.x > 0);
+            }
+            else if (moveInput.x == 0)
+            {
+                movementState.StateChange(PlayerStates.MovementStates.Idle);
             }
 
             if (true == isWallGrabbing && false == isLookingOther)
@@ -516,6 +536,8 @@ public class PlayerMovement : MonoBehaviour
     #region RUN METHODS
     private void Run(float _lerp_amount)
     {
+        movementState.StateChange(PlayerStates.MovementStates.Running);
+
         // 이동하고자 하는 방향과 원하는 속도 계산
         float target_speed = moveInput.x * data.runMaxSpeed;
 

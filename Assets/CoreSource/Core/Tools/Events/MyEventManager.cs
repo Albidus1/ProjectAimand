@@ -1,13 +1,20 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using System.Collections;
+using System.Collections.Generic;
 
 
 
+public interface IEventListenerBase { }
+public interface IEventListener<T> : IEventListenerBase
+{
+    void OnEvent(T _eventType);
+}
 
 public struct GameEvent
 {
-    private static GameEvent e;
+    static GameEvent e;
     public string eventName;
 
     public GameEvent(string _newName)
@@ -27,6 +34,9 @@ public static class EventManager
 {
     private static Dictionary<Type, List<IEventListenerBase>> subscribersList;
 
+
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void InitializeStatics()
     {
         subscribersList = new Dictionary<Type, List<IEventListenerBase>>();
@@ -113,7 +123,7 @@ public static class EventManager
                 break;
             }
         }
-
+        
         return exits;
     }
 }
@@ -122,19 +132,13 @@ public static class EventRegister
 {
     public delegate void Delegate<T> (T eventType);
 
-    public static void EventStartListening<EventType>(IEventListener<EventType> _caller) where EventType : struct
+    public static void EventStartListening<EventType>(this IEventListener<EventType> _caller) where EventType : struct
     {
         EventManager.AddListener<EventType>(_caller);
     }
 
-    public static void EventStopListening<EventType>(IEventListener<EventType> _caller) where EventType : struct
+    public static void EventStopListening<EventType>(this IEventListener<EventType> _caller) where EventType : struct
     {
         EventManager.RemoveListener<EventType>(_caller);
     }
-}
-
-public interface IEventListenerBase { }
-public interface IEventListener<T> : IEventListenerBase
-{
-    void OnEvent(T _eventType);
 }
