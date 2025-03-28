@@ -1,38 +1,61 @@
+using System.Collections;
 using UnityEngine;
 
 public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>
 {
-    [SerializeField] private string obejctID = "default";
+    [SerializeField] private string objectID = "default";
 
-    Button button = null;
+    private Button button = null;
 
 
 
 
     public virtual void OnEvent(ButtonEvent _buttonEvent)
     {
-        if (_buttonEvent.buttonID != obejctID)
+        if (_buttonEvent.buttonID != objectID)
         {
             return;
         }
 
-        ObejctActivate(_buttonEvent.buttonPressed);
+        ObjectActivate(_buttonEvent.buttonPressed);
     }
 
-    public virtual void ObejctActivate(Button _button)
+    public virtual void ObjectActivate(Button _button)
     {
-        Debug.Log("버튼 누름");
         button = _button;
-        ButtonEvent.Trigger(obejctID, _button);
+
+        StartCoroutine(nameof(ObjectMoving));
+    }
+
+    private IEnumerator ObjectMoving()
+    {
+        Vector3 direction = Vector3.right;
+        Vector3 targetToPosition = transform.position + Vector3.right;
+        float moveSpeed = 2f * Time.deltaTime;
+        float distanceToTarget = 0;
+
+        while (true)
+        {
+            distanceToTarget = (targetToPosition - transform.position).magnitude;
+
+            transform.Translate(direction * moveSpeed, Space.World);
+
+            if (moveSpeed >= distanceToTarget)
+            {
+                yield break;
+            }
+
+            yield return null;
+        }
     }
 
     protected virtual void OnEnable()
     {
-        this.EventStartListening();
+        this.EventStartListening<ButtonEvent>();
     }
 
     protected virtual void OnDisable()
     {
-        this.EventStopListening();
+        this.EventStopListening<ButtonEvent>();
     }
 }

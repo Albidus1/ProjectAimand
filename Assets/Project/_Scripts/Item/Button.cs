@@ -38,11 +38,7 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
     protected const string playerTag = "Player";
 
     #region SAVELOAD
-    public string Save()
-    {
-        return JsonUtility.ToJson(this);
-    }
-
+    public string Save() => JsonUtility.ToJson(this);
     public void Load(string _json)
     {
         JsonUtility.FromJsonOverwrite(_json, this);
