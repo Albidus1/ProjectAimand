@@ -49,9 +49,9 @@ public class CMCameraMove : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        StopAllCoroutines();
+        StopCoroutine(nameof(SwitchCamera));
     }
 
 
