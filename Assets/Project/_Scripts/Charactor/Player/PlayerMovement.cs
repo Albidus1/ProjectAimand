@@ -614,7 +614,7 @@ public class PlayerMovement : MonoBehaviour
     #region JUMP METHODS
     public void Jump(float _force, Vector2 _dir = default)
     {
-        Debug.Log("점프");
+        //Debug.Log("점프");
       
         lastPressedJumpTime = 0;
         lastOnGroundTime = 0;
@@ -643,7 +643,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallJump(int _dir)
     {
-        Debug.Log("벽 점프");
+        //Debug.Log("벽 점프");
 
         wallJumpStartTime = Time.time;
         lastPressedJumpTime = 0;

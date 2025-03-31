@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 
-public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
+public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
 {
     public Rigidbody2D rb { get; private set; }
     public PlayerMovement player { get; private set; }
@@ -33,8 +33,10 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
     public float homeWaitTime;
     [Space(5)]
 
+    [Header("가속")]
     [Tooltip("플레이어가 가속을 받는 최소 속도")]
     public float speedThreshold;
+    public bool isAccelerateAble = false;
 
     private float waitTime;
     public float jumpTime { get; private set; }
@@ -92,7 +94,8 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
         jumpTime -= Time.deltaTime;
         #endregion
 
-        if (player != null)
+        #region HANDLE MOVEMENT
+        if (player != null && base.button == null && base.objectID == "")
         {
             if (true == CanMove())
             {
@@ -103,12 +106,18 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
 
             CheckAccelerateAble();
 
-            if (jumpTime <= 0)
+            if (jumpTime <= 0 && true == isAccelerateAble)
             {
                 player.platformDirection = direction;
             }
+            else
+            {
+                player.platformDirection = Vector3.zero;
+            }
         }
+        #endregion
 
+        #region HANDLE PAUSE
         if (waitTime <= 0)
         {
             isPaused = false;
@@ -117,6 +126,7 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
         {
             isPaused = true;
         }
+        #endregion
     }
 
     private void FixedUpdate()
@@ -133,61 +143,73 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
         }
     }
 
+    public override void ObjectActivate(Button _button)
+    {
+        base.ObjectActivate(_button);
+
+        if (true == isMoving)
+        {
+            return;
+        }
+
+        isMoving = true;
+        isReturning = false;
+        waitTime = startWaitTime;
+        DirectionCalculate();
+    }
+
     public void DirectionCalculate(bool _flag = false)
     {
-        if (true == _flag)
-        {
-            direction = (pointB - pointA).normalized;
-        }
-        else
-        {
-            direction = (next - transform.position).normalized;
-        }
+        direction = _flag ? (pointB - pointA).normalized : (next - transform.position).normalized;
     }
 
     #region MOVE
     private void Move()
     {
-        float distance_to_target = (next - transform.position).magnitude;
+        float distanceToTarget = (next - transform.position).magnitude;
+        float currentSpeed = (isReturning ? speedToHome : speedToDestination) * Time.deltaTime;
 
-        float current_speed = (false == isReturning ? speedToDestination : speedToHome) * Time.deltaTime;
-
-        if (current_speed >= distance_to_target)
+        if (currentSpeed >= distanceToTarget)
         {
             transform.position = next;
-
-            if (false == isReturning)
-            {
-                // B지점 도착
-                next = pointA;
-                isReturning = true;
-                
-                waitTime = homeWaitTime;
-            }
-            else
-            {
-                // A지점 복귀
-                next = pointB;
-                isReturning = false;
-                isMoving = false;
-
-                waitTime = startWaitTime;
-            }
-
-            DirectionCalculate();
+            HandleArrival();
         }
         else
         {
-            transform.Translate(direction * current_speed, Space.World);
+            transform.Translate(direction * currentSpeed, Space.World);
         }
 
+        UpdateSpeed();
+    }
+
+    private void HandleArrival()
+    {
+        if (!isReturning)
+        {
+            next = pointA;
+            isReturning = true;
+            waitTime = homeWaitTime;
+        }
+        else
+        {
+            next = pointB;
+            isReturning = false;
+            isMoving = false;
+            waitTime = startWaitTime;
+        }
+
+        DirectionCalculate();
+    }
+
+    private void UpdateSpeed()
+    {
         float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
         lastPosition = transform.position;
 
         if (speed >= speedThreshold)
         {
             jumpTime = inputDelay;
-        }        
+        }
     }
     #endregion
 
@@ -218,6 +240,11 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
     #region ON COLLISION
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (base.button != null && base.objectID != "")
+        {
+            return;
+        }
+
         if (collision.gameObject.CompareTag("Player"))
         {
             player = collision.gameObject.GetComponent<PlayerMovement>();
@@ -230,6 +257,11 @@ public class PlatformMoving : MonoBehaviour, ISaveLoadManagerMethods
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        if (base.button != null && base.objectID != "")
+        {
+            return;
+        }
+
         if (collision.gameObject.CompareTag("Player") && player != null)
         {
             player.isOnMovingPlatform = false;
