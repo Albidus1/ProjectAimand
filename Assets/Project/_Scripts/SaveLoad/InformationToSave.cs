@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 
 
 [System.Serializable]
-public class SaveData
+public class SaveMapData
 {
     public List<GameObjectData> gameObjects = new List<GameObjectData>();
     public List<TilemapData> tilemapDataList = new List<TilemapData>();
