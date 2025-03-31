@@ -26,7 +26,7 @@ public class SaveAndLoadHandler : MonoBehaviour
     [ContextMenu("저장")]
     public void OnSave()
     {
-        SaveData saveData = new SaveData();
+        SaveMapData saveData = new SaveMapData();
 
         foreach (Tilemap tilemap in tilemaps)
         {
@@ -130,7 +130,7 @@ public class SaveAndLoadHandler : MonoBehaviour
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+            SaveMapData saveData = JsonUtility.FromJson<SaveMapData>(json);
 
             ClearScene();
 
@@ -187,7 +187,7 @@ public class SaveAndLoadHandler : MonoBehaviour
         }
     }
 
-    private void LoadGameObjects(SaveData _saveData)
+    private void LoadGameObjects(SaveMapData _saveData)
     {
         Dictionary<string, GameObject> prefabDirctionary = new Dictionary<string, GameObject>();
 

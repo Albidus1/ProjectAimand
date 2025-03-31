@@ -31,8 +31,8 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
 
     [SerializeField] private string ButtonID = "default";
 
-    public enum JumpDirection { Left, Right, Up };
-    public JumpDirection direction;
+    public enum ButtonDirection { Left, Right, Up, Down };
+    public ButtonDirection direction;
     private Vector3 dir;
 
     protected const string playerTag = "Player";
@@ -71,19 +71,24 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
     {
         switch (direction)
         {
-            case JumpDirection.Left:
+            case ButtonDirection.Left:
                 dir = Vector3.left;
                 transform.rotation = Quaternion.Euler(0, 0, 90);
                 break;
 
-            case JumpDirection.Right:
+            case ButtonDirection.Right:
                 dir = Vector3.right;
                 transform.rotation = Quaternion.Euler(0, 0, -90);
                 break;
 
-            case JumpDirection.Up:
+            case ButtonDirection.Up:
                 dir = Vector3.up;
                 transform.rotation = Quaternion.Euler(0, 0, 0);
+                break;
+
+            case ButtonDirection.Down:
+                dir = Vector3.down;
+                transform.rotation = Quaternion.Euler(0, 0, 180);
                 break;
         }
     }
