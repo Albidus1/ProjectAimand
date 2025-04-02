@@ -37,7 +37,7 @@ public class ConeOfVision2D : MonoBehaviour
 
 
 
-    [Header("시야")]
+    [Header("범위")]
     public LayerMask obstacleMask;
     public float visionRadius = 5;
     [Range(0, 360)]
@@ -49,7 +49,7 @@ public class ConeOfVision2D : MonoBehaviour
     [MyReadOnly]
     public Vector3 eulerAngles;
 
-    [Header("Target Scanning")]
+    [Header("오브젝트 감지")]
     public bool shouldScanForTargets = true;
     public LayerMask targetMask;
     public float scanFrequencyInSeconds = 1;
@@ -72,7 +72,7 @@ public class ConeOfVision2D : MonoBehaviour
     protected float lastScanTime;
 
     protected RaycastHit2D scanForTargetsHit2D;
-    protected List<Vector3> viewPoint = new List<Vector3>();
+    protected List<Vector3> viewPoints = new List<Vector3>();
     protected RaycastData oldViewCast = new RaycastData();
     protected RaycastData viewCast = new RaycastData();
 
@@ -104,6 +104,13 @@ public class ConeOfVision2D : MonoBehaviour
         }
 
         DrawMesh();
+    }
+
+    public virtual void SetDirectionAndAngles(Vector3 _direction, Vector3 _eulerAngles)
+    {
+        direction = _direction;
+        eulerAngles = _eulerAngles;
+        eulerAngles.y += angleOffset;
     }
 
     protected virtual void ScanForTargets()
@@ -141,7 +148,7 @@ public class ConeOfVision2D : MonoBehaviour
         int steps = Mathf.RoundToInt(meshDensity * visionAngle);
         float stepsAngle = visionAngle / steps;
 
-        viewPoint.Clear();
+        viewPoints.Clear();
 
         for (int i = 0; i <= steps; i++)
         {
@@ -158,21 +165,21 @@ public class ConeOfVision2D : MonoBehaviour
 
                     if(edge.pointA != Vector3.zero)
                     {
-                        viewPoint.Add(edge.pointA);
+                        viewPoints.Add(edge.pointA);
                     }
 
                     if (edge.pointB != Vector3.zero)
                     {
-                        viewPoint.Add(edge.pointB);
+                        viewPoints.Add(edge.pointB);
                     }
                 }
             }
 
-            viewPoint.Add(viewCast.point);
+            viewPoints.Add(viewCast.point);
             oldViewCast = viewCast;
         }
 
-        int numOfVertices = viewPoint.Count + 1;
+        int numOfVertices = viewPoints.Count + 1;
         if (numOfVertices != numOfVerticesLastTime)
         {
             Array.Resize(ref vertices, numOfVertices);
@@ -185,7 +192,7 @@ public class ConeOfVision2D : MonoBehaviour
 
         for (int i = 0; i < numOfVertices - 1; i++) 
         {
-            vertices[i + 1] = this.transform.InverseTransformPoint(vertices[i]);
+            vertices[i + 1] = this.transform.InverseTransformPoint(viewPoints[i]);
 
             if (i < numOfVertices - 2)
             {
