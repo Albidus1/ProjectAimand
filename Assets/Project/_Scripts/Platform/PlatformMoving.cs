@@ -49,12 +49,12 @@ public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
 
 
     #region SAVELOAD
-    public string Save()
+    public override string Save()
     {
         return JsonUtility.ToJson(this);
     }
 
-    public void Load(string _json)
+    public override void Load(string _json)
     {
         JsonUtility.FromJsonOverwrite(_json, this);
     }

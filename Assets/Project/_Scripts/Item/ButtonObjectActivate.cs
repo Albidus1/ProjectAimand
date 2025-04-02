@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>
+public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>, ISaveLoadManagerMethods
 {
     [SerializeField] protected string objectID = "default";
 
@@ -9,6 +9,15 @@ public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>
 
 
 
+    public virtual string Save()
+    {
+        return JsonUtility.ToJson(this);
+    }
+
+    public virtual void Load(string _json)
+    {
+        JsonUtility.FromJsonOverwrite(_json, this);
+    }
 
     public virtual void OnEvent(ButtonEvent _buttonEvent)
     {

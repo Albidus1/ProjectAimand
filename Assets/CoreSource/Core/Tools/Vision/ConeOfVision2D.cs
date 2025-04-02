@@ -81,7 +81,7 @@ public class ConeOfVision2D : MonoBehaviour
     protected Vector3 minPoint, maxPoint, dir;
     protected RaycastData returnRaycastData;
     protected RaycastHit2D raycastAtAngleHit2D;
-    protected int numberOfVerticesLastTime = 0;
+    protected int numOfVerticesLastTime = 0;
 
 
 
@@ -147,7 +147,60 @@ public class ConeOfVision2D : MonoBehaviour
         {
             float angle = (stepsAngle * i) + eulerAngles.y - (visionAngle * 0.5f);
             viewCast = RaycastAtAngle(angle);
+
+            if (i > 0)
+            {
+                bool thresholdExeeded = Mathf.Abs(oldViewCast.distance -  viewCast.distance) > edgeThreshold;
+
+                if ((oldViewCast.hit != viewCast.hit) || (oldViewCast.hit && viewCast.hit && true == thresholdExeeded))
+                {
+                    MeshEdgePosition edge = FindMeshEdgePosition(oldViewCast, viewCast);
+
+                    if(edge.pointA != Vector3.zero)
+                    {
+                        viewPoint.Add(edge.pointA);
+                    }
+
+                    if (edge.pointB != Vector3.zero)
+                    {
+                        viewPoint.Add(edge.pointB);
+                    }
+                }
+            }
+
+            viewPoint.Add(viewCast.point);
+            oldViewCast = viewCast;
         }
+
+        int numOfVertices = viewPoint.Count + 1;
+        if (numOfVertices != numOfVerticesLastTime)
+        {
+            Array.Resize(ref vertices, numOfVertices);
+            Array.Resize(ref triangles, (numOfVertices - 2) * 3);
+        }
+
+        vertices[0].x = 0;
+        vertices[0].y = 0;
+        vertices[0].z = 0;
+
+        for (int i = 0; i < numOfVertices - 1; i++) 
+        {
+            vertices[i + 1] = this.transform.InverseTransformPoint(vertices[i]);
+
+            if (i < numOfVertices - 2)
+            {
+                triangles[i * 3] = 0;
+                triangles[i * 3 + 1] = i + 1;
+                triangles[i * 3 + 2] = i + 2;
+            }
+        }
+
+        visionMesh.Clear();
+        visionMesh.vertices = vertices;
+        visionMesh.triangles = triangles;
+        visionMesh.RecalculateNormals();
+
+        numOfVerticesLastTime = numOfVertices;
     }
 
     RaycastData RaycastAtAngle(float _angle)
@@ -168,12 +221,41 @@ public class ConeOfVision2D : MonoBehaviour
         }
         else
         {
-            returnRaycastData.hit = true;
+            returnRaycastData.hit = false;
             returnRaycastData.point = this.transform.position + (dir * visionRadius);
             returnRaycastData.distance = visionRadius;
             returnRaycastData.angle = _angle;
         }
 
         return returnRaycastData;
+    }
+
+    MeshEdgePosition FindMeshEdgePosition(RaycastData _minViewCast, RaycastData _maxViewCast)
+    {
+        float minAngle = _minViewCast.angle;
+        float maxAngle = _maxViewCast.angle;
+        minPoint = _minViewCast.point;
+        maxPoint = _maxViewCast.point;
+
+        for (int i = 0; i < edgePrecision; i++)
+        {
+            float angle = (minAngle + maxAngle) * 0.5f;
+            RaycastData newViewCast = RaycastAtAngle(angle);
+
+            bool thresholdExeeded = Mathf.Abs(_minViewCast.distance - newViewCast.distance) > edgeThreshold;
+
+            if (newViewCast.hit == _minViewCast.hit && false == thresholdExeeded)
+            {
+                minAngle = angle;
+                minPoint = newViewCast.point;
+            }
+            else
+            {
+                maxAngle = angle;
+                maxPoint = newViewCast.point;
+            }
+        }
+
+        return new MeshEdgePosition(minPoint, maxPoint);
     }
 }
