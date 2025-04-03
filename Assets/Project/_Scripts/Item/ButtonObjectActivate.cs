@@ -1,14 +1,23 @@
 using System.Collections;
 using UnityEngine;
 
-public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>
+public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>, ISaveLoadManagerMethods
 {
-    [SerializeField] private string objectID = "default";
+    [SerializeField] protected string objectID = "default";
 
-    private Button button = null;
+    protected Button button = null;
 
 
 
+    public virtual string Save()
+    {
+        return JsonUtility.ToJson(this);
+    }
+
+    public virtual void Load(string _json)
+    {
+        JsonUtility.FromJsonOverwrite(_json, this);
+    }
 
     public virtual void OnEvent(ButtonEvent _buttonEvent)
     {
@@ -24,11 +33,12 @@ public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>
     {
         button = _button;
 
-        StartCoroutine(nameof(ObjectMoving));
+        //StartCoroutine(nameof(ObjectMoving));
     }
 
     private IEnumerator ObjectMoving()
     {
+        // 테스트용 코드
         Vector3 direction = Vector3.right;
         Vector3 targetToPosition = transform.position + Vector3.right;
         float moveSpeed = 2f * Time.deltaTime;

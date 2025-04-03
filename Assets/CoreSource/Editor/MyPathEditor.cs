@@ -31,7 +31,7 @@ public class MyPathEditor : Editor
         Handles.color = Color.green;
         PlatformMoving platform = (PlatformMoving)target;
    
-        Vector3 gridOffset = Vector3.zero;
+        Vector3 gridOffset = new Vector3(1, 1, 0);
 
         // pointA의 위치 변경 가능
         EditorGUI.BeginChangeCheck();
