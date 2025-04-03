@@ -219,6 +219,10 @@ public class ConeOfVision2D : MonoBehaviour
 
         raycastAtAngleHit2D = Physics2D.Raycast(this.transform.position, dir, visionRadius, obstacleMask);
 
+#if UNITY_EDITOR
+        //Debug.DrawRay(this.transform.position, dir * visionRadius, raycastAtAngleHit2D ? Color.red : Color.green, 0.1f);
+#endif
+
         if (raycastAtAngleHit2D)
         {
             returnRaycastData.hit = true;
