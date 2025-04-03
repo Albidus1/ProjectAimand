@@ -42,6 +42,8 @@ public class ConeOfVision2D : MonoBehaviour
     public float visionRadius = 5;
     [Range(0, 360)]
     public float visionAngle = 180;
+
+    [MyReadOnly]
     [Range(0, 360)]
     public float angleOffset = 0;
     [MyReadOnly]

@@ -5,6 +5,7 @@ public class MagneticAbility : ConeOfVision2D
     [Header("플레이어")]
     [SerializeField] private PlayerMovement playerController;
     private bool previousFacingDirection = true;
+    private bool isScanning = true;
 
     [MyReadOnly]
     public Vector3 abilityDirection
@@ -27,17 +28,32 @@ public class MagneticAbility : ConeOfVision2D
     protected override void Awake()
     {
         base.Awake();
+        OnOff(isScanning);
+
         playerController = GetComponent<PlayerMovement>();
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            OnOff(isScanning);
+            isScanning = !isScanning;
+        }
+
         if (previousFacingDirection != playerController.isFacingRight)
         {
-            Debug.Log("방향 전환");
+            //Debug.Log("방향 전환");
             UpdateDirection();
             previousFacingDirection = playerController.isFacingRight;
         }
+    }
+
+    private void OnOff(bool _trigger)
+    {
+        base.shouldScanForTargets = _trigger;
+        base.shouldDrawMesh = _trigger;
+        base.visionMeshFilter.gameObject.SetActive(_trigger);
     }
 
     public void UpdateDirection()
@@ -50,5 +66,10 @@ public class MagneticAbility : ConeOfVision2D
         {
             abilityDirection = Vector3.left;
         }
+    }
+
+    protected virtual void ObjectAction()
+    {
+
     }
 }
