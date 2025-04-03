@@ -42,6 +42,8 @@ public class ConeOfVision2D : MonoBehaviour
     public float visionRadius = 5;
     [Range(0, 360)]
     public float visionAngle = 180;
+
+    [MyReadOnly]
     [Range(0, 360)]
     public float angleOffset = 0;
     [MyReadOnly]
@@ -218,6 +220,10 @@ public class ConeOfVision2D : MonoBehaviour
         dir.z = 0f;
 
         raycastAtAngleHit2D = Physics2D.Raycast(this.transform.position, dir, visionRadius, obstacleMask);
+
+#if UNITY_EDITOR
+        //Debug.DrawRay(this.transform.position, dir * visionRadius, raycastAtAngleHit2D ? Color.red : Color.green, 0.1f);
+#endif
 
         if (raycastAtAngleHit2D)
         {

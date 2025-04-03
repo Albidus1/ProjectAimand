@@ -68,6 +68,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isLookingOther;
 
     // 대쉬
+    private enum DashDirection { TwoDirections, FourDirections, EightDirections}
+    [Header("대쉬 방향")]
+    [SerializeField] private DashDirection dashDirection;
+
     public int dashesLeft { get; private set; }
     private bool dashRefilling;
     private Vector2 lastDashDirection;
@@ -197,6 +201,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 lastOnGroundTime = data.coyoteTime;
                 lastOnGrabTime = data.grabStamina;
+                dashesLeft = data.dashAmount;
             }
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight) 
@@ -372,6 +377,27 @@ public class PlayerMovement : MonoBehaviour
             if (moveInput != Vector2.zero)
             {
                 lastDashDirection = moveInput;
+
+                switch (dashDirection)
+                {
+                    case DashDirection.TwoDirections:
+                        lastDashDirection.y = 0;
+                        break;
+
+                    case DashDirection.FourDirections:
+                        if (moveInput.x != 0)
+                        {
+                            lastDashDirection.y = 0;
+                        }
+                        else
+                        {
+                            lastDashDirection.x = 0;
+                        }
+                        break;
+
+                    case DashDirection.EightDirections:
+                        break;
+                }          
             }
             else
             {
