@@ -102,15 +102,14 @@ public class MagneticAbility : ConeOfVision2D
     {
         foreach (Transform col in base.visibleTargets)
         {
-            if (col.gameObject == this.gameObject) 
+            PlatformMagnetic pole = col.GetComponent<PlatformMagnetic>();
+
+            if (pole == null)
                 continue;
 
-            NorthPole north = col.GetComponent<NorthPole>();
-            SouthPole south = col.GetComponent<SouthPole>();
-            Rigidbody2D rb = col.GetComponent<Rigidbody2D>();
-
-            if (rb == null) 
-                continue;
+            //
+            // 이동은 PlatformMagnetic에서 처리하기
+            //
 
             Vector2 direction = (transform.position - col.transform.position); //transform.position: 플레이어 현재위치, col.transform.position: 오브젝트의 위치
             float distance = direction.magnitude;
@@ -123,13 +122,15 @@ public class MagneticAbility : ConeOfVision2D
 
             Vector2 force = direction * forceMagnet;
 
-            if ((north != null && isNorthPole) || (south != null && !isNorthPole)) //같은 극
+            if ((pole.Pole == PlatformMagnetic.PoleType.NPole && isNorthPole) 
+                || (pole.Pole == PlatformMagnetic.PoleType.SPole && !isNorthPole)) //같은 극
             {
-                rb.AddForce(force, ForceMode2D.Force);
+                pole.rb.AddForce(force, ForceMode2D.Force);
             }
-            else if ((north != null && !isNorthPole) || (south != null && isNorthPole))// 다른 극
+            else if ((pole.Pole == PlatformMagnetic.PoleType.NPole && !isNorthPole) 
+                || (pole.Pole == PlatformMagnetic.PoleType.SPole && isNorthPole))// 다른 극
             {
-                rb.AddForce(-force, ForceMode2D.Force);
+                pole.rb.AddForce(-force, ForceMode2D.Force);
             }
         }
     }
