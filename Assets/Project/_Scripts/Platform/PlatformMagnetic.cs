@@ -9,11 +9,13 @@ public class PlatformMagnetic : MonoBehaviour
     [Header("중력")]
     public float gravityScale = 1f;
 
+    private PlayerMovement playerData;
     [HideInInspector] public Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
+        playerData = FindAnyObjectByType<PlayerMovement>();
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = Pole == PoleType.NPole ? Color.red : Color.blue; // 🔴 N극 = 빨강, 🔵 S극 = 파랑
@@ -30,6 +32,18 @@ public class PlatformMagnetic : MonoBehaviour
         // 자력블럭의 중력 기준은 플레이어로
         // 1. 자력블럭 gravityScale이 1배율일 경우 => 플레이어의 기본 중력 값
         // 2. 낙하시 가속 넣기
+
+        if (rb.linearVelocity.y < 0)
+        {
+            SetGravityScale(playerData.data.gravityScale * playerData.data.fallGravityMult);
+
+            rb.linearVelocity =
+                new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -playerData.data.maxFallSpeed));
+        }
+        else
+        {
+            SetGravityScale(playerData.data.gravityScale);
+        }
     }
 
     public void Move()

@@ -42,5 +42,17 @@ public static class MyDebug
         Gizmos.DrawRay(_arrowEndPosition + _direction, down * _arrowHeadLength);
     }
     #endregion
+
+    #region CASTs
+    public static RaycastHit2D Raycast(Vector2 _rayOriginPoint,  Vector2 _rayDirection, float _rayDistance, LayerMask _mask, Color _color, bool _drawGizmo = false)
+    {
+        if (true == _drawGizmo) 
+        {
+            Debug.DrawRay(_rayOriginPoint, _rayDirection * _rayDistance, _color);
+        }
+
+        return Physics2D.Raycast(_rayOriginPoint, _rayDirection, _rayDistance, _mask);
+    }
+    #endregion
 }
 
