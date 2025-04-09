@@ -2,17 +2,16 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    public bool isFacingRight = true;
-    public int facingDirection = 1;
+    private int facingDirection = 1;
+    public bool isFacingRight { get; private set; } = true;
+    public bool isFalling { get; private set; }
+
 
     [Header("스피드")]
     public float speed;
 
     [Header("레이캐스트")]
-    public int numOfHorizontalRay = 4;
-    public int numOfVerticalRay = 4;
-    public float RayOffsetHorizontal = 0.05f;
-    public float RayOffsetVertical = 0.05f;
+    public Transform checkHoles;
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;
@@ -23,14 +22,14 @@ public class EnemyMovement : MonoBehaviour
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb;
 
-    private RaycastHit2D[] sideHitsStorage;
-    private RaycastHit2D[] belowHitsStorage;
+    //private RaycastHit2D[] sideHitsStorage;
+    //private RaycastHit2D[] belowHitsStorage;
 
-    private Vector2 horizontalRaycastFromBottom = Vector2.zero;
-    private Vector2 horizontalRaycastToTop = Vector2.zero;
-    private Vector2 verticalRaycastFromLeft = Vector2.zero;
-    private Vector2 verticalRaycastToRight = Vector2.zero;
-    private Vector2 raycastOrigin = Vector2.zero;
+    //private Vector2 horizontalRaycastFromBottom = Vector2.zero;
+    //private Vector2 horizontalRaycastToTop = Vector2.zero;
+    //private Vector2 verticalRaycastFromLeft = Vector2.zero;
+    //private Vector2 verticalRaycastToRight = Vector2.zero;
+    //private Vector2 raycastOrigin = Vector2.zero;
 
     private Vector2 bounds;
     private Vector2 boundsCenter;
@@ -47,9 +46,6 @@ public class EnemyMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
 
-        sideHitsStorage = new RaycastHit2D[numOfHorizontalRay];
-        belowHitsStorage = new RaycastHit2D[numOfVerticalRay];
-
         SetRaysParameters();
     }
 
@@ -59,9 +55,7 @@ public class EnemyMovement : MonoBehaviour
 
         SetRaysParameters();
 
-        CastRaysLeft();
-        CastRaysRight();
-        CastRaysBelow();
+        CastRay();
     }
 
     private void FixedUpdate()
@@ -75,10 +69,13 @@ public class EnemyMovement : MonoBehaviour
     #region INITIALIZATION
     private void SetRaysParameters()
     {
-        float right = boxCollider.size.x * 0.5f;
-        float left = -boxCollider.size.x * 0.5f;
-        float top = boxCollider.size.y * 0.5f;
-        float bottom = -boxCollider.size.y * 0.5f;
+        float x = boxCollider.size.x;
+        float y = boxCollider.size.y;
+
+        float right = x * 0.5f;
+        float left = -x * 0.5f;
+        float top = y * 0.5f;
+        float bottom = -y * 0.5f;
 
         boundsCenter = boxCollider.bounds.center;
 
@@ -125,42 +122,25 @@ public class EnemyMovement : MonoBehaviour
     #endregion
 
     #region RAYCAST METHODS
-    private void CastRaysLeft()
+    private void CastRay()
     {
-        CastRaysToTheSides(-1);
-    }
-
-    private void CastRaysRight()
-    {
-        CastRaysToTheSides(1);
-    }
-
-    private void CastRaysToTheSides(int _rayDirection)
-    {
-        
-    }
-
-    private void CastRaysBelow()
-    {
-        float rayLenth = boundsHeight * 0.5f + RayOffsetVertical;
-
-        verticalRaycastFromLeft = (boundsTopLeftCorner + boundsBottomLeftCorner) * 0.5f;
-        verticalRaycastToRight = (boundsTopRightCorner + boundsBottomRightCorner) * 0.5f;
-        verticalRaycastFromLeft += (Vector2)transform.up * RayOffsetVertical;
-        verticalRaycastToRight += (Vector2)transform.up * RayOffsetVertical;
-        verticalRaycastFromLeft += (Vector2)transform.right * rb.linearVelocity;
-        verticalRaycastToRight += (Vector2)transform.right * rb.linearVelocity;
-
-        if (belowHitsStorage.Length != numOfVerticalRay)
+        if (rb.linearVelocity.y == 0)
         {
-            belowHitsStorage = new RaycastHit2D[numOfVerticalRay];
+            RaycastHit2D hitHole = MyDebug.Raycast(checkHoles.position, transform.up, 0.5f, groundLayer, Color.blue, true);
+            if (false == hitHole)
+            {
+                Turn();
+            }
         }
 
-        for (int i = 0; i < numOfVerticalRay; i++)
-        {
-            Vector2 rayOriginPoint = Vector2.Lerp(verticalRaycastFromLeft, verticalRaycastToRight, (float)i / (float)(numOfVerticalRay - 1));
 
-            belowHitsStorage[i] = MyDebug.Raycast(rayOriginPoint, -transform.up, rayLenth, groundLayer, Color.blue, true);
+        Vector2 dir = Vector2.zero;
+        dir.x = facingDirection;
+
+        RaycastHit2D hitWall = MyDebug.Raycast(boundsCenter, dir, boundsWidth * 0.5f + 0.5f, groundLayer, Color.blue, true);
+        if (true == hitWall)
+        {
+            Turn();
         }
     }
     #endregion
