@@ -158,7 +158,7 @@ public class PlayerData : ScriptableObject
     //[ContextMenu("로드")]
     public void OnLoad()
     {
-        string path = Path.Combine(Application.persistentDataPath, "playerData.json");
+        string path = Path.Combine(Application.persistentDataPath, "PlayerStateData.json");
 
         if (File.Exists(path))
         {

@@ -5,7 +5,12 @@ public class MagneticAbility : ConeOfVision2D
     [Header("플레이어")]
     [SerializeField] private PlayerMovement playerController;
     private bool previousFacingDirection = true;
-    private bool isScanning = true;
+    private bool isScanning = false;
+
+    [Header("자력 능력")]
+    public float pullForce = 30f; //기본 자력 세기
+    private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
+    private SpriteRenderer spriteRenderer;
 
     [MyReadOnly]
     public Vector3 abilityDirection
@@ -19,7 +24,6 @@ public class MagneticAbility : ConeOfVision2D
             base.direction = value;
             base.angleOffset = (base.direction == Vector3.right) ? 0 : 180;
             base.SetDirectionAndAngles(base.direction, transform.eulerAngles);
-            Debug.Log(base.direction);
         }
     }
     
@@ -31,14 +35,35 @@ public class MagneticAbility : ConeOfVision2D
         OnOff(isScanning);
 
         playerController = GetComponent<PlayerMovement>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        UpdateColor();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        //D 키를 누르면 극성 변경
+        if (Input.GetKeyDown(KeyCode.D))
         {
+            isNorthPole = !isNorthPole;
+            UpdateColor();
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            if (false == isScanning)
+            {
+                isScanning = true;
+                OnOff(isScanning);
+            }
+
+            PullMagnet();
+        }
+
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            isScanning = false;
             OnOff(isScanning);
-            isScanning = !isScanning;
         }
 
         if (previousFacingDirection != playerController.isFacingRight)
@@ -68,8 +93,45 @@ public class MagneticAbility : ConeOfVision2D
         }
     }
 
-    protected virtual void ObjectAction()
+    void UpdateColor()
     {
+        spriteRenderer.color = isNorthPole ? Color.blue : Color.red;
+    }
 
+    void PullMagnet()
+    {
+        foreach (Transform col in base.visibleTargets)
+        {
+            PlatformMagnetic pole = col.GetComponent<PlatformMagnetic>();
+
+            if (pole == null)
+                continue;
+
+            //
+            // 이동은 PlatformMagnetic에서 처리하기
+            //
+
+            Vector2 direction = (transform.position - col.transform.position); //transform.position: 플레이어 현재위치, col.transform.position: 오브젝트의 위치
+            float distance = direction.magnitude;
+
+            if (distance < 0.3f) continue; // 화면이탈 방지
+
+            // 가까울수록 힘의 세기가 세짐
+            float forceMagnet = pullForce / (distance * distance); // 거리 제곱에 반비례
+            forceMagnet = Mathf.Clamp(forceMagnet, 0f, 50f); // 최대 힘 제한
+
+            Vector2 force = direction * forceMagnet;
+
+            if ((pole.Pole == PlatformMagnetic.PoleType.NPole && isNorthPole) 
+                || (pole.Pole == PlatformMagnetic.PoleType.SPole && !isNorthPole)) //같은 극
+            {
+                pole.rb.AddForce(force, ForceMode2D.Force);
+            }
+            else if ((pole.Pole == PlatformMagnetic.PoleType.NPole && !isNorthPole) 
+                || (pole.Pole == PlatformMagnetic.PoleType.SPole && isNorthPole))// 다른 극
+            {
+                pole.rb.AddForce(-force, ForceMode2D.Force);
+            }
+        }
     }
 }
