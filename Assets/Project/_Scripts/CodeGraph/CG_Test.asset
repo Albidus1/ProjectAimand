@@ -17,21 +17,10 @@ MonoBehaviour:
   - rid: 7470537427714048078
   - rid: 7470537427714048079
   - rid: 7470537427714048081
+  - rid: 374759981880443079
   m_connections:
   - inputPort:
-      nodeId: e0aabad2-48ba-4d50-8871-e133d676b7ce
-      portIndex: 0
-    outputPort:
-      nodeId: 4dfcfc1e-8bdd-4e80-aedb-94dc45f3dfda
-      portIndex: 0
-  - inputPort:
-      nodeId: 9b69e3db-2343-48c2-9847-848df8a2a7dd
-      portIndex: 0
-    outputPort:
-      nodeId: e0aabad2-48ba-4d50-8871-e133d676b7ce
-      portIndex: 1
-  - inputPort:
-      nodeId: daef9e52-c968-4d98-b8a9-70f958c913f5
+      nodeId: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
       portIndex: 1
     outputPort:
       nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
@@ -43,22 +32,34 @@ MonoBehaviour:
       nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
       portIndex: 0
   - inputPort:
-      nodeId: d294842c-7440-4c22-96af-b8b19c70e07e
+      nodeId: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
       portIndex: 1
     outputPort:
-      nodeId: daef9e52-c968-4d98-b8a9-70f958c913f5
+      nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
       portIndex: 0
   references:
     version: 2
     RefIds:
+    - rid: 374759981880443079
+      type: {class: DebugLogNode, ns: CodeGraph, asm: CodeGraph}
+      data:
+        m_guid: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
+        m_position:
+          serializedVersion: 2
+          x: 534
+          y: 179
+          width: 188
+          height: 98
+        typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+        logMessage: "\uB514\uBC84\uADF8 1"
     - rid: 7470537427714048078
       type: {class: StartNode, ns: CodeGraph, asm: CodeGraph}
       data:
         m_guid: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
         m_position:
           serializedVersion: 2
-          x: 295
-          y: 312
+          x: 306
+          y: 261
           width: 75
           height: 77
         typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
@@ -68,21 +69,21 @@ MonoBehaviour:
         m_guid: daef9e52-c968-4d98-b8a9-70f958c913f5
         m_position:
           serializedVersion: 2
-          x: 526
-          y: 312
-          width: 108
-          height: 77
+          x: 532
+          y: 368
+          width: 189
+          height: 98
         typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-        logMessage: "\uB514\uBC84\uADF8 \uB85C\uADF8\uB85C \uC774\uB3D9\uD568"
+        logMessage: "\uB514\uBC84\uADF8 2"
     - rid: 7470537427714048081
       type: {class: MoveNode, ns: CodeGraph, asm: CodeGraph}
       data:
         m_guid: d294842c-7440-4c22-96af-b8b19c70e07e
         m_position:
           serializedVersion: 2
-          x: 892
-          y: 313
-          width: 223
+          x: 825
+          y: 374
+          width: 257
           height: 97
         typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-        direction: {x: 2, y: 0, z: 0}
+        direction: {x: 9.95, y: 0, z: 0}

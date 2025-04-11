@@ -26,7 +26,7 @@ public class PlayerData : ScriptableObject
     public float runMaxSpeed;
     public float runAcceleration;
     [HideInInspector] public float runAccelAmount;
-    public float run_decceleration;
+    public float runDecceleration;
     [HideInInspector] public float runDeccelAmount;
     [Space(5)]
 
@@ -99,12 +99,12 @@ public class PlayerData : ScriptableObject
         gravityScale = gravityStrength / Physics2D.gravity.y;
 
         runAccelAmount = (50 * runAcceleration) / runMaxSpeed;
-        runDeccelAmount = (50 * run_decceleration) / runMaxSpeed;
+        runDeccelAmount = (50 * runDecceleration) / runMaxSpeed;
 
         jumpForce = Mathf.Abs(gravityStrength) * jumpTimeToApex;
 
         runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
-        run_decceleration = Mathf.Clamp(run_decceleration, 0.01f, runMaxSpeed);
+        runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);
     }
 
     //[ContextMenu("저장")]
@@ -118,7 +118,7 @@ public class PlayerData : ScriptableObject
             maxFastFallSpeed = maxFastFallSpeed,
             runMaxSpeed = runMaxSpeed,
             runAcceleration = runAcceleration,
-            run_decceleration = run_decceleration,
+            run_decceleration = runDecceleration,
             accelInAir = accelInAir,
             deccelInAir = deccelInAir,
             doConserveMomentum = doConserveMomentum,
@@ -171,7 +171,7 @@ public class PlayerData : ScriptableObject
             maxFastFallSpeed         = data.maxFastFallSpeed;
             runMaxSpeed              = data.runMaxSpeed;
             runAcceleration          = data.runAcceleration;
-            run_decceleration        = data.run_decceleration;
+            runDecceleration        = data.run_decceleration;
             accelInAir               = data.accelInAir;
             deccelInAir              = data.deccelInAir;
             doConserveMomentum       = data.doConserveMomentum;

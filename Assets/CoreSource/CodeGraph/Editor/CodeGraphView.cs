@@ -49,6 +49,7 @@ namespace CodeGraph.Editor
             Add(backGround);
             backGround.SendToBack();
 
+            this.AddManipulator(new ContentZoomer());
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
@@ -242,7 +243,7 @@ namespace CodeGraph.Editor
 
         private void Bind()
         {
-            Debug.Log("Bind");
+            //Debug.Log("Bind");
             m_serializedObject.Update();
             this.Bind(m_serializedObject);
         }

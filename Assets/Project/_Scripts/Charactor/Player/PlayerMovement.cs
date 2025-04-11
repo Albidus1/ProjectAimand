@@ -560,15 +560,15 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region RUN METHODS
-    private void Run(float _lerp_amount)
+    private void Run(float _lerpAmount)
     {
         movementState.StateChange(PlayerStates.MovementStates.Running);
 
         // 이동하고자 하는 방향과 원하는 속도 계산
-        float target_speed = moveInput.x * data.runMaxSpeed;
+        float targetSpeed = moveInput.x * data.runMaxSpeed;
 
         // 방향과 속도로 부드럽게 조절
-        target_speed = Mathf.Lerp(rb.linearVelocity.x, target_speed, _lerp_amount);
+        targetSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, _lerpAmount);
 
         // 가속도 값 계산
         float accelerate;
@@ -577,11 +577,11 @@ public class PlayerMovement : MonoBehaviour
         // 감속 포함
         if (lastOnGroundTime > 0)
         {
-            accelerate = (Mathf.Abs(target_speed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
+            accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
         }
         else
         {
-            accelerate = (Mathf.Abs(target_speed) > 0.01f) ? 
+            accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ? 
                 data.runAccelAmount * data.accelInAir : data.runDeccelAmount * data.deccelInAir;
         }
 
@@ -590,14 +590,14 @@ public class PlayerMovement : MonoBehaviour
             Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
         {
             accelerate *= data.jumpHangAccelerationMult;
-            target_speed *= data.jumpHangMaxSpeedMult;
+            targetSpeed *= data.jumpHangMaxSpeedMult;
         }
 
         // 속도 제어
         if (true == data.doConserveMomentum &&
-            Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(target_speed) &&
-            Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(target_speed) &&
-            Mathf.Abs(target_speed) > 0.01f &&
+            Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) &&
+            Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) &&
+            Mathf.Abs(targetSpeed) > 0.01f &&
             lastOnGroundTime < 0)
         {
             // 감속이 발생하지 않도록 방지
@@ -606,7 +606,7 @@ public class PlayerMovement : MonoBehaviour
 
         // 현재 속도와 원하는 속도 간의 차이 계산
         // 플레이어에게 적용할 X축을 따라 힘 계산
-        float speed_dif = target_speed - rb.linearVelocity.x;
+        float speed_dif = targetSpeed - rb.linearVelocity.x;
 
         float movement = speed_dif * accelerate;
 

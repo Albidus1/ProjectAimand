@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class MagneticAbility : ConeOfVision2D
 {
@@ -107,10 +108,7 @@ public class MagneticAbility : ConeOfVision2D
             if (pole == null)
                 continue;
 
-            //
-            // 이동은 PlatformMagnetic에서 처리하기
-            //
-
+          
             Vector2 direction = (transform.position - col.transform.position); //transform.position: 플레이어 현재위치, col.transform.position: 오브젝트의 위치
             float distance = direction.magnitude;
 
@@ -118,20 +116,24 @@ public class MagneticAbility : ConeOfVision2D
 
             // 가까울수록 힘의 세기가 세짐
             float forceMagnet = pullForce / (distance * distance); // 거리 제곱에 반비례
-            forceMagnet = Mathf.Clamp(forceMagnet, 0f, 50f); // 최대 힘 제한
+            forceMagnet = Mathf.Clamp(forceMagnet, 0f, 20f); // 최대 힘 제한
 
             Vector2 force = direction * forceMagnet;
 
-            if ((pole.Pole == PlatformMagnetic.PoleType.NPole && isNorthPole) 
-                || (pole.Pole == PlatformMagnetic.PoleType.SPole && !isNorthPole)) //같은 극
+            pole.isActive = true;
+            if (((pole.Pole == PlatformMagnetic.PoleType.NPole && isNorthPole) 
+                || (pole.Pole == PlatformMagnetic.PoleType.SPole && !isNorthPole)) &&
+                distance > 1.1f) //같은 극
             {
-                pole.rb.AddForce(force, ForceMode2D.Force);
+                pole.Move(force);
             }
             else if ((pole.Pole == PlatformMagnetic.PoleType.NPole && !isNorthPole) 
                 || (pole.Pole == PlatformMagnetic.PoleType.SPole && isNorthPole))// 다른 극
             {
-                pole.rb.AddForce(-force, ForceMode2D.Force);
+                pole.Move(-force);
             }
+
+            pole.isActive = false;
         }
     }
 }

@@ -5,9 +5,16 @@ public class PlatformMagnetic : MonoBehaviour
     public enum PoleType { NPole, SPole }
     [Header("극성")]
     public PoleType Pole;
+    public bool isActive { get; set; }
 
     [Header("중력")]
-    public float gravityScale = 1f;
+    public float gravityScale = 1;
+    private float gravityStrength = 0;
+
+    [Header("이동")]
+    public float maxSpeed = 5f;
+    public float acceleration = 1.5f;
+    public float decceleration = 3f;
 
     private PlayerMovement playerData;
     [HideInInspector] public Rigidbody2D rb;
@@ -26,42 +33,75 @@ public class PlatformMagnetic : MonoBehaviour
         Gravity();
     }
 
+    private void FixedUpdate()
+    {
+        if (rb.linearVelocity.x != 0 && false == isActive)
+        {
+            Move(Vector2.zero);
+        }
+    }
+
     public void Gravity()
     {
-        // 여기에 중력 관련 작업하기
-        // 자력블럭의 중력 기준은 플레이어로
-        // 1. 자력블럭 gravityScale이 1배율일 경우 => 플레이어의 기본 중력 값
-        // 2. 낙하시 가속 넣기
+        gravityStrength = gravityScale * playerData.data.gravityScale;
 
         if (rb.linearVelocity.y < 0)
         {
-            SetGravityScale(playerData.data.gravityScale * playerData.data.fallGravityMult);
+            SetGravityScale(gravityStrength * playerData.data.fallGravityMult);
 
             rb.linearVelocity =
                 new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -playerData.data.maxFallSpeed));
         }
         else
         {
-            SetGravityScale(playerData.data.gravityScale);
+            SetGravityScale(gravityStrength);
         }
     }
 
-    public void Move()
+    public void Move(Vector2 _force)
     {
-        // MagneticAbility의 PullMagnet에서 이동 처리를 지우고 여기로 옮기기
-        // 미끄러지는 현상 해결하기
+        float targetSpeed = _force.x * maxSpeed;
+
+        targetSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, 1);
+
+        float accelerate = SetAccelerate(targetSpeed);
+
+        
+
+        if (Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) &&
+            Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) &&
+            Mathf.Abs(targetSpeed) > 0.01f)
+        {
+            accelerate = 0;
+        }
+
+        float speedDif = targetSpeed - rb.linearVelocity.x;
+        float movement = speedDif * accelerate;
+
+        rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
     }
 
     #region GENERAL METHODS
     public void SetGravityScale(float _scale)
     {
-        // PlayerMovement 참고하셔도 됩니다
         rb.gravityScale = _scale;
+    }
+
+    public float SetAccelerate(float _speed)
+    {
+        float runAccelAmount = (50 * acceleration) / maxSpeed;
+        float runDeccelAmount = (50 * acceleration) / maxSpeed;
+
+        float acc = (Mathf.Abs(_speed) > 0.01f) ? runAccelAmount : runDeccelAmount;
+
+        return acc;
     }
     #endregion
 
     private void OnValidate()
     {
         //gravityScale = 1;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = Pole == PoleType.NPole ? Color.red : Color.blue; // 🔴 N극 = 빨강, 🔵 S극 = 파랑
     }
 }
