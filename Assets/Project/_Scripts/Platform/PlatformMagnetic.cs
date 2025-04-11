@@ -16,9 +16,14 @@ public class PlatformMagnetic : MonoBehaviour
     public float acceleration = 1.5f;
     public float decceleration = 3f;
 
+
     private PlayerMovement playerData;
     [HideInInspector] public Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+
+    private Vector2 magnetForce;
+
+
 
     private void Awake()
     {
@@ -35,9 +40,19 @@ public class PlatformMagnetic : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rb.linearVelocity.x != 0 && false == isActive)
+        if (rb.linearVelocity.x == 0 && isActive)
+        {
+            Move(magnetForce);
+        }
+        else if (rb.linearVelocity.x != 0 && true == isActive)
+        {
+            Move(magnetForce);
+            isActive = false;
+        }
+        else
         {
             Move(Vector2.zero);
+            isActive = false;
         }
     }
 
@@ -65,12 +80,10 @@ public class PlatformMagnetic : MonoBehaviour
         targetSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, 1);
 
         float accelerate = SetAccelerate(targetSpeed);
-
-        
-
+      
         if (Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) &&
             Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) &&
-            Mathf.Abs(targetSpeed) > 0.01f)
+            Mathf.Abs(targetSpeed) > 0.01f && isActive)
         {
             accelerate = 0;
         }
@@ -79,6 +92,36 @@ public class PlatformMagnetic : MonoBehaviour
         float movement = speedDif * accelerate;
 
         rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
+    }
+
+    public void MagneticActivate(Vector3 _playerPosition, float _pullForce, bool _isNPole)
+    {
+        Vector2 direction = _playerPosition - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance < 0.5f)
+        {
+            return;
+        }
+
+        isActive = true;
+
+        float forceMagnet = _pullForce / (distance * distance);
+        forceMagnet = Mathf.Clamp(forceMagnet, 0f, 20f);
+
+        magnetForce = direction * forceMagnet;
+
+        //if ((Pole == PlatformMagnetic.PoleType.NPole && _isNPole)
+        //    || (Pole == PlatformMagnetic.PoleType.SPole && !_isNPole)) //같은 극
+        //{
+            
+        //}
+        //else
+        if ((Pole == PlatformMagnetic.PoleType.NPole && !_isNPole)
+            || (Pole == PlatformMagnetic.PoleType.SPole && _isNPole)) // 다른 극
+        {
+            magnetForce = -magnetForce;
+        }
     }
 
     #region GENERAL METHODS

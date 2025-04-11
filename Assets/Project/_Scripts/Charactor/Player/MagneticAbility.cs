@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -9,7 +10,7 @@ public class MagneticAbility : ConeOfVision2D
     private bool isScanning = false;
 
     [Header("자력 능력")]
-    public float pullForce = 30f; //기본 자력 세기
+    public float pullForce = 20f; //기본 자력 세기
     private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
     private SpriteRenderer spriteRenderer;
 
@@ -43,6 +44,7 @@ public class MagneticAbility : ConeOfVision2D
 
     private void Update()
     {
+        #region INPUT HANDLER
         //D 키를 누르면 극성 변경
         if (Input.GetKeyDown(KeyCode.D))
         {
@@ -66,6 +68,7 @@ public class MagneticAbility : ConeOfVision2D
             isScanning = false;
             OnOff(isScanning);
         }
+        #endregion
 
         if (previousFacingDirection != playerController.isFacingRight)
         {
@@ -108,32 +111,8 @@ public class MagneticAbility : ConeOfVision2D
             if (pole == null)
                 continue;
 
-          
-            Vector2 direction = (transform.position - col.transform.position); //transform.position: 플레이어 현재위치, col.transform.position: 오브젝트의 위치
-            float distance = direction.magnitude;
 
-            if (distance < 0.3f) continue; // 화면이탈 방지
-
-            // 가까울수록 힘의 세기가 세짐
-            float forceMagnet = pullForce / (distance * distance); // 거리 제곱에 반비례
-            forceMagnet = Mathf.Clamp(forceMagnet, 0f, 20f); // 최대 힘 제한
-
-            Vector2 force = direction * forceMagnet;
-
-            pole.isActive = true;
-            if (((pole.Pole == PlatformMagnetic.PoleType.NPole && isNorthPole) 
-                || (pole.Pole == PlatformMagnetic.PoleType.SPole && !isNorthPole)) &&
-                distance > 1.1f) //같은 극
-            {
-                pole.Move(force);
-            }
-            else if ((pole.Pole == PlatformMagnetic.PoleType.NPole && !isNorthPole) 
-                || (pole.Pole == PlatformMagnetic.PoleType.SPole && isNorthPole))// 다른 극
-            {
-                pole.Move(-force);
-            }
-
-            pole.isActive = false;
+            pole.MagneticActivate(transform.position, pullForce, isNorthPole);
         }
     }
 }
