@@ -112,14 +112,14 @@ public class PlatformMagnetic : MonoBehaviour
 
         magnetForce = direction * forceMagnet;
 
-        //if ((Pole == PlatformMagnetic.PoleType.NPole && _isNPole)
-        //    || (Pole == PlatformMagnetic.PoleType.SPole && !_isNPole)) //같은 극
-        //{
-            
-        //}
-        //else
-        if ((Pole == PlatformMagnetic.PoleType.NPole && !_isNPole)
-            || (Pole == PlatformMagnetic.PoleType.SPole && _isNPole)) // 다른 극
+        if (((Pole == PoleType.NPole && _isNPole)
+            || (Pole == PoleType.SPole && !_isNPole)) && 
+            distance < 1.1f) //같은 극
+        {
+            magnetForce = Vector2.zero;
+        }
+        else if ((Pole == PoleType.NPole && !_isNPole)
+            || (Pole == PoleType.SPole && _isNPole)) // 다른 극
         {
             magnetForce = -magnetForce;
         }

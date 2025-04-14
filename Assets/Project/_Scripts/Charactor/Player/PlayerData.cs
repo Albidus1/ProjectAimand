@@ -69,8 +69,8 @@ public class PlayerData : ScriptableObject
     public float climbUpSpeed;
 
     [Header("대쉬")]
-    public bool doDoubleInput = true;
-    public float doubleInputTime = 0.3f;
+    public bool doDoubleTap = true;
+    public float doubleTapThreshold = 0.3f;
     [Space(5)]
 
     public int dashAmount;

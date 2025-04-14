@@ -85,6 +85,8 @@ public class PlayerMovement : MonoBehaviour
 
     // 입력
     private Vector2 moveInput;
+    private int lastMoveDirection = 0;
+
     public float lastPressedMoveInputTime { get; private set; }
     public float lastPressedJumpTime { get; private set; }
     public float lastPressedGrabTime { get; private set; }
@@ -163,12 +165,16 @@ public class PlayerMovement : MonoBehaviour
         #region INPUT HANDLER
         if (false == isControlSleep)
         {
+            int currentDirection = 0;
+
             moveInput.x = Input.GetAxisRaw("Horizontal");
             moveInput.y = Input.GetAxisRaw("Vertical");
 
             if (moveInput.x != 0)
             {
                 CheckDirectionToFace(moveInput.x > 0);
+
+                currentDirection = (moveInput.x > 0) ? 1 : -1;
             }
             else if (moveInput.x == 0)
             {
@@ -190,23 +196,27 @@ public class PlayerMovement : MonoBehaviour
                 OnJumpUpInput();
             }
 
-            // 대쉬
-            //if (Input.GetKeyDown(KeyCode.X))
-            //{
-            //    OnDashInput();
-            //}
-
-            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) &&
-                lastPressedMoveInputTime > 0)
+            if (Input.GetKeyDown(KeyCode.X) && false == data.doDoubleTap)
             {
                 OnDashInput();
-                lastPressedMoveInputTime = 0;
             }
 
-            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) &&
-                lastPressedMoveInputTime > 0)
+            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) && 
+                false == isDashing && data.doDoubleTap)
             {
-                lastPressedMoveInputTime = data.doubleInputTime;
+                bool sameDirection = (currentDirection == lastMoveDirection) ? true : false;
+
+                if (Time.time - lastPressedMoveInputTime <= data.doubleTapThreshold && sameDirection)
+                {
+                    OnDashInput();
+                    lastPressedMoveInputTime = -1f;
+                    lastMoveDirection = 0;
+                }
+                else
+                {
+                    lastPressedMoveInputTime = Time.time;
+                    lastMoveDirection = currentDirection;
+                }
             }
 
             if (Input.GetKey(KeyCode.C))
@@ -867,7 +877,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region CHECK METHODS
     public void CheckDirectionToFace(bool _isMovingRight)
-    {
+    {     
         if (_isMovingRight != isFacingRight)
         {
             Turn();

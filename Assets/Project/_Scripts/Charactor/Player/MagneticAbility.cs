@@ -48,7 +48,7 @@ public class MagneticAbility : ConeOfVision2D
     {
         #region INPUT HANDLER
         //D 키를 누르면 극성 변경
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.D) && false == isScanning)
         {
             isNorthPole = !isNorthPole;
             UpdateColor();
