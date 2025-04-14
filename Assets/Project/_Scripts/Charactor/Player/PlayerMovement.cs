@@ -27,6 +27,12 @@ public class PlayerMovement : MonoBehaviour
 
     public Rigidbody2D rb { get; private set; }
 
+    [Header("움직임 제어")]
+    public bool CanWallJumping = true;
+    public bool CanWallSliding = true;
+    public bool CanWallGrabbing = true;
+    public bool CanDasing = true;
+
     public bool isFacingRight { get; private set; }
     public bool isJumping { get; private set; }
     public bool isWallJumping { get; private set; }
@@ -864,7 +870,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanWallJump()
     {
-        return lastPressedJumpTime > 0 && lastOnWallTime > 0 && lastOnGroundTime <= 0 && 
+        return CanWallJumping && lastPressedJumpTime > 0 && lastOnWallTime > 0 && lastOnGroundTime <= 0 && 
             (false == isWallJumping || (lastOnWallRightTime > 0 && lastWallJumpDirection == 1) || (lastOnWallLeftTime > 0 && lastWallJumpDirection == -1));
     }
 
@@ -875,7 +881,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanSlide()
     {
-        if (lastOnWallTime > 0 && 
+        if (CanWallSliding &&
+            lastOnWallTime > 0 && 
             false == isJumping &&
             false == isWallJumping &&
             lastOnGroundTime <= 0)
@@ -890,7 +897,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanGrab()
     {     
-        if (true == isJumping || true == isWallJumping)
+        if (isJumping || isWallJumping || false == CanWallGrabbing)
         {
             return false;
         }
@@ -912,7 +919,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanDash()
     {
-        if (false == isDashing &&
+        if (CanDasing &&
+            false == isDashing &&
             dashesLeft < data.dashAmount &&
             lastOnGroundTime > 0 &&
             false == dashRefilling)
