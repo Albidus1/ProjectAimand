@@ -40,19 +40,13 @@ public class PlatformMagnetic : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rb.linearVelocity.x == 0 && isActive)
+        if (isActive)
         {
             Move(magnetForce);
-        }
-        else if (rb.linearVelocity.x != 0 && true == isActive)
-        {
-            Move(magnetForce);
-            isActive = false;
         }
         else
         {
             Move(Vector2.zero);
-            isActive = false;
         }
     }
 
@@ -92,10 +86,19 @@ public class PlatformMagnetic : MonoBehaviour
         float movement = speedDif * accelerate;
 
         rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
+
+        isActive = false;
     }
 
-    public void MagneticActivate(Vector3 _playerPosition, float _pullForce, bool _isNPole)
+    public void MagneticActivate(bool _isActive,Vector3 _playerPosition, float _pullForce, bool _isNPole)
     {
+        isActive = _isActive;
+
+        if (false == isActive)
+        {
+            return;
+        }
+
         Vector2 direction = _playerPosition - transform.position;
         float distance = direction.magnitude;
 
@@ -103,8 +106,6 @@ public class PlatformMagnetic : MonoBehaviour
         {
             return;
         }
-
-        isActive = true;
 
         float forceMagnet = _pullForce / (distance * distance);
         forceMagnet = Mathf.Clamp(forceMagnet, 0f, 20f);

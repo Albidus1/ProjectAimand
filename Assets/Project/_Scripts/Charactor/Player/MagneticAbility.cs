@@ -9,10 +9,12 @@ public class MagneticAbility : ConeOfVision2D
     private bool previousFacingDirection = true;
     private bool isScanning = false;
 
+    private SpriteRenderer spriteRenderer;
+
     [Header("자력 능력")]
     public float pullForce = 20f; //기본 자력 세기
     private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
-    private SpriteRenderer spriteRenderer;
+
 
     [MyReadOnly]
     public Vector3 abilityDirection
@@ -67,6 +69,9 @@ public class MagneticAbility : ConeOfVision2D
         {
             isScanning = false;
             OnOff(isScanning);
+            
+            PullMagnet();
+            base.visibleTargets.Clear();
         }
         #endregion
 
@@ -112,7 +117,7 @@ public class MagneticAbility : ConeOfVision2D
                 continue;
 
 
-            pole.MagneticActivate(transform.position, pullForce, isNorthPole);
+            pole.MagneticActivate(isScanning, transform.position, pullForce, isNorthPole);
         }
     }
 }

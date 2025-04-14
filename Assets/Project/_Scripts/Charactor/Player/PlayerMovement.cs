@@ -381,7 +381,7 @@ public class PlayerMovement : MonoBehaviour
                 switch (dashDirection)
                 {
                     case DashDirection.TwoDirections:
-                        lastDashDirection.y = 0;
+                        lastDashDirection = isFacingRight ? Vector2.right : Vector2.left;
                         break;
 
                     case DashDirection.FourDirections:
