@@ -36,6 +36,8 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
     private Vector3 dir;
 
     protected const string playerTag = "Player";
+    public LayerMask checkLayer;
+
 
     #region SAVELOAD
     public string Save() => JsonUtility.ToJson(this);
@@ -60,10 +62,12 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag(playerTag))
+        if (((1 << collision.gameObject.layer) & checkLayer) == 0)
         {
-            ButtonEvent.Trigger(ButtonID, this);
+            return;
         }
+
+        ButtonEvent.Trigger(ButtonID, this);
     }
 
     #region OTHER METHODS

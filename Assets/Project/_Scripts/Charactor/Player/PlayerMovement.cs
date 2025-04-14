@@ -85,6 +85,7 @@ public class PlayerMovement : MonoBehaviour
 
     // 입력
     private Vector2 moveInput;
+    public float lastPressedMoveInputTime { get; private set; }
     public float lastPressedJumpTime { get; private set; }
     public float lastPressedGrabTime { get; private set; }
     public float lastPressedDashTime { get; private set; }
@@ -131,9 +132,9 @@ public class PlayerMovement : MonoBehaviour
 
         playerState = new PlayerStates();
 
-        groundLayer |= platform;
-        groundLayer |= movingPlatform;
-        groundLayer |= onewayPlatform;
+        //groundLayer |= platform;
+        //groundLayer |= movingPlatform;
+        //groundLayer |= onewayPlatform;
     }
 
     private void Start()
@@ -153,6 +154,7 @@ public class PlayerMovement : MonoBehaviour
 
         lastOnJumpPadTime -= Time.deltaTime;
 
+        lastPressedMoveInputTime -= Time.deltaTime;
         lastPressedJumpTime -= Time.deltaTime;
         lastPressedDashTime -= Time.deltaTime;
         lastPressedGrabTime -= Time.deltaTime;
@@ -178,19 +180,33 @@ public class PlayerMovement : MonoBehaviour
                 CheckDirectionToFace(lastGrabDirection == 1);
             }
 
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 OnJumpInput();
             }
 
-            if (Input.GetKeyUp(KeyCode.Z))
+            if (Input.GetKeyUp(KeyCode.UpArrow))
             {
                 OnJumpUpInput();
             }
 
-            if (Input.GetKeyDown(KeyCode.X))
+            // 대쉬
+            //if (Input.GetKeyDown(KeyCode.X))
+            //{
+            //    OnDashInput();
+            //}
+
+            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) &&
+                lastPressedMoveInputTime > 0)
             {
                 OnDashInput();
+                lastPressedMoveInputTime = 0;
+            }
+
+            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) &&
+                lastPressedMoveInputTime > 0)
+            {
+                lastPressedMoveInputTime = data.doubleInputTime;
             }
 
             if (Input.GetKey(KeyCode.C))
