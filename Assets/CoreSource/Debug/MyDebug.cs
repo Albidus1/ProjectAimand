@@ -70,10 +70,10 @@ public static class MyDebug
             points[2] = rotation * (_origin + (Vector2.right * halfSizeX) - (Vector2.up * halfSizeY));
             points[3] = rotation * (_origin + (Vector2.left * halfSizeX) - (Vector2.up * halfSizeY));
 
-            points[4] = rotation * (_origin + (Vector2.left * halfSizeX) + (Vector2.up * halfSizeY) + _length * _direction);
-            points[5] = rotation * (_origin + (Vector2.right * halfSizeX) + (Vector2.up * halfSizeY) + _length * _direction);
-            points[6] = rotation * (_origin + (Vector2.right * halfSizeX) - (Vector2.up * halfSizeY) + _length * _direction);
-            points[7] = rotation * (_origin + (Vector2.left * halfSizeX) - (Vector2.up * halfSizeY) + _length * _direction);
+            points[4] = rotation * ((_origin + (Vector2.left * halfSizeX) + (Vector2.up * halfSizeY)) + _length * _direction);
+            points[5] = rotation * ((_origin + (Vector2.right * halfSizeX) + (Vector2.up * halfSizeY)) + _length * _direction);
+            points[6] = rotation * ((_origin + (Vector2.right * halfSizeX) - (Vector2.up * halfSizeY)) + _length * _direction);
+            points[7] = rotation * ((_origin + (Vector2.left * halfSizeX) - (Vector2.up * halfSizeY)) + _length * _direction);
 
             Debug.DrawLine(points[0], points[1], _color);
             Debug.DrawLine(points[1], points[2], _color);

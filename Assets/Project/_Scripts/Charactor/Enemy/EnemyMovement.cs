@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     private int facingDirection = 1;
-    public bool isFacingRight { get; private set; } = true;
+    public bool isFacingRight { get; private set; }
     public bool isFalling { get; private set; }
 
 
@@ -12,12 +12,13 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("레이캐스트")]
     public Transform checkHoles;
+    public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
+    public Vector3 colliderCenterPosition => boxCollider.bounds.center;
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;
 
-    public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
-    public Vector3 colliderCenterPosition => boxCollider.bounds.center;
+    
 
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb;
@@ -40,12 +41,15 @@ public class EnemyMovement : MonoBehaviour
     private float boundsWidth;
     private float boundsHeight;
 
+    private bool isChasingPlayer;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
 
+        isFacingRight = true;
+        CheckDirectionToFace(isFacingRight);
         SetRaysParameters();
     }
 
@@ -56,14 +60,12 @@ public class EnemyMovement : MonoBehaviour
         SetRaysParameters();
 
         CastRay();
+        DetectPlayer();
     }
 
     private void FixedUpdate()
     {
-        Vector2 moveDirection = isFacingRight ? Vector2.right : Vector2.left;
-        Vector2 newPosition = moveDirection * speed * Time.deltaTime;
-
-        transform.Translate(newPosition, Space.Self);
+        
     }
 
     #region INITIALIZATION
@@ -144,7 +146,7 @@ public class EnemyMovement : MonoBehaviour
             Vector2 position = boundsCenter;
             position.y = boundsTopLeftCorner.y - (raysDistance * i);
 
-            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, boundsWidth * 0.5f + 0.5f, groundLayer, Color.blue, true);
+            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, boundsWidth * 0.5f + 0.05f, groundLayer, Color.blue, true);
             if (true == hitWall)
             {
                 Turn();
@@ -153,9 +155,43 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    private void CastPlayer()
+    private void DetectPlayer()
     {
-        //MyDebug.BoxCast(boundsCenter, new Vector2(boundsWidth, boundsHeight), Vector2.Angle(transform.up, Vector2.up), -transform.up, 10f, LayerMask.GetMask("Player"), Color.);
+        Vector2 boxSize = new Vector2(boundsWidth, boundsHeight);
+
+        RaycastHit2D hit = MyDebug.BoxCast(boundsCenter, boxSize, Vector2.Angle(transform.up, Vector2.up), transform.right * facingDirection, 10f, LayerMask.GetMask("Player"), Color.cyan, true);
+
+        if (hit)
+        {
+            Debug.Log("충돌");
+
+            isChasingPlayer = true;
+        }
+        else
+        {
+            isChasingPlayer = false;
+        }
+    }
+    #endregion
+
+    #region MOVE METHODS
+    private void Run(bool _hasTarget)
+    {
+        Vector2 moveDirection, newPosition;
+
+        if (false == _hasTarget)
+        {
+            moveDirection = isFacingRight ? Vector2.right : Vector2.left;
+            newPosition = moveDirection.normalized * speed * Time.deltaTime;
+        }
+        else
+        {
+            moveDirection = isFacingRight ? Vector2.right : Vector2.left;
+            newPosition = moveDirection.normalized * speed * Time.deltaTime;
+        }
+
+
+        transform.Translate(newPosition, Space.Self);
     }
     #endregion
 }
