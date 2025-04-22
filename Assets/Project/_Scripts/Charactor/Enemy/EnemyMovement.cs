@@ -77,6 +77,7 @@ public class EnemyMovement : MonoBehaviour
         float top = y * 0.5f;
         float bottom = -y * 0.5f;
 
+
         boundsCenter = boxCollider.bounds.center;
 
         boundsTopLeftCorner.x = left;
@@ -91,7 +92,6 @@ public class EnemyMovement : MonoBehaviour
         boundsBottomRightCorner.x = right;
         boundsBottomRightCorner.y = bottom;
 
-        boundsCenter = boxCollider.bounds.center;
         boundsTopLeftCorner = transform.TransformPoint(boundsTopLeftCorner);
         boundsBottomLeftCorner = transform.TransformPoint(boundsBottomLeftCorner);
         boundsTopRightCorner = transform.TransformPoint(boundsTopRightCorner);
@@ -137,11 +137,25 @@ public class EnemyMovement : MonoBehaviour
         Vector2 dir = Vector2.zero;
         dir.x = facingDirection;
 
-        RaycastHit2D hitWall = MyDebug.Raycast(boundsCenter, dir, boundsWidth * 0.5f + 0.5f, groundLayer, Color.blue, true);
-        if (true == hitWall)
+        int raysCount = 5;
+        float raysDistance = boundsHeight / raysCount;
+        for (int i = 0; i < raysCount; i++)
         {
-            Turn();
+            Vector2 position = boundsCenter;
+            position.y = boundsTopLeftCorner.y - (raysDistance * i);
+
+            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, boundsWidth * 0.5f + 0.5f, groundLayer, Color.blue, true);
+            if (true == hitWall)
+            {
+                Turn();
+                break;
+            }
         }
+    }
+
+    private void CastPlayer()
+    {
+        //MyDebug.BoxCast(boundsCenter, new Vector2(boundsWidth, boundsHeight), Vector2.Angle(transform.up, Vector2.up), -transform.up, 10f, LayerMask.GetMask("Player"), Color.);
     }
     #endregion
 }
