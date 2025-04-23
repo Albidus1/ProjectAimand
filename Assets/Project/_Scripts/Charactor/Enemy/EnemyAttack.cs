@@ -6,7 +6,9 @@ public class EnemyAttack : MonoBehaviour
 
     [Header("범위")]
     public Vector2 chaseRange = new Vector2(12, 12);
+    public Transform chaseRangeCenter;
     public Vector2 attackRange = new Vector2(6, 6);
+    public Transform attackRangeCenter;
 
     [Header("타이머")]
     public float attackTime;
@@ -19,8 +21,15 @@ public class EnemyAttack : MonoBehaviour
     {
         enemyMovement = GetComponent<EnemyMovement>();
 
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         enemyMovement.chaseRange = chaseRange;
         enemyMovement.attackRange = attackRange;
+        //enemyMovement.chaseRangePosition = chaseRangeCenter.position;
+        //enemyMovement.attackRangePosition = attackRangeCenter.position;
     }
 
     private void Update()
@@ -49,13 +58,11 @@ public class EnemyAttack : MonoBehaviour
         {
             enemyMovement = GetComponent<EnemyMovement>();
 
-            enemyMovement.chaseRange = chaseRange;
-            enemyMovement.attackRange = attackRange;
+            Initialize();
         }
         else
         {
-            enemyMovement.chaseRange = chaseRange;
-            enemyMovement.attackRange = attackRange;
+            Initialize();
         }
     }
 }

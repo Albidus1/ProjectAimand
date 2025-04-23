@@ -16,7 +16,9 @@ public class EnemyMovement : MonoBehaviour
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
     public Vector3 colliderCenterPosition => boxCollider.bounds.center;
     public Vector2 chaseRange { get; set; }
+    public Vector2 chaseRangePosition { get; set; }
     public Vector2 attackRange { get; set; }
+    public Vector2 attackRangePosition { get; set; }
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;
