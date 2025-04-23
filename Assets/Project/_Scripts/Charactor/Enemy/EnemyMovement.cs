@@ -4,9 +4,9 @@ using UnityEngine.EventSystems;
 public class EnemyMovement : MonoBehaviour
 {
     private int facingDirection = 1;
-    public bool isFacingRight { get; private set; }
-    public bool isFalling { get; private set; }
-
+    public bool isFacingRight { get; protected set; }
+    public bool isFalling { get; protected set; }
+    public bool isAttacking { get; protected set; }
 
     [Header("스피드")]
     public float speed;
@@ -15,6 +15,8 @@ public class EnemyMovement : MonoBehaviour
     public Transform checkHoles;
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
     public Vector3 colliderCenterPosition => boxCollider.bounds.center;
+    public Vector2 chaseRange { get; set; }
+    public Vector2 attackRange { get; set; }
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;
@@ -24,7 +26,6 @@ public class EnemyMovement : MonoBehaviour
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb;
 
-    private bool AtEdge;
     private bool hitObject;
 
     //private RaycastHit2D[] sideHitsStorage;
@@ -36,18 +37,20 @@ public class EnemyMovement : MonoBehaviour
     //private Vector2 verticalRaycastToRight = Vector2.zero;
     //private Vector2 raycastOrigin = Vector2.zero;
 
-    private Vector2 bounds;
-    private Vector2 boundsCenter;
-    private Vector2 boundsTopLeftCorner;
-    private Vector2 boundsBottomLeftCorner;
-    private Vector2 boundsTopRightCorner;
-    private Vector2 boundsBottomRightCorner;
-    private float boundsWidth;
-    private float boundsHeight;
+    protected Vector2 bounds;
+    protected Vector2 boundsCenter;
+    protected Vector2 boundsTopLeftCorner;
+    protected Vector2 boundsBottomLeftCorner;
+    protected Vector2 boundsTopRightCorner;
+    protected Vector2 boundsBottomRightCorner;
+    protected float boundsWidth;
+    protected float boundsHeight;
 
     private bool isChasingPlayer;
     private Vector2 playerPosition;
-    private Vector2 previousPlayerPosition;
+
+
+
 
     private void Awake()
     {
@@ -79,10 +82,17 @@ public class EnemyMovement : MonoBehaviour
         }
         else if (isChasingPlayer && false == hitObject)
         {
-            direction = playerPosition.x > transform.position.x ? Vector2.right : Vector2.left;
-            CheckDirectionToFace(playerPosition.x > transform.position.x);
+            if (Mathf.Abs(playerPosition.x - transform.position.x) > 0.1f)
+            {
+                direction = playerPosition.x > transform.position.x ? Vector2.right : Vector2.left;
+                CheckDirectionToFace(playerPosition.x > transform.position.x);
 
-            Run(direction);
+                Run(direction);
+            }
+            else
+            {
+                Run(Vector2.zero);
+            }
         }
         else
         {
@@ -160,6 +170,7 @@ public class EnemyMovement : MonoBehaviour
         if (rb.linearVelocity.y == 0)
         {
             RaycastHit2D hitHole = MyDebug.Raycast(checkHoles.position, transform.up, 0.5f, groundLayer, Color.blue, true);
+
             if (false == hitHole)
             {
                 hitObject = true;
@@ -186,26 +197,49 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    public float sightRange = 10f;
     private void DetectPlayer()
     {
-        Vector2 boxSize = new Vector2(boundsWidth, boundsHeight);
+        RaycastHit2D hit1 = MyDebug.BoxCast
+            (boundsCenter,
+            chaseRange,
+            Vector2.Angle(transform.up, Vector2.up),
+            transform.right * facingDirection,
+            0,
+            LayerMask.GetMask("Player"),
+            Color.cyan,
+            true);
+        RaycastHit2D hit2 = MyDebug.BoxCast
+            (boundsCenter,
+            attackRange,
+            Vector2.Angle(transform.up, Vector2.up),
+            transform.right * facingDirection,
+            0,
+            LayerMask.GetMask("Player"),
+            Color.red,
+            true);
 
-        RaycastHit2D hit = MyDebug.BoxCast(boundsCenter, boxSize, Vector2.Angle(transform.up, Vector2.up), transform.right * facingDirection, sightRange, LayerMask.GetMask("Player"), Color.cyan, true);
-
-        if (hit)
+        if (hit1)
         {
             Debug.Log("충돌");
 
             isChasingPlayer = true;
 
-            playerPosition = hit.collider.transform.position;
+            playerPosition = hit1.collider.transform.position;
         }
         else
         {
             isChasingPlayer = false;
 
             playerPosition = Vector2.zero;
+        }
+
+        if (hit2)
+        {
+            isAttacking = true;
+        }
+        else
+        {
+            isAttacking = false;
         }
     }
     #endregion
