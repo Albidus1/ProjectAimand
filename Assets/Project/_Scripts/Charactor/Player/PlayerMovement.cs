@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isSliding { get; private set; }
     public bool isWallGrabbing { get; private set; }
     public bool isDashing { get; private set; }
+    public bool doKnockback { get; private set; }
     public bool isControlSleep { get; private set; }
 
     // 이동 플랫폼
@@ -163,6 +164,13 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region INPUT HANDLER
+        if (doKnockback)
+        {
+            //StartCoroutine(nameof(PerformControllSleep), 0.25f);
+            //doKnockback = false;
+            return;
+        }
+
         if (false == isControlSleep)
         {
             int currentDirection = 0;
@@ -223,12 +231,12 @@ public class PlayerMovement : MonoBehaviour
             {
                 OnGrabInput();
             }
-        }      
+        }
         #endregion
 
         #region COLLISION CHECKS
         if (false == isJumping && false == isDashing)
-        {         
+        {
             if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
                 lastOnGroundTime = data.coyoteTime;
@@ -236,7 +244,7 @@ public class PlayerMovement : MonoBehaviour
                 dashesLeft = data.dashAmount;
             }
 
-            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight) 
+            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
                 false == isWallJumping)
             {
@@ -244,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
                 lastOnWallRightTime = data.coyoteTime;
             }
 
-            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight) 
+            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
                 false == isWallJumping)
             {
@@ -252,7 +260,7 @@ public class PlayerMovement : MonoBehaviour
                 lastOnWallLeftTime = data.coyoteTime;
             }
 
-            lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);    
+            lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);
         }
 
         EdgeDetection();
@@ -693,7 +701,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            _dir.y += 0.5f;
+            _dir.y = Mathf.Max(_dir.y, _dir.y, 1);
         }
 
         rb.AddForce(_dir * _force, ForceMode2D.Impulse);
@@ -872,6 +880,78 @@ public class PlayerMovement : MonoBehaviour
     public void BonusDash()
     {
         dashesLeft = data.dashAmount;
+    }
+    #endregion
+
+    #region KNOCKBACK METHODS
+    public void Knockback(Vector2 _dir)
+    {
+        StartCoroutine(nameof(StartKnockBack), _dir);
+        //doKnockback = true;
+        //isJumping = true;
+        //isWallJumping = false;
+        //isJumpCut = false;
+        //isJumpFalling = false;
+
+        //moveInput = Vector2.zero;
+        //rb.linearVelocity = Vector2.zero;
+        //SetGravityScale(0);
+
+        //if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(_dir.x))
+        //{
+        //    _dir.x -= rb.linearVelocity.x;
+        //}
+        //if (rb.linearVelocity.y < 0)
+        //{
+        //    _dir.y -= rb.linearVelocity.y;
+        //}
+
+        //rb.AddForce(_dir.normalized * data.jumpForce, ForceMode2D.Impulse);
+    }
+
+    private IEnumerator StartKnockBack(Vector2 _dir)
+    {
+        lastOnGroundTime = 0;
+
+        doKnockback = true;
+
+        isJumping = true;
+        isWallJumping = false;
+        isJumpCut = false;
+
+        float startTime = Time.time;
+
+        dashesLeft--;
+        isDashAttacking = true;
+
+        SetGravityScale(0);
+
+        while (Time.time - startTime <= data.dashAttackTime)
+        {
+            rb.linearVelocity = _dir.normalized * data.dashSpeed;
+
+            if (rb.linearVelocity.y > 0 &&
+                Physics2D.OverlapBox(headCheckPoint.position, headCheckSize, 0, groundLayer & ~onewayPlatform))
+            {
+                break;
+            }
+
+            yield return null;
+        }
+
+        startTime = Time.time;
+
+        isDashAttacking = false;
+
+        SetGravityScale(data.gravityScale);
+        rb.linearVelocity = _dir.normalized * data.dashEndSpeed;
+
+        while (Time.time - startTime <= data.dashEndTime)
+        {
+            yield return null;
+        }
+
+        doKnockback = false;
     }
     #endregion
 

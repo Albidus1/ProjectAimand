@@ -62,7 +62,7 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (((1 << collision.gameObject.layer) & checkLayer) == 0)
+        if (false == MyLayers.LayerInLayerMask(this.gameObject.layer, checkLayer))
         {
             return;
         }

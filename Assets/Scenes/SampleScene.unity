@@ -209,9 +209,11 @@ GameObject:
   - component: {fileID: 20397982}
   - component: {fileID: 20397981}
   - component: {fileID: 20397985}
+  - component: {fileID: 20397988}
   - component: {fileID: 20397984}
   - component: {fileID: 20397983}
   - component: {fileID: 20397986}
+  - component: {fileID: 20397987}
   m_Layer: 25
   m_Name: Monster
   m_TagString: Untagged
@@ -260,8 +262,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 719086249
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 1, g: 0.11818848, b: 0, a: 1}
@@ -283,7 +285,7 @@ Transform:
   m_GameObject: {fileID: 20397980}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -88.76, y: -7.66, z: 0}
+  m_LocalPosition: {x: -90.25588, y: -6.98187, z: 0}
   m_LocalScale: {x: 1.5, y: 2.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -400,6 +402,69 @@ MonoBehaviour:
   attackRange: {x: 6, y: 6}
   attackRangeCenter: {fileID: 0}
   attackTime: 3
+--- !u!114 &20397987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20397980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyDamageOnTriggerEnter: 1
+  applyDamageOnTriggerStay: 1
+  damageCausedKnockbackForce: {x: 15, y: 2.5}
+  invincibilityDuration: 1
+  owner: {fileID: 0}
+--- !u!61 &20397988
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20397980}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &352968508
 GameObject:
   m_ObjectHideFlags: 0
@@ -923,7 +988,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 0000000093c99b29d3a3097e
+  m_ApplyToSortingLayers: 0000000093c99b29d3a3097ee5dce305a962dc2a
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -26403,8 +26468,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 719086249
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -27237,8 +27302,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 719086249
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -27697,9 +27762,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3557760932712175624, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3557760932712175624, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 98819301
+      objectReference: {fileID: 0}
     - target: {fileID: 3631446610809159985, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       propertyPath: m_Name
       value: BackCheck
+      objectReference: {fileID: 0}
+    - target: {fileID: 3697946856084699757, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3697946856084699757, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 98819301
       objectReference: {fileID: 0}
     - target: {fileID: 3747102144972331660, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       propertyPath: targetMask.m_Bits
@@ -27732,6 +27813,18 @@ PrefabInstance:
     - target: {fileID: 7710291584736515603, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       propertyPath: groundLayer.m_Bits
       value: 2944
+      objectReference: {fileID: 0}
+    - target: {fileID: 9144257462320758668, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9144257462320758668, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9144257462320758668, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 98819301
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

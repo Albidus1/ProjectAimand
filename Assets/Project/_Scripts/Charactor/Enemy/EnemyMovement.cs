@@ -222,7 +222,7 @@ public class EnemyMovement : MonoBehaviour
 
         if (hit1)
         {
-            Debug.Log("충돌");
+            //Debug.Log("충돌");
 
             isChasingPlayer = true;
 
