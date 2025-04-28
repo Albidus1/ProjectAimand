@@ -46,7 +46,7 @@ public class EnemyAttack : MonoBehaviour
     {
         m_attackTime = attackTime;
 
-        Debug.Log("적 공격");
+        //Debug.Log("적 공격");
     }
 
     private void OnValidate()

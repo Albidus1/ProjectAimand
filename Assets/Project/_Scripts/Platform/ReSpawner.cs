@@ -4,26 +4,38 @@ public class ReSpawner : MonoBehaviour
 {
     public Transform respawnPosition;
 
-    private GameObject m_Object;
-
+    private GameObject m_owner;
+    private Collider2D m_collider;
 
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            m_Object = collision.gameObject;
-            collision.enabled = false;
+            OnDestroyObject(collision);
 
             Invoke(nameof(OnReSpawn), 2f);
         }
     }
 
-    private void OnReSpawn()
+    protected virtual void OnDestroyObject(Collider2D _col)
     {
-        m_Object.transform.position = respawnPosition.position;
+        m_owner = _col.gameObject;
+        m_collider = _col;
+        m_collider.enabled = false;
+    }
 
-        Collider2D col = m_Object.GetComponent<Collider2D>();
-        col.enabled = true;
+    public virtual void OnReSpawn()
+    {
+        m_owner.transform.position = respawnPosition.position;
+
+        m_collider.enabled = true;
+
+        Health health = m_owner.GetComponent<Health>();
+
+        if (health != null)
+        {
+            health.InitializeCurrentHealth();
+        }
     }
 }

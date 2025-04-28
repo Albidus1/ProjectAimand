@@ -18,6 +18,7 @@ public class DamageOnTouch : MonoBehaviour
     public GameObject owner;
 
 
+    private Health m_health;
     private Vector2 m_lastPosition;
     private Vector2 m_lastDamagePosition;
     private Vector2 m_velocity;
@@ -124,12 +125,19 @@ public class DamageOnTouch : MonoBehaviour
 
         m_playerCollider = _col;
 
+        if (m_health == null)
+        {
+            m_health = _col.GetComponent<Health>();
+        }
+
+        m_health.currentHP -= 10;
+
         ApplyDamageCausedKnockback();
     }
 
     private void ApplyDamageCausedKnockback()
     {
-        Debug.Log("넉백");
+        //Debug.Log("넉백");
 
         m_knockbackForce.x = damageCausedKnockbackForce.x;
 
