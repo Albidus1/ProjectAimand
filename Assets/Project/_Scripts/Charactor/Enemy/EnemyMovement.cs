@@ -190,7 +190,7 @@ public class EnemyMovement : MonoBehaviour
             Vector2 position = boundsCenter;
             position.y = boundsTopLeftCorner.y - (raysDistance * i);
 
-            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, boundsWidth * 0.5f + 0.05f, groundLayer, Color.blue, true);
+            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, boundsWidth * 0.5f + 0.1f, groundLayer, Color.blue, true);
             if (hitWall)
             {
                 hitObject = true;

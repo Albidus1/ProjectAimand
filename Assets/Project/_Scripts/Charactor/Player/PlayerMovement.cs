@@ -8,6 +8,7 @@ public class PlayerStates
 {
     public enum MovementStates 
     { 
+        Die,
         Idle, 
         Running, 
         Jumping, 
@@ -41,6 +42,9 @@ public class PlayerMovement : MonoBehaviour
     public bool isDashing { get; private set; }
     public bool doKnockback { get; private set; }
     public bool isControlSleep { get; private set; }
+    public bool ApplyGravityOnDeath;
+
+
 
     // 이동 플랫폼
     public Transform platformTransform { get; set; }
@@ -149,6 +153,26 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (doKnockback)
+        {
+            //StartCoroutine(nameof(PerformControllSleep), 0.25f);
+            //doKnockback = false;
+            return;
+        }
+
+        if (movementState.currentState == PlayerStates.MovementStates.Die)
+        {
+            Debug.Log("사망");
+
+            if (false == ApplyGravityOnDeath)
+            {
+                SetGravityScale(0);
+                rb.linearVelocity = Vector2.zero;
+            }
+
+            return;
+        }
+
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
         lastOnWallTime -= Time.deltaTime;
@@ -164,13 +188,6 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region INPUT HANDLER
-        if (doKnockback)
-        {
-            //StartCoroutine(nameof(PerformControllSleep), 0.25f);
-            //doKnockback = false;
-            return;
-        }
-
         if (false == isControlSleep)
         {
             int currentDirection = 0;
@@ -499,6 +516,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (movementState.currentState == PlayerStates.MovementStates.Die)
+        {
+            return;
+        }
+
         if (false == isDashing)
         {
             if (true == isWallJumping)
@@ -921,9 +943,6 @@ public class PlayerMovement : MonoBehaviour
 
         float startTime = Time.time;
 
-        dashesLeft--;
-        isDashAttacking = true;
-
         SetGravityScale(0);
 
         while (Time.time - startTime <= data.dashAttackTime)
@@ -940,8 +959,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         startTime = Time.time;
-
-        isDashAttacking = false;
+        
+        if (movementState.currentState == PlayerStates.MovementStates.Die)
+        {
+            doKnockback = false;
+            yield break;
+        }
 
         SetGravityScale(data.gravityScale);
         rb.linearVelocity = _dir.normalized * data.dashEndSpeed;

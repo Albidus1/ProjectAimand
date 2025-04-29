@@ -50,6 +50,21 @@ public class PlatformMagnetic : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Enemy"))
+        {
+            Health health = collision.gameObject.GetComponent<Health>();
+
+            Debug.Log($"{Mathf.Abs(rb.linearVelocity.x)}");
+
+            if (Mathf.Abs(rb.linearVelocity.x) > 5)
+            {
+                health.currentHP -= 10;
+            }
+        }
+    }
+
     public void Gravity()
     {
         gravityStrength = gravityScale * playerData.data.gravityScale;
@@ -102,7 +117,7 @@ public class PlatformMagnetic : MonoBehaviour
         Vector2 direction = _playerPosition - transform.position;
         float distance = direction.magnitude;
 
-        if (distance < 0.5f)
+        if (distance < 0.7f)
         {
             return;
         }

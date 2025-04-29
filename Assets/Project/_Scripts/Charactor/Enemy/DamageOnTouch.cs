@@ -116,7 +116,7 @@ public class DamageOnTouch : MonoBehaviour
             return;
         }
 
-        Debug.Log("데미지");
+        //Debug.Log("데미지");
 
         if (m_playerMovement == null)
         {

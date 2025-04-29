@@ -25,7 +25,7 @@ public class Health : MonoBehaviour
         }
     }
 
-    public ReSpawner respawner;
+    private ReSpawner m_respawner;
 
     private float m_HP;
     private Collider2D m_collider;
@@ -42,7 +42,7 @@ public class Health : MonoBehaviour
         m_enemyMovement = GetComponent<EnemyMovement>();
         m_owner = this.gameObject;
 
-        respawner = FindFirstObjectByType<ReSpawner>();
+        m_respawner = FindFirstObjectByType<ReSpawner>();
     }
 
     private void Start()
@@ -63,8 +63,15 @@ public class Health : MonoBehaviour
 
     private void Kill()
     {
-        Debug.Log("사망");
-        StartCoroutine(nameof(OnRespawn));
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Die);
+            StartCoroutine(nameof(OnRespawn));
+        }
+        else if (m_enemyMovement != null)
+        {
+            StartCoroutine(nameof(OnDeath));
+        }       
     }
 
     private IEnumerator OnRespawn()
@@ -74,7 +81,22 @@ public class Health : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         InitializeCurrentHealth();
-        transform.position = respawner.respawnPosition.position;
+        transform.position = m_respawner.respawnPosition.position;
         m_collider.enabled = true;
+
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+    }
+
+    private IEnumerator OnDeath()
+    {
+        m_collider.enabled = false;
+
+        Destroy(this.gameObject);
+
+        yield return new WaitForSeconds(3f);
+
     }
 }
