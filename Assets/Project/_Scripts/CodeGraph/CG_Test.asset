@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fac3ff6a21fc746a98eb760e877169, type: 3}
+  m_Name: CG_Test
+  m_EditorClassIdentifier: 
+  gameObject: {fileID: 0}
+  m_nodes:
+  - rid: 7470537427714048078
+  - rid: 7470537427714048079
+  - rid: 7470537427714048081
+  - rid: 374759981880443079
+  m_connections:
+  - inputPort:
+      nodeId: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
+      portIndex: 1
+    outputPort:
+      nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
+      portIndex: 0
+  - inputPort:
+      nodeId: daef9e52-c968-4d98-b8a9-70f958c913f5
+      portIndex: 1
+    outputPort:
+      nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
+      portIndex: 0
+  - inputPort:
+      nodeId: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
+      portIndex: 1
+    outputPort:
+      nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
+      portIndex: 0
+  - inputPort:
+      nodeId: d294842c-7440-4c22-96af-b8b19c70e07e
+      portIndex: 1
+    outputPort:
+      nodeId: daef9e52-c968-4d98-b8a9-70f958c913f5
+      portIndex: 0
+  - inputPort:
+      nodeId: daef9e52-c968-4d98-b8a9-70f958c913f5
+      portIndex: 1
+    outputPort:
+      nodeId: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
+      portIndex: 0
+  - inputPort:
+      nodeId: d294842c-7440-4c22-96af-b8b19c70e07e
+      portIndex: 1
+    outputPort:
+      nodeId: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
+      portIndex: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 374759981880443079
+      type: {class: DebugLogNode, ns: CodeGraph, asm: CodeGraph}
+      data:
+        m_guid: 8f272cba-f1e9-42b6-b4d5-a6cc317dd3a3
+        m_position:
+          serializedVersion: 2
+          x: 534
+          y: 179
+          width: 188
+          height: 98
+        typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+        logMessage: "\uB514\uBC84\uADF8 1"
+    - rid: 7470537427714048078
+      type: {class: StartNode, ns: CodeGraph, asm: CodeGraph}
+      data:
+        m_guid: 09c7594c-fc2a-4b2d-8a99-4a812fbb1d5f
+        m_position:
+          serializedVersion: 2
+          x: 306
+          y: 261
+          width: 75
+          height: 77
+        typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    - rid: 7470537427714048079
+      type: {class: DebugLogNode, ns: CodeGraph, asm: CodeGraph}
+      data:
+        m_guid: daef9e52-c968-4d98-b8a9-70f958c913f5
+        m_position:
+          serializedVersion: 2
+          x: 532
+          y: 368
+          width: 189
+          height: 98
+        typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+        logMessage: "\uB514\uBC84\uADF8 2"
+    - rid: 7470537427714048081
+      type: {class: MoveNode, ns: CodeGraph, asm: CodeGraph}
+      data:
+        m_guid: d294842c-7440-4c22-96af-b8b19c70e07e
+        m_position:
+          serializedVersion: 2
+          x: 834
+          y: 179
+          width: 257
+          height: 97
+        typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+        direction: {x: 9.95, y: 0, z: 0}

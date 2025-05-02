@@ -1,11 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class MagneticAbility : ConeOfVision2D
 {
     [Header("플레이어")]
     [SerializeField] private PlayerMovement playerController;
     private bool previousFacingDirection = true;
-    private bool isScanning = true;
+    private bool isScanning = false;
+
+    private SpriteRenderer spriteRenderer;
+
+    [Header("자력 능력")]
+    public float pullForce = 20f; //기본 자력 세기
+    private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
+
 
     [MyReadOnly]
     public Vector3 abilityDirection
@@ -19,7 +28,6 @@ public class MagneticAbility : ConeOfVision2D
             base.direction = value;
             base.angleOffset = (base.direction == Vector3.right) ? 0 : 180;
             base.SetDirectionAndAngles(base.direction, transform.eulerAngles);
-            Debug.Log(base.direction);
         }
     }
     
@@ -31,15 +39,41 @@ public class MagneticAbility : ConeOfVision2D
         OnOff(isScanning);
 
         playerController = GetComponent<PlayerMovement>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        UpdateColor();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        #region INPUT HANDLER
+        //D 키를 누르면 극성 변경
+        if (Input.GetKeyDown(KeyCode.D) && false == isScanning)
         {
-            OnOff(isScanning);
-            isScanning = !isScanning;
+            isNorthPole = !isNorthPole;
+            UpdateColor();
         }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            if (false == isScanning)
+            {
+                isScanning = true;
+                OnOff(isScanning);
+            }
+
+            PullMagnet();
+        }
+
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            isScanning = false;
+            OnOff(isScanning);
+            
+            PullMagnet();
+            base.visibleTargets.Clear();
+        }
+        #endregion
 
         if (previousFacingDirection != playerController.isFacingRight)
         {
@@ -68,8 +102,22 @@ public class MagneticAbility : ConeOfVision2D
         }
     }
 
-    protected virtual void ObjectAction()
+    void UpdateColor()
     {
+        spriteRenderer.color = isNorthPole ? Color.blue : Color.red;
+    }
 
+    void PullMagnet()
+    {
+        foreach (Transform col in base.visibleTargets)
+        {
+            PlatformMagnetic pole = col.GetComponent<PlatformMagnetic>();
+
+            if (pole == null)
+                continue;
+
+
+            pole.MagneticActivate(isScanning, transform.position, pullForce, isNorthPole);
+        }
     }
 }

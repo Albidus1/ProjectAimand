@@ -8,6 +8,7 @@ public class PlayerStates
 {
     public enum MovementStates 
     { 
+        Die,
         Idle, 
         Running, 
         Jumping, 
@@ -27,13 +28,23 @@ public class PlayerMovement : MonoBehaviour
 
     public Rigidbody2D rb { get; private set; }
 
+    [Header("움직임 제어")]
+    public bool CanWallJumping = true;
+    public bool CanWallSliding = true;
+    public bool CanWallGrabbing = true;
+    public bool CanDasing = true;
+
     public bool isFacingRight { get; private set; }
     public bool isJumping { get; private set; }
     public bool isWallJumping { get; private set; }
     public bool isSliding { get; private set; }
     public bool isWallGrabbing { get; private set; }
     public bool isDashing { get; private set; }
+    public bool doKnockback { get; private set; }
     public bool isControlSleep { get; private set; }
+    public bool ApplyGravityOnDeath;
+
+
 
     // 이동 플랫폼
     public Transform platformTransform { get; set; }
@@ -79,6 +90,9 @@ public class PlayerMovement : MonoBehaviour
 
     // 입력
     private Vector2 moveInput;
+    private int lastMoveDirection = 0;
+
+    public float lastPressedMoveInputTime { get; private set; }
     public float lastPressedJumpTime { get; private set; }
     public float lastPressedGrabTime { get; private set; }
     public float lastPressedDashTime { get; private set; }
@@ -125,9 +139,9 @@ public class PlayerMovement : MonoBehaviour
 
         playerState = new PlayerStates();
 
-        groundLayer |= platform;
-        groundLayer |= movingPlatform;
-        groundLayer |= onewayPlatform;
+        //groundLayer |= platform;
+        //groundLayer |= movingPlatform;
+        //groundLayer |= onewayPlatform;
     }
 
     private void Start()
@@ -139,6 +153,26 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (doKnockback)
+        {
+            //StartCoroutine(nameof(PerformControllSleep), 0.25f);
+            //doKnockback = false;
+            return;
+        }
+
+        if (movementState.currentState == PlayerStates.MovementStates.Die)
+        {
+            Debug.Log("사망");
+
+            if (false == ApplyGravityOnDeath)
+            {
+                SetGravityScale(0);
+                rb.linearVelocity = Vector2.zero;
+            }
+
+            return;
+        }
+
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
         lastOnWallTime -= Time.deltaTime;
@@ -147,6 +181,7 @@ public class PlayerMovement : MonoBehaviour
 
         lastOnJumpPadTime -= Time.deltaTime;
 
+        lastPressedMoveInputTime -= Time.deltaTime;
         lastPressedJumpTime -= Time.deltaTime;
         lastPressedDashTime -= Time.deltaTime;
         lastPressedGrabTime -= Time.deltaTime;
@@ -155,12 +190,16 @@ public class PlayerMovement : MonoBehaviour
         #region INPUT HANDLER
         if (false == isControlSleep)
         {
+            int currentDirection = 0;
+
             moveInput.x = Input.GetAxisRaw("Horizontal");
             moveInput.y = Input.GetAxisRaw("Vertical");
 
             if (moveInput.x != 0)
             {
                 CheckDirectionToFace(moveInput.x > 0);
+
+                currentDirection = (moveInput.x > 0) ? 1 : -1;
             }
             else if (moveInput.x == 0)
             {
@@ -172,31 +211,49 @@ public class PlayerMovement : MonoBehaviour
                 CheckDirectionToFace(lastGrabDirection == 1);
             }
 
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 OnJumpInput();
             }
 
-            if (Input.GetKeyUp(KeyCode.Z))
+            if (Input.GetKeyUp(KeyCode.UpArrow))
             {
                 OnJumpUpInput();
             }
 
-            if (Input.GetKeyDown(KeyCode.X))
+            if (Input.GetKeyDown(KeyCode.X) && false == data.doDoubleTap)
             {
                 OnDashInput();
+            }
+
+            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) && 
+                false == isDashing && data.doDoubleTap)
+            {
+                bool sameDirection = (currentDirection == lastMoveDirection) ? true : false;
+
+                if (Time.time - lastPressedMoveInputTime <= data.doubleTapThreshold && sameDirection)
+                {
+                    OnDashInput();
+                    lastPressedMoveInputTime = -1f;
+                    lastMoveDirection = 0;
+                }
+                else
+                {
+                    lastPressedMoveInputTime = Time.time;
+                    lastMoveDirection = currentDirection;
+                }
             }
 
             if (Input.GetKey(KeyCode.C))
             {
                 OnGrabInput();
             }
-        }      
+        }
         #endregion
 
         #region COLLISION CHECKS
         if (false == isJumping && false == isDashing)
-        {         
+        {
             if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
                 lastOnGroundTime = data.coyoteTime;
@@ -204,7 +261,7 @@ public class PlayerMovement : MonoBehaviour
                 dashesLeft = data.dashAmount;
             }
 
-            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight) 
+            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
                 false == isWallJumping)
             {
@@ -212,7 +269,7 @@ public class PlayerMovement : MonoBehaviour
                 lastOnWallRightTime = data.coyoteTime;
             }
 
-            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight) 
+            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
                 false == isWallJumping)
             {
@@ -220,7 +277,7 @@ public class PlayerMovement : MonoBehaviour
                 lastOnWallLeftTime = data.coyoteTime;
             }
 
-            lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);    
+            lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);
         }
 
         EdgeDetection();
@@ -381,7 +438,7 @@ public class PlayerMovement : MonoBehaviour
                 switch (dashDirection)
                 {
                     case DashDirection.TwoDirections:
-                        lastDashDirection.y = 0;
+                        lastDashDirection = isFacingRight ? Vector2.right : Vector2.left;
                         break;
 
                     case DashDirection.FourDirections:
@@ -459,6 +516,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (movementState.currentState == PlayerStates.MovementStates.Die)
+        {
+            return;
+        }
+
         if (false == isDashing)
         {
             if (true == isWallJumping)
@@ -560,15 +622,15 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region RUN METHODS
-    private void Run(float _lerp_amount)
+    private void Run(float _lerpAmount)
     {
         movementState.StateChange(PlayerStates.MovementStates.Running);
 
         // 이동하고자 하는 방향과 원하는 속도 계산
-        float target_speed = moveInput.x * data.runMaxSpeed;
+        float targetSpeed = moveInput.x * data.runMaxSpeed;
 
         // 방향과 속도로 부드럽게 조절
-        target_speed = Mathf.Lerp(rb.linearVelocity.x, target_speed, _lerp_amount);
+        targetSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, _lerpAmount);
 
         // 가속도 값 계산
         float accelerate;
@@ -577,11 +639,11 @@ public class PlayerMovement : MonoBehaviour
         // 감속 포함
         if (lastOnGroundTime > 0)
         {
-            accelerate = (Mathf.Abs(target_speed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
+            accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
         }
         else
         {
-            accelerate = (Mathf.Abs(target_speed) > 0.01f) ? 
+            accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ? 
                 data.runAccelAmount * data.accelInAir : data.runDeccelAmount * data.deccelInAir;
         }
 
@@ -590,14 +652,14 @@ public class PlayerMovement : MonoBehaviour
             Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
         {
             accelerate *= data.jumpHangAccelerationMult;
-            target_speed *= data.jumpHangMaxSpeedMult;
+            targetSpeed *= data.jumpHangMaxSpeedMult;
         }
 
         // 속도 제어
         if (true == data.doConserveMomentum &&
-            Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(target_speed) &&
-            Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(target_speed) &&
-            Mathf.Abs(target_speed) > 0.01f &&
+            Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) &&
+            Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) &&
+            Mathf.Abs(targetSpeed) > 0.01f &&
             lastOnGroundTime < 0)
         {
             // 감속이 발생하지 않도록 방지
@@ -606,7 +668,7 @@ public class PlayerMovement : MonoBehaviour
 
         // 현재 속도와 원하는 속도 간의 차이 계산
         // 플레이어에게 적용할 X축을 따라 힘 계산
-        float speed_dif = target_speed - rb.linearVelocity.x;
+        float speed_dif = targetSpeed - rb.linearVelocity.x;
 
         float movement = speed_dif * accelerate;
 
@@ -661,7 +723,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            _dir.y += 0.5f;
+            _dir.y = Mathf.Max(_dir.y, _dir.y, 1);
         }
 
         rb.AddForce(_dir * _force, ForceMode2D.Impulse);
@@ -843,9 +905,82 @@ public class PlayerMovement : MonoBehaviour
     }
     #endregion
 
+    #region KNOCKBACK METHODS
+    public void Knockback(Vector2 _dir)
+    {
+        StartCoroutine(nameof(StartKnockBack), _dir);
+        //doKnockback = true;
+        //isJumping = true;
+        //isWallJumping = false;
+        //isJumpCut = false;
+        //isJumpFalling = false;
+
+        //moveInput = Vector2.zero;
+        //rb.linearVelocity = Vector2.zero;
+        //SetGravityScale(0);
+
+        //if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(_dir.x))
+        //{
+        //    _dir.x -= rb.linearVelocity.x;
+        //}
+        //if (rb.linearVelocity.y < 0)
+        //{
+        //    _dir.y -= rb.linearVelocity.y;
+        //}
+
+        //rb.AddForce(_dir.normalized * data.jumpForce, ForceMode2D.Impulse);
+    }
+
+    private IEnumerator StartKnockBack(Vector2 _dir)
+    {
+        lastOnGroundTime = 0;
+
+        doKnockback = true;
+
+        isJumping = true;
+        isWallJumping = false;
+        isJumpCut = false;
+
+        float startTime = Time.time;
+
+        SetGravityScale(0);
+
+        while (Time.time - startTime <= data.dashAttackTime)
+        {
+            rb.linearVelocity = _dir.normalized * data.dashSpeed;
+
+            if (rb.linearVelocity.y > 0 &&
+                Physics2D.OverlapBox(headCheckPoint.position, headCheckSize, 0, groundLayer & ~onewayPlatform))
+            {
+                break;
+            }
+
+            yield return null;
+        }
+
+        startTime = Time.time;
+        
+        if (movementState.currentState == PlayerStates.MovementStates.Die)
+        {
+            doKnockback = false;
+            yield break;
+        }
+
+        SetGravityScale(data.gravityScale);
+        rb.linearVelocity = _dir.normalized * data.dashEndSpeed;
+
+        while (Time.time - startTime <= data.dashEndTime)
+        {
+            yield return null;
+        }
+
+        doKnockback = false;
+    }
+    #endregion
+
     #region CHECK METHODS
     public void CheckDirectionToFace(bool _isMovingRight)
-    {
+    {     
         if (_isMovingRight != isFacingRight)
         {
             Turn();
@@ -864,7 +999,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanWallJump()
     {
-        return lastPressedJumpTime > 0 && lastOnWallTime > 0 && lastOnGroundTime <= 0 && 
+        return CanWallJumping && lastPressedJumpTime > 0 && lastOnWallTime > 0 && lastOnGroundTime <= 0 && 
             (false == isWallJumping || (lastOnWallRightTime > 0 && lastWallJumpDirection == 1) || (lastOnWallLeftTime > 0 && lastWallJumpDirection == -1));
     }
 
@@ -875,7 +1010,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanSlide()
     {
-        if (lastOnWallTime > 0 && 
+        if (CanWallSliding &&
+            lastOnWallTime > 0 && 
             false == isJumping &&
             false == isWallJumping &&
             lastOnGroundTime <= 0)
@@ -890,7 +1026,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanGrab()
     {     
-        if (true == isJumping || true == isWallJumping)
+        if (isJumping || isWallJumping || false == CanWallGrabbing)
         {
             return false;
         }
@@ -912,7 +1048,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanDash()
     {
-        if (false == isDashing &&
+        if (CanDasing &&
+            false == isDashing &&
             dashesLeft < data.dashAmount &&
             lastOnGroundTime > 0 &&
             false == dashRefilling)

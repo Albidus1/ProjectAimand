@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -15,6 +16,11 @@ TagManager:
   - Platform
   - Platform_Moving
   - Platform_OneWay
+  - Platform_KillOnTouch
+  - Platform_Magnet
+  - 
+  - 
+  - 
   - JumpPad
   - Item
   - 
@@ -25,12 +31,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -46,6 +47,12 @@ TagManager:
     locked: 0
   - name: Platform
     uniqueID: 2114560979
+    locked: 0
+  - name: Enemy
+    uniqueID: 719086249
+    locked: 0
+  - name: Player
+    uniqueID: 98819301
     locked: 0
   m_RenderingLayers:
   - Default
