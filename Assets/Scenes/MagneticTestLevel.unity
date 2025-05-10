@@ -306,12 +306,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3747102144972331660, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: pullForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747102144972331660, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       propertyPath: visionAngle
       value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 3747102144972331660, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       propertyPath: targetMask.m_Bits
       value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747102144972331660, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
+      propertyPath: obstacleMask.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3747102144972331660, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       propertyPath: scanFrequencyInSeconds
@@ -703,20 +711,36 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1260251720205291485, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
+      propertyPath: Gravity
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260251720205291485, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
+      propertyPath: maxSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260251720205291485, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
       propertyPath: acceleration
-      value: 1
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260251720205291485, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
+      propertyPath: decceleration
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3267699515276965087, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
       propertyPath: m_Name
       value: Platform_Magnetic
       objectReference: {fileID: 0}
+    - target: {fileID: 7689525584905242265, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9101536219982018389, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.110084
+      value: 4.28
       objectReference: {fileID: 0}
     - target: {fileID: 9101536219982018389, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.3367007
+      value: -1.48
       objectReference: {fileID: 0}
     - target: {fileID: 9101536219982018389, guid: dc2a04826c637be4da5d51ad4113c7e0, type: 3}
       propertyPath: m_LocalPosition.z
