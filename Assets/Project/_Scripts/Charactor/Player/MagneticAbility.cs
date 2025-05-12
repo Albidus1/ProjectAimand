@@ -13,6 +13,8 @@ public class MagneticAbility : ConeOfVision2D
 
     [Header("자력 능력")]
     public float pullForce = 20f; //기본 자력 세기
+
+    private float currentPullForce;
     private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
 
 
@@ -116,8 +118,21 @@ public class MagneticAbility : ConeOfVision2D
             if (pole == null)
                 continue;
 
+            Vector2 direction = col.transform.position - transform.position;
+            float distance = direction.magnitude;
 
-            pole.MagneticActivate(isScanning, transform.position, pullForce, isNorthPole);
+            if (distance < 0.45f)
+            {
+                return;
+            }
+
+            //float normalizedDistance = Mathf.Clamp01(distance / base.visionRadius);        
+            float force = 0.1f + (pullForce - 0.1f) * Mathf.Exp(-3f * Mathf.Pow(distance / base.visionRadius, 2f));
+            force = -Mathf.Clamp(force, 0.1f, pullForce);
+
+            Debug.DrawRay(transform.position, force * Vector2.up, Color.red);
+
+            pole.MagneticActivate(isScanning, direction, force, isNorthPole);
         }
     }
 }
