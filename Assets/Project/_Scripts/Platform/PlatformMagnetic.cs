@@ -1,3 +1,4 @@
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class PlatformMagnetic : MonoBehaviour
@@ -107,6 +108,7 @@ public class PlatformMagnetic : MonoBehaviour
 
         float speedDif = targetSpeed - rb.linearVelocity.x;
         float movement = speedDif * accelerate;
+        //float movement = speedDif * accelerate * Time.fixedDeltaTime;
 
         rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
         //transform.Translate(new Vector2((rb.linearVelocity.x + movement) * Time.deltaTime, 0));
