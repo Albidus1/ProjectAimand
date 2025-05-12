@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    public float maxHP = 30;
+    public float maxHP = 100;
+    public Slider healthSlider;
     public float currentHP
     {
         get
@@ -13,7 +15,12 @@ public class Health : MonoBehaviour
         }
         set
         {
-            m_HP = value;
+            m_HP = Mathf.Clamp(value, 0, maxHP);
+
+            if (healthSlider != null)
+            {
+                healthSlider.value = m_HP / maxHP;
+            }
 
             Debug.Log($"현재 체력: {currentHP}");
 
@@ -24,6 +31,7 @@ public class Health : MonoBehaviour
             }
         }
     }
+
 
     private ReSpawner m_respawner;
 
@@ -47,6 +55,8 @@ public class Health : MonoBehaviour
 
     private void Start()
     {
+        currentHP = maxHP;
+
         InitializeCurrentHealth();
     }
 
@@ -59,6 +69,11 @@ public class Health : MonoBehaviour
     {
         Debug.Log($"현재 체력: {currentHP}");
         m_HP = maxHP;
+
+        if(healthSlider != null)
+        {
+            healthSlider.value = currentHP / maxHP;
+        }
     }
 
     private void Kill()

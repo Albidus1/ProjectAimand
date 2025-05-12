@@ -67,6 +67,7 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
             return;
         }
 
+        Debug.Log("버튼 입력");
         ButtonEvent.Trigger(ButtonID, this);
     }
 
