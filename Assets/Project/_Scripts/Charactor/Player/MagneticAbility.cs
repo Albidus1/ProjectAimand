@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
+using DG.Tweening;
 
 public class MagneticAbility : ConeOfVision2D
 {
@@ -13,6 +15,9 @@ public class MagneticAbility : ConeOfVision2D
 
     [Header("자력 능력")]
     public float pullForce = 20f; //기본 자력 세기
+    [Range(0.01f, 0.5f)]
+    public float minAdjust = 0.4f;
+    public Ease easeType = Ease.InQuart;
 
     private float currentPullForce;
     private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
@@ -121,18 +126,26 @@ public class MagneticAbility : ConeOfVision2D
             Vector2 direction = col.transform.position - transform.position;
             float distance = direction.magnitude;
 
-            if (distance < 0.45f)
+            if (distance < 0.7f)
             {
                 return;
             }
 
-            //float normalizedDistance = Mathf.Clamp01(distance / base.visionRadius);        
-            float force = 0.1f + (pullForce - 0.1f) * Mathf.Exp(-3f * Mathf.Pow(distance / base.visionRadius, 2f));
-            force = -Mathf.Clamp(force, 0.1f, pullForce);
 
-            Debug.DrawRay(transform.position, force * Vector2.up, Color.red);
+            if (distance > base.visionRadius || false == isScanning)
+            {
+                pole.MagneticActivate(false, Vector3.zero, 0, isNorthPole);
+            }
+            else
+            {
+                float normalizedDistance = Mathf.Clamp01((distance - 0.7f) / (base.visionRadius - 0.7f));
+                float t = 1 - normalizedDistance;
+                float easedForce = DOVirtual.EasedValue(0, -pullForce, Mathf.Max(t, minAdjust), easeType);
 
-            pole.MagneticActivate(isScanning, direction, force, isNorthPole);
+                Debug.DrawRay(transform.position, easedForce * Vector2.up, Color.red);
+
+                pole.MagneticActivate(true, direction.normalized, easedForce, isNorthPole);
+            }
         }
     }
 }
