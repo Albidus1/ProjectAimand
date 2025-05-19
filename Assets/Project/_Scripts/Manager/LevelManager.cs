@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro.Examples;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -87,6 +88,8 @@ public class LevelManager : MySingleton<LevelManager>
     {
         levelCameraController = FindFirstObjectByType<CameraController>();
 
+        GenerateColliderBounds();
+
         switch (checkpointAttributeAxis)
         {
             case CheckpointsAxis.x:
@@ -127,6 +130,32 @@ public class LevelManager : MySingleton<LevelManager>
         }
 
         currentCheckPoint = m_checkPoints.Count > 0 ? m_checkPoints[0] : null;
+    }
+
+    //[ExecuteAlways]
+    private void GenerateColliderBounds()
+    {
+        //boundsCollider2D = GetComponent<CompositeCollider2D>();
+
+        //if (boundsCollider2D == null)
+        //{
+        //    if (GetComponent<BoxCollider2D>() != null)
+        //    {
+        //        DestroyImmediate(GetComponent<BoxCollider2D>());
+        //    }
+
+        //    Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
+        //    rb.bodyType = RigidbodyType2D.Kinematic;
+        //    rb.simulated = false;
+
+        //    m_collider2D = gameObject.AddComponent<BoxCollider2D>();
+        //    m_collider2D.size = levelBounds.extents * 2f;
+
+        //    CompositeCollider2D composits = this.gameObject.AddComponent<CompositeCollider2D>();
+        //    composits.geometryType = CompositeCollider2D.GeometryType.Polygons;
+        //}
+
+        //boundsCollider2D = gameObject.GetComponent<CompositeCollider2D>();
     }
 
     private void InstantiatePlayableCharacters()
