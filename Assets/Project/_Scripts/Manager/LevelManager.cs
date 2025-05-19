@@ -143,7 +143,37 @@ public class LevelManager : MySingleton<LevelManager>
 
     private void CheckpointAssignment()
     {
+        IEnumerable<RespawnAble> listeners = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).OfType<RespawnAble>();
 
+        foreach (RespawnAble listener in listeners)
+        {
+            for (int i = m_checkPoints.Count - 1; i >= 0; i--)
+            {
+                Vector3 vectorDistance = ((MonoBehaviour)listener).transform.position - m_checkPoints[i].transform.position;
+
+                float distance = 0;
+                if (checkpointAttributeAxis == CheckpointsAxis.x)
+                {
+                    distance = vectorDistance.x;
+                }
+                else if (checkpointAttributeAxis == CheckpointsAxis.y)
+                {
+                    distance = vectorDistance.y;
+                }
+
+                if(distance < 0 && checkpointAttributeDirection == CheckpointDirection.Asending)
+                {
+                    continue;
+                }
+                else if (distance > 0 && checkpointAttributeDirection == CheckpointDirection.Descending)
+                {
+                    continue;
+                }
+
+                m_checkPoints[i].AssignObjectToCheckPoint(listener);
+                break;
+            }      
+        }
     }
 
     private void SpawnPlayer()
@@ -194,7 +224,7 @@ public class LevelManager : MySingleton<LevelManager>
 
     public void PlayerDead(PlayerMovement _player)
     {
-        if (player != null)
+        if (_player != null)
         {
             StartCoroutine(Restart());
         }

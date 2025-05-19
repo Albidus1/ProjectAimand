@@ -79,14 +79,14 @@ public class PlatformMagnetic : MonoBehaviour
 
     public void Gravity()
     {
-        gravityStrength = gravityScale * playerData.data.gravityScale;
+        gravityStrength = gravityScale * 8f;
 
         if (rb.linearVelocity.y < 0)
         {
-            SetGravityScale(gravityStrength * playerData.data.fallGravityMult);
+            SetGravityScale(gravityStrength * 1.5f);
 
             rb.linearVelocity =
-                new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -playerData.data.maxFallSpeed));
+                new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -20));
         }
         else
         {
