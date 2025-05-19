@@ -10,12 +10,12 @@ using UnityEngine.PlayerLoop;
 
 
 
-[Serializable]
-public struct PointOfEntry
-{
-    public string name;
-    public Transform position;
-}
+//[Serializable]
+//public struct PointOfEntry
+//{
+//    public string name;
+//    public Transform position;
+//}
 
 [AddComponentMenu("게임/Managers/LevelManager")]
 public class LevelManager : MySingleton<LevelManager>
@@ -35,9 +35,9 @@ public class LevelManager : MySingleton<LevelManager>
 
     [MyReadOnly] public CheckPoint currentCheckPoint;
 
-    [Space(10)]
-    [Header("Points of Entry")]
-    public List<PointOfEntry> pointsOfEntry;
+    //[Space(10)]
+    //[Header("Points of Entry")]
+    //public List<PointOfEntry> pointsOfEntry;
 
     [Space(10)]
     [Header("인트로 & 아웃트로")]
