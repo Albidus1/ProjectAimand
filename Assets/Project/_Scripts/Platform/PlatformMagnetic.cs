@@ -94,12 +94,13 @@ public class PlatformMagnetic : MonoBehaviour
         }
     }
 
-
-    public float spd;
     public void Move(Vector2 _force)
     {
-        spd = _force.magnitude;
-        rb.AddForce(_force);
+        float targetSpeed = Mathf.Lerp(rb.linearVelocity.x, _force.magnitude, 1);
+        float movement = targetSpeed - rb.linearVelocity.x;
+
+        rb.AddForce(movement * _force.normalized);
+        //transform.Translate(_force * Time.deltaTime);
 
         //float f = _force.x > 0 ? _force.magnitude : -_force.magnitude;
         //float targetSpeed = f;
@@ -121,8 +122,6 @@ public class PlatformMagnetic : MonoBehaviour
 
         //rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
         ////transform.Translate(new Vector2((rb.linearVelocity.x + movement) * Time.deltaTime, 0));
-
-        isActive = false;
     }
 
     public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isNPole)
@@ -135,20 +134,21 @@ public class PlatformMagnetic : MonoBehaviour
         if (false == _isActive)
         {
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+            isActive = false;
             return;
         }
 
         bool isSamePole = (Pole == PoleType.NPole && _isNPole) ||
                          (Pole == PoleType.SPole && !_isNPole);
 
-        if (isSamePole && distance < 1f)
+        if (false == isSamePole && distance < 1f)
         {
             m_magnetForce = Vector2.zero;
         }
         else
         {
             _pullForce = Mathf.Clamp(_pullForce, -forceLimit, forceLimit);
-            m_magnetForce = isSamePole ? _direction * _pullForce : -_direction * _pullForce;
+            m_magnetForce = isSamePole ? _direction * -_pullForce : _direction * _pullForce;
         }
     }
 
