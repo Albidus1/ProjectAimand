@@ -11,24 +11,29 @@ public class CMCameraMove : MonoBehaviour
 
     private bool isSwitching;
 
-    private void Awake()
+    private void Start()
+    {
+        Initialization();
+    }
+
+    public void Initialization()
     {
         if (player == null)
         {
             player = FindAnyObjectByType<PlayerMovement>();
         }
 
-        if (cmBrain ==  null)
+        if (cmBrain == null)
         {
             cmBrain = FindAnyObjectByType<CinemachineBrain>();
         }
 
-        if (virtualCamera == null)
+        if (player != null && virtualCamera == null)
         {
             virtualCamera = transform.GetChild(0).gameObject;
 
             var cam = virtualCamera.GetComponent<CinemachineCamera>();
-            cam.Target.TrackingTarget = FindAnyObjectByType<PlayerMovement>().GetComponent<Transform>();
+            cam.Target.TrackingTarget = player.transform;
             virtualCamera.SetActive(false);
         }
     }

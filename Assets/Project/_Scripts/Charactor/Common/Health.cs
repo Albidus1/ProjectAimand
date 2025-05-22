@@ -81,6 +81,7 @@ public class Health : MonoBehaviour
         if (m_playerMovement != null)
         {
             m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Die);
+            LevelManager.Instance.PlayerDead(m_playerMovement);
             StartCoroutine(nameof(OnRespawn));
         }
         else if (m_enemyMovement != null)
@@ -93,10 +94,9 @@ public class Health : MonoBehaviour
     {
         m_collider.enabled = false;
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
 
         InitializeCurrentHealth();
-        transform.position = m_respawner.respawnPosition.position;
         m_collider.enabled = true;
 
         if (m_playerMovement != null)

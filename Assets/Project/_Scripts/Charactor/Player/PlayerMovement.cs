@@ -151,6 +151,15 @@ public class PlayerMovement : MonoBehaviour
         isFacingRight = true;   
     }
 
+    private void OnEnable()
+    {
+        CMCameraMove camera = FindAnyObjectByType<CMCameraMove>();
+        if (camera != null )
+        {
+            camera.Initialization();
+        }
+    }
+
     private void Update()
     {
         if (doKnockback)
