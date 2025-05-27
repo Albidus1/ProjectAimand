@@ -55,8 +55,6 @@ public class Health : MonoBehaviour
 
     private void Start()
     {
-        currentHP = maxHP;
-
         InitializeCurrentHealth();
     }
 
@@ -67,7 +65,7 @@ public class Health : MonoBehaviour
 
     public void InitializeCurrentHealth()
     {
-        Debug.Log($"현재 체력: {currentHP}");
+        //Debug.Log($"현재 체력: {currentHP}");
         m_HP = maxHP;
 
         if(healthSlider != null)
