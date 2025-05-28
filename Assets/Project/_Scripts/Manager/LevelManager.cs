@@ -168,6 +168,7 @@ public class LevelManager : MySingleton<LevelManager>
 
         player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         player.name = playerPrefab.name;
+        player.movementState.StateChange(PlayerStates.MovementStates.Idle);
     }
 
     private void CheckpointAssignment()
@@ -254,17 +255,25 @@ public class LevelManager : MySingleton<LevelManager>
     public void PlayerDead(PlayerMovement _player)
     {
         if (_player != null)
-        {
+        {        
             StartCoroutine(Restart());
         }
     }
 
     private IEnumerator Restart()
     {
+        Collider2D col = player.GetComponent<Collider2D>();
+        col.enabled = false;
+
+        player.movementState.StateChange(PlayerStates.MovementStates.Die);
+
         yield return new WaitForSeconds(respawnDelay);
-       
+
+        col.enabled = true;
+
         if (currentCheckPoint != null)
         {
+            player.movementState.StateChange(PlayerStates.MovementStates.Idle);
             currentCheckPoint.SpawnPlayer(player);
         }
     }
