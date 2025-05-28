@@ -26,7 +26,7 @@ public class PlatformMagnetic : MonoBehaviour
 
     private Vector2 m_magnetForce;
     private float m_currentSpeed;
-
+    private float m_activateTime;
 
     private void Awake()
     {
@@ -39,6 +39,15 @@ public class PlatformMagnetic : MonoBehaviour
 
     private void Update()
     {
+        m_activateTime -= Time.deltaTime;
+
+        if (m_activateTime < 0 && isActive)
+        {
+            isActive = false;
+            m_magnetForce = Vector2.zero;
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+        }
+
         Gravity();
     }
 
@@ -62,8 +71,8 @@ public class PlatformMagnetic : MonoBehaviour
         {
             Health health = collision.gameObject.GetComponent<Health>();
 
-            Debug.Log($"속도1 : {Mathf.Abs(rb.linearVelocity.x)}");
-            Debug.Log($"속도2 : {m_currentSpeed}");
+            //Debug.Log($"속도1 : {Mathf.Abs(rb.linearVelocity.x)}");
+            //Debug.Log($"속도2 : {m_currentSpeed}");
 
             if (m_currentSpeed > minKillSpeed)
             {
@@ -127,19 +136,22 @@ public class PlatformMagnetic : MonoBehaviour
     public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isNPole)
     {
         isActive = _isActive;
-        rb.constraints = RigidbodyConstraints2D.None | RigidbodyConstraints2D.FreezeRotation;
-
-        float distance = _direction.magnitude;
 
         if (false == _isActive)
         {
+            m_magnetForce = Vector2.zero;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-            isActive = false;
             return;
         }
 
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        m_activateTime = 0.1f;
+
+        float distance = _direction.magnitude;
+
         bool isSamePole = (Pole == PoleType.NPole && _isNPole) ||
-                         (Pole == PoleType.SPole && !_isNPole);
+                             (Pole == PoleType.SPole && !_isNPole);
 
         if (false == isSamePole && distance < 1f)
         {

@@ -178,6 +178,13 @@ public class PlayerMovement : MonoBehaviour
                 SetGravityScale(0);
                 rb.linearVelocity = Vector2.zero;
             }
+            else
+            {
+                SetGravityScale(data.gravityScale * data.fastFallGravityMult);
+
+                rb.linearVelocity =
+                    new Vector2(0, Mathf.Max(rb.linearVelocity.y, -data.maxFastFallSpeed));
+            }
 
             return;
         }
@@ -1082,7 +1089,7 @@ public class PlayerMovement : MonoBehaviour
     {
 #if UNITY_EDITOR
         BoxCollider2D col = GetComponent<BoxCollider2D>();
-        Vector2 size = new Vector2 (col.size.x, col.size.y * 1.2f);
+        Vector2 size = new Vector2 (col.size.x, col.size.y);
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position, size);

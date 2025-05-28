@@ -55,8 +55,6 @@ public class Health : MonoBehaviour
 
     private void Start()
     {
-        currentHP = maxHP;
-
         InitializeCurrentHealth();
     }
 
@@ -67,7 +65,7 @@ public class Health : MonoBehaviour
 
     public void InitializeCurrentHealth()
     {
-        Debug.Log($"현재 체력: {currentHP}");
+        //Debug.Log($"현재 체력: {currentHP}");
         m_HP = maxHP;
 
         if(healthSlider != null)
@@ -80,29 +78,13 @@ public class Health : MonoBehaviour
     {
         if (m_playerMovement != null)
         {
-            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Die);
             LevelManager.Instance.PlayerDead(m_playerMovement);
-            StartCoroutine(nameof(OnRespawn));
+            InitializeCurrentHealth();
         }
         else if (m_enemyMovement != null)
         {
             StartCoroutine(nameof(OnDeath));
         }       
-    }
-
-    private IEnumerator OnRespawn()
-    {
-        m_collider.enabled = false;
-
-        yield return new WaitForSeconds(1f);
-
-        InitializeCurrentHealth();
-        m_collider.enabled = true;
-
-        if (m_playerMovement != null)
-        {
-            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Idle);
-        }
     }
 
     private IEnumerator OnDeath()

@@ -81,6 +81,7 @@ public class MagneticAbility : ConeOfVision2D
 
         if (lastPressedAbilityInputTime > 0)
         {
+            ScanForTargets();
             PullMagnet();
         }
         if (lastPressedAbilityInputTime < 0 && base.visibleTargets.Count > 0)
@@ -100,7 +101,6 @@ public class MagneticAbility : ConeOfVision2D
     {
         isScanning = _trigger;
 
-        base.shouldScanForTargets = _trigger;
         base.shouldDrawMesh = _trigger;
         base.visionMeshFilter.gameObject.SetActive(_trigger);
     }
@@ -117,9 +117,17 @@ public class MagneticAbility : ConeOfVision2D
         }
     }
 
-    void UpdateColor()
+    private void UpdateColor()
     {
         spriteRenderer.color = isNorthPole ? Color.blue : Color.red;
+    }
+
+    protected override void ScanForTargets()
+    {
+        if ((Time.time - base.lastScanTime > base.scanFrequencyInSeconds))
+        {
+            base.ScanForTargets();
+        }
     }
 
     void PullMagnet()
@@ -134,7 +142,7 @@ public class MagneticAbility : ConeOfVision2D
             Vector2 direction = col.transform.position - transform.position;
             float distance = Vector2.Distance(col.transform.position, transform.position);
 
-            if (distance < 0.75f || distance > base.visionRadius || false == isScanning)
+            if (distance > base.visionRadius || false == isScanning)
             {
                 pole.MagneticActivate(false, Vector3.zero, 0, isNorthPole);
                 return;
