@@ -139,24 +139,23 @@ public class MagneticAbility : ConeOfVision2D
             if (pole == null)
                 continue;
 
-            Vector2 direction = col.transform.position - transform.position;
             float distance = Vector2.Distance(col.transform.position, transform.position);
 
             if (distance > base.visionRadius || false == isScanning)
             {
                 pole.MagneticActivate(false, Vector3.zero, 0, isNorthPole);
-                return;
+                continue;
             }
-            
-            float normalizedDistance = Mathf.Clamp01(distance / base.visionRadius);
-            float t = 1 - normalizedDistance;
-            float easedForce = (isNorthPole != (pole.Pole == PlatformMagnetic.PoleType.NPole)) ?
-                                            DOVirtual.EasedValue(0, pullForce, Mathf.Max(t, minAdjust), easeType) :
-                                            DOVirtual.EasedValue(pullForce, 0, Mathf.Max(t, minAdjust), easeType);
+
+            Vector2 direction = (col.transform.position - transform.position).normalized;
+
+            float t = 1f - Mathf.Clamp01(distance / base.visionRadius);
+            float rawForce = DOVirtual.EasedValue(0, pullForce, t, easeType);
+            float easedForce = Mathf.Max(rawForce, 1);
 
             Debug.DrawRay(transform.position, easedForce * Vector2.up, Color.red);
 
-            pole.MagneticActivate(true, direction.normalized, easedForce, isNorthPole);
+            pole.MagneticActivate(true, direction, easedForce, isNorthPole);
         }
     }
 }
