@@ -105,10 +105,13 @@ public class PlatformMagnetic : MonoBehaviour
 
     public void Move(Vector2 _force)
     {
-        float targetSpeed = Mathf.Lerp(rb.linearVelocity.x, _force.magnitude, 1);
-        float movement = targetSpeed - rb.linearVelocity.x;
+        rb.AddForce(_force);
 
-        rb.AddForce(movement * _force.normalized);
+        //float targetSpeed = Mathf.Lerp(rb.linearVelocity.x, _force.magnitude, 1);
+        //float movement = targetSpeed - rb.linearVelocity.x;
+
+        //rb.AddForce(movement * _force.normalized);
+
         //transform.Translate(_force * Time.deltaTime);
 
         //float f = _force.x > 0 ? _force.magnitude : -_force.magnitude;
@@ -162,6 +165,8 @@ public class PlatformMagnetic : MonoBehaviour
             _pullForce = Mathf.Clamp(_pullForce, -forceLimit, forceLimit);
             m_magnetForce = isSamePole ? _direction * -_pullForce : _direction * _pullForce;
         }
+
+        Debug.DrawRay(transform.position, _pullForce * Vector2.up, Color.cyan);
     }
 
     #region GENERAL METHODS
