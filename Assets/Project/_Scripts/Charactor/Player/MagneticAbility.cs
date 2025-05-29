@@ -153,7 +153,7 @@ public class MagneticAbility : ConeOfVision2D
             float rawForce = DOVirtual.EasedValue(0, pullForce, t, easeType);
             float easedForce = Mathf.Max(rawForce, 1);
 
-            Debug.DrawRay(transform.position, easedForce * Vector2.up, Color.red);
+            //Debug.DrawRay(transform.position, easedForce * Vector2.up, Color.red);
 
             pole.MagneticActivate(true, direction, easedForce, isNorthPole);
         }
