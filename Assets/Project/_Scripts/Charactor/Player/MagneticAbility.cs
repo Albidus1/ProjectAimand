@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 using DG.Tweening;
+using System.Xml.Xsl;
 
 public class MagneticAbility : ConeOfVision2D
 {
@@ -22,7 +23,8 @@ public class MagneticAbility : ConeOfVision2D
     private float lastPressedAbilityInputTime;
 
     private bool isNorthPole = true; //플레이어 극성 (true: N극, false: S극)
-
+    private float m_halfXSize;
+    private Vector2 m_playerFrontPosition;
 
     [MyReadOnly]
     public Vector3 abilityDirection
@@ -48,6 +50,7 @@ public class MagneticAbility : ConeOfVision2D
 
         playerController = GetComponent<PlayerMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        m_halfXSize = spriteRenderer.size.x * 0.5f;
 
         UpdateColor();
     }
@@ -110,10 +113,12 @@ public class MagneticAbility : ConeOfVision2D
         if (transform.localScale.x > 0)
         {
             abilityDirection = Vector3.right;
+            m_playerFrontPosition = new Vector2(transform.position.x + m_halfXSize, transform.position.y);
         }
         else
         {
             abilityDirection = Vector3.left;
+            m_playerFrontPosition = new Vector2(transform.position.x - m_halfXSize, transform.position.y);
         }
     }
 
@@ -140,14 +145,19 @@ public class MagneticAbility : ConeOfVision2D
                 continue;
 
             float distance = Vector2.Distance(col.transform.position, transform.position);
-
+            
             if (distance > base.visionRadius || false == isScanning)
             {
                 pole.MagneticActivate(false, Vector3.zero, 0, isNorthPole);
                 continue;
             }
 
-            Vector2 direction = (col.transform.position - transform.position).normalized;
+            bool isSamePole = ((pole.Pole == PlatformMagnetic.PoleType.NPole) && isNorthPole) ||
+                                    ((pole.Pole == PlatformMagnetic.PoleType.SPole) && !isNorthPole);
+
+            Vector2 direction = isSamePole ? 
+                (m_playerFrontPosition - (Vector2)col.transform.position).normalized : 
+                ((Vector2)col.transform.position - m_playerFrontPosition).normalized;
 
             float t = 1f - Mathf.Clamp01(distance / base.visionRadius);
             float rawForce = DOVirtual.EasedValue(0, pullForce, t, easeType);
@@ -155,7 +165,7 @@ public class MagneticAbility : ConeOfVision2D
 
             //Debug.DrawRay(transform.position, easedForce * Vector2.up, Color.red);
 
-            pole.MagneticActivate(true, direction, easedForce, isNorthPole);
+            pole.MagneticActivate(true, direction, easedForce, isSamePole);
         }
     }
 }

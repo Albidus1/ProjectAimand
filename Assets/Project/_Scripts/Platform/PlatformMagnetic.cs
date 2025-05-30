@@ -9,19 +9,20 @@ public class PlatformMagnetic : MonoBehaviour
     public PoleType Pole;
     public bool isActive { get; set; }
 
-    [Header("중력")]
-    public float gravityScale = 1;
+    //[Header("중력")]
+    private float gravityScale = 1;
     private float gravityStrength = 0;
 
     [Header("힘")]
     public float minKillSpeed = 5f;
-    public float forceLimit = 5f;
+    [Range(0f, 2f)]
+    public float forceLimit = 1f;
     //public float acceleration = 1.5f;
     //public float decceleration = 3f;
 
 
-    private PlayerMovement playerData;
-    [HideInInspector] public Rigidbody2D rb;
+    private Rigidbody2D rb;
+    private Collider2D col;
     private SpriteRenderer spriteRenderer;
 
     private Vector2 m_magnetForce;
@@ -30,9 +31,9 @@ public class PlatformMagnetic : MonoBehaviour
 
     private void Awake()
     {
-        playerData = FindAnyObjectByType<PlayerMovement>();
         rb = GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+        col = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = Pole == PoleType.NPole ? Color.red : Color.blue; // 🔴 N극 = 빨강, 🔵 S극 = 파랑
     }
@@ -105,7 +106,7 @@ public class PlatformMagnetic : MonoBehaviour
 
     public void Move(Vector2 _force)
     {
-        rb.AddForce(_force);
+        rb.AddForce(_force, ForceMode2D.Force);
 
         //float targetSpeed = Mathf.Lerp(rb.linearVelocity.x, _force.magnitude, 1);
         //float movement = targetSpeed - rb.linearVelocity.x;
@@ -136,7 +137,7 @@ public class PlatformMagnetic : MonoBehaviour
         ////transform.Translate(new Vector2((rb.linearVelocity.x + movement) * Time.deltaTime, 0));
     }
 
-    public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isNPole)
+    public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isSamePole)
     {
         isActive = _isActive;
 
@@ -153,20 +154,16 @@ public class PlatformMagnetic : MonoBehaviour
 
         float distance = _direction.magnitude;
 
-        bool isSamePole = (Pole == PoleType.NPole && _isNPole) ||
-                             (Pole == PoleType.SPole && !_isNPole);
+        m_magnetForce = _direction * _pullForce * forceLimit;
 
-        if (false == isSamePole && distance < 1f)
+        if (_isSamePole)
         {
-            m_magnetForce = Vector2.zero;
+            Debug.DrawRay(transform.position, _pullForce * Vector2.up, Color.cyan);
         }
         else
         {
-            _pullForce = Mathf.Clamp(_pullForce, -forceLimit, forceLimit);
-            m_magnetForce = isSamePole ? _direction * -_pullForce : _direction * _pullForce;
+            Debug.DrawRay(transform.position, _pullForce * Vector2.down, Color.magenta);
         }
-
-        Debug.DrawRay(transform.position, _pullForce * Vector2.up, Color.cyan);
     }
 
     #region GENERAL METHODS
