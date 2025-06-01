@@ -4,8 +4,16 @@ using UnityEngine;
 
 public class PlatformMagnetic : MonoBehaviour
 {
+    public enum BoxSize
+    {
+        m1x1, m2x1, m3x1,
+        m1x2, m2x2, m3x2,
+        m1x3, m2x3, m3x3
+    }
     public enum PoleType { NPole, SPole }
-    [Header("극성")]
+
+    [Header("자력블록")]
+    public BoxSize boxSize = BoxSize.m2x2;
     public PoleType Pole;
     public bool isActive { get; set; }
 
@@ -42,11 +50,13 @@ public class PlatformMagnetic : MonoBehaviour
     {
         m_activateTime -= Time.deltaTime;
 
-        if (m_activateTime < 0 && isActive)
+        if (m_activateTime < 0)
         {
-            isActive = false;
+            rb.linearVelocity = Vector2.zero;
             m_magnetForce = Vector2.zero;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+
+            isActive = false;
         }
 
         Gravity();
@@ -143,6 +153,7 @@ public class PlatformMagnetic : MonoBehaviour
 
         if (false == _isActive)
         {
+            rb.linearVelocity = Vector2.zero;
             m_magnetForce = Vector2.zero;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
             return;
