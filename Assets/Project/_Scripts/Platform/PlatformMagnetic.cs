@@ -50,7 +50,7 @@ public class PlatformMagnetic : MonoBehaviour
     {
         m_activateTime -= Time.deltaTime;
 
-        if (m_activateTime < 0)
+        if (m_activateTime < 0 && isActive)
         {
             rb.linearVelocity = Vector2.zero;
             m_magnetForce = Vector2.zero;
@@ -87,7 +87,7 @@ public class PlatformMagnetic : MonoBehaviour
 
             if (m_currentSpeed > minKillSpeed)
             {
-                health.currentHP -= 10;
+                health.Kill();
             }
         }
 

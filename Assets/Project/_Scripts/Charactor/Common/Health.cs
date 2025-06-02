@@ -74,7 +74,7 @@ public class Health : MonoBehaviour
         }
     }
 
-    private void Kill()
+    public void Kill()
     {
         if (m_playerMovement != null)
         {
