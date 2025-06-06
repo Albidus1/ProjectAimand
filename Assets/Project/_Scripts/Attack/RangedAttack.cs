@@ -3,9 +3,9 @@ using UnityEngine;
 public class RangedAttack : MonoBehaviour
 {
     [Header("원거리 공격 설정")]
-    public GameObject projectilePrefab;
-    public float chargeTime = 2f;
-    public Transform firePoint;
+    public GameObject projectilePrefab; // 발사할 총알 프리팹
+    public float chargeTime = 2f; // 공격이 발사되기 위한 최소 차징 시간
+    public Transform firePoint; // 총알이 생성되느 ㄴ위치
 
     private float currentCharge = 0f;
     private bool isCharging = false;

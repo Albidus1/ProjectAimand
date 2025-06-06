@@ -532,10 +532,10 @@ PrefabInstance:
       addedObject: {fileID: 1653455907}
     - targetCorrespondingSourceObject: {fileID: 1636643584472994324, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1653455914}
+      addedObject: {fileID: 1653455921}
     - targetCorrespondingSourceObject: {fileID: 1636643584472994324, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1653455921}
+      addedObject: {fileID: 1653455927}
   m_SourcePrefab: {fileID: 100100000, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
 --- !u!1 &1104497394
 GameObject:
@@ -961,23 +961,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 100
   healthSlider: {fileID: 0}
---- !u!114 &1653455914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1653455900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e22b522061c5a604abf0c83a6f9f7db9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewAngle: 90
-  viewRadius: 5
-  resolution: 30
-  damage: 20
-  attackInterval: 0.5
 --- !u!4 &1653455920 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2606449219221306203, guid: b735a7c46546a94488283cec8c7327f2, type: 3}
@@ -998,6 +981,23 @@ MonoBehaviour:
   projectilePrefab: {fileID: 8047954322326610999, guid: 8fea0695c920a2248a6d52fb36de876f, type: 3}
   chargeTime: 2
   firePoint: {fileID: 876384077}
+--- !u!114 &1653455927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653455900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e22b522061c5a604abf0c83a6f9f7db9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAngle: 90
+  viewRadius: 100
+  resolution: 30
+  damage: 20
+  attackInterval: 0.5
 --- !u!1 &1870055254 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1862029570782637524, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}

@@ -3,14 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class FieldOfViewMesh2D : MonoBehaviour
 {
-    [Header("FOV Settings")]
-    [Range(1f, 360f)] public float viewAngle = 90f;
-    public float viewRadius = 5f;
-    public int resolution = 30;
-
-    private Mesh mesh;
-    private Vector3[] vertices;
-    private int[] triangles;
+    private Mesh mesh; // 부채꼴 Mesh
+    private Vector3[] vertices; // 정점 배열
+    private int[] triangles; // 삼각형 인덱스 배열
 
     void Start()
     {
@@ -19,35 +14,31 @@ public class FieldOfViewMesh2D : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
     }
 
-    void Update()
+    /// <summary>
+    /// 부채꼴을 그리는 함수
+    /// </summary>
+    /// <param name="radius">반지름</param>
+    /// <param name="angle">각도</param>
+    /// <param name="resolution">삼각형 수</param>
+    public void DrawFOV(float radius, float angle, int resolution)
     {
-        if (Input.GetKey(KeyCode.A))
-        {
-            DrawFOV();
-        }
-        else
-        {
-            mesh.Clear();
-        }
-    }
+        if (resolution < 1) return;
 
-    public void DrawFOV()
-    {
-        vertices = new Vector3[resolution + 2];
-        triangles = new int[resolution * 3];
+        vertices = new Vector3[resolution + 2]; // 중심점 + 외곽 정점들
+        triangles = new int[resolution * 3];    // 삼각형 개수 * 3 (정점 인덱스)
 
-        vertices[0] = Vector3.zero;
+        vertices[0] = Vector3.zero; // 중심점
 
-        float angleStep = viewAngle / resolution;
-        float startAngle = -viewAngle / 2f;
+        float angleStep = angle / resolution;
+        float startAngle = -angle / 2f;
 
         for (int i = 0; i <= resolution; i++)
         {
-            float angle = startAngle + i * angleStep;
-            float rad = Mathf.Deg2Rad * angle;
+            float currentAngle = startAngle + i * angleStep;
+            float rad = Mathf.Deg2Rad * currentAngle;
 
             Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-            vertices[i + 1] = dir * viewRadius;
+            vertices[i + 1] = dir * radius;
         }
 
         for (int i = 0; i < resolution; i++)
@@ -62,6 +53,10 @@ public class FieldOfViewMesh2D : MonoBehaviour
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
     }
+
+    /// <summary>
+    /// 메쉬 초기화
+    /// </summary>
     public void ClearMesh()
     {
         if (mesh != null)

@@ -2,13 +2,12 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 10f;
-    public int damage = 10;
-    public float maxLifeTime = 5f;
+    public float speed = 10f; // 총알 이동 속도
+    public int damage = 10; 
+    public float maxLifeTime = 5f; // 총알 자동 삭제 시간
 
     private Vector3 moveDirection; // 이동 방향
 
-    // 방향 설정 함수
     public void SetDirection(Vector3 dir)
     {
         moveDirection = dir.normalized;
