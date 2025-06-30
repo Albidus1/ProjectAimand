@@ -10,6 +10,8 @@ public class CMCameraMove : MonoBehaviour
     [SerializeField] private CinemachineBrain cmBrain;
 
     private bool isSwitching;
+    private CinemachineConfiner2D m_confiner;
+
 
     private void Start()
     {
@@ -42,7 +44,8 @@ public class CMCameraMove : MonoBehaviour
     {
         if (collision.CompareTag("Player") && !collision.isTrigger && false == isSwitching)
         {
-            StartCoroutine(nameof(SwitchCamera), true);
+            //StartCoroutine(nameof(SwitchCamera), true);
+            m_confiner.BoundingShape2D = GetComponent<BoxCollider2D>();
         }
     }
 
@@ -50,7 +53,7 @@ public class CMCameraMove : MonoBehaviour
     {
         if (collision.CompareTag("Player") && !collision.isTrigger && false == isSwitching)
         {
-            StartCoroutine(nameof(SwitchCamera), false);
+            //StartCoroutine(nameof(SwitchCamera), false);
         }
     }
 
@@ -91,18 +94,17 @@ public class CMCameraMove : MonoBehaviour
         Time.timeScale = 1;
 
         isSwitching = false;
-
-        yield break;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-#if UNITY_EDITOR
-        Collider2D collision = GetComponent<Collider2D>();
-        Vector3 pos = collision.bounds.center;
+        //Collider2D collision = GetComponent<Collider2D>();
+        //Vector3 pos = collision.bounds.center;
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(pos, collision.bounds.size);
-#endif
+        //Gizmos.color = Color.yellow;
+        //Gizmos.DrawWireCube(pos, collision.bounds.size);
+
     }
+#endif
 }

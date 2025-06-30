@@ -125,7 +125,10 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask platform;
     public LayerMask movingPlatform;
     public LayerMask onewayPlatform;
+    public LayerMask magnetPlatform;
+
     [SerializeField] private LayerMask groundLayer;
+    [MyReadOnly] public LayerMask m_currentPlatform;
 
     [Header("이벤트")]
     public bool SendStateChangeEvents = true;
@@ -142,6 +145,7 @@ public class PlayerMovement : MonoBehaviour
         //groundLayer |= platform;
         //groundLayer |= movingPlatform;
         //groundLayer |= onewayPlatform;
+        //groundLayer |= magnetPlatform;
     }
 
     private void Start()
@@ -187,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             return;
-        }
+        }    
 
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
@@ -718,7 +722,7 @@ public class PlayerMovement : MonoBehaviour
     #region JUMP METHODS
     public void Jump(float _force, Vector2 _dir = default)
     {
-        //Debug.Log("점프");
+        Debug.Log("점프");
       
         lastPressedJumpTime = 0;
         lastOnGroundTime = 0;
