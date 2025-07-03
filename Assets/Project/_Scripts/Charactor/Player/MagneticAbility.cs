@@ -12,7 +12,7 @@ public class MagneticAbility : ConeOfVision2D
     private bool previousFacingDirection = true;
     private bool isScanning = false;
 
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
 
     [Header("자력 능력")]
     public float pullForce = 20f; //기본 자력 세기
@@ -49,7 +49,6 @@ public class MagneticAbility : ConeOfVision2D
         OnOff(isScanning);
 
         playerController = GetComponent<PlayerMovement>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         m_halfXSize = spriteRenderer.size.x * 0.5f;
 
         UpdateColor();
