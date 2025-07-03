@@ -5,12 +5,15 @@ using UnityEngine;
 public class CMCameraMove : MonoBehaviour
 {
     [SerializeField] private PlayerMovement player;
+    public GameObject cameraTarget;
 
     [SerializeField] private GameObject virtualCamera;
     [SerializeField] private CinemachineBrain cmBrain;
+    private CinemachineCamera m_cinemachineCamera;
+    private CinemachineConfiner2D m_confiner;
 
     private bool isSwitching;
-    private CinemachineConfiner2D m_confiner;
+
 
 
     private void Start()
@@ -25,18 +28,15 @@ public class CMCameraMove : MonoBehaviour
             player = FindAnyObjectByType<PlayerMovement>();
         }
 
+        if (m_cinemachineCamera == null)
+        {
+            m_cinemachineCamera = GetComponent<CinemachineCamera>();
+            m_cinemachineCamera.Target.TrackingTarget = cameraTarget != null ? cameraTarget.transform : player.transform;
+        }
+
         if (cmBrain == null)
         {
             cmBrain = FindAnyObjectByType<CinemachineBrain>();
-        }
-
-        if (player != null && virtualCamera == null)
-        {
-            virtualCamera = transform.GetChild(0).gameObject;
-
-            var cam = virtualCamera.GetComponent<CinemachineCamera>();
-            cam.Target.TrackingTarget = player.transform;
-            virtualCamera.SetActive(false);
         }
     }
 
