@@ -44,8 +44,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isControlSleep { get; private set; }
     public bool ApplyGravityOnDeath;
 
-
-
     // 이동 플랫폼
     public Transform platformTransform { get; set; }
     public Vector3 lastPlatformPosition { get; set; }
@@ -143,7 +141,6 @@ public class PlayerMovement : MonoBehaviour
         //groundLayer |= movingPlatform;
         //groundLayer |= onewayPlatform;
     }
-
     private void Start()
     {
         SetGravityScale(data.gravityScale);

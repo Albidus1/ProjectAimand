@@ -3,42 +3,37 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class FieldOfViewMesh2D : MonoBehaviour
 {
-    private Mesh mesh; // 부채꼴 Mesh
-    private Vector3[] vertices; // 정점 배열
-    private int[] triangles; // 삼각형 인덱스 배열
+    private Mesh mesh;
 
-    void Start()
+    void Awake()
     {
         mesh = new Mesh();
         mesh.name = "FOV Mesh";
         GetComponent<MeshFilter>().mesh = mesh;
     }
 
-    /// <summary>
-    /// 부채꼴을 그리는 함수
-    /// </summary>
-    /// <param name="radius">반지름</param>
-    /// <param name="angle">각도</param>
-    /// <param name="resolution">삼각형 수</param>
-    public void DrawFOV(float radius, float angle, int resolution)
+    public void DrawFOV(float radius, float angle, int resolution, Vector2 direction)
     {
-        if (resolution < 1) return;
+        direction.Normalize();
 
-        vertices = new Vector3[resolution + 2]; // 중심점 + 외곽 정점들
-        triangles = new int[resolution * 3];    // 삼각형 개수 * 3 (정점 인덱스)
+        Vector3[] vertices = new Vector3[resolution + 2];
+        int[] triangles = new int[resolution * 3];
 
-        vertices[0] = Vector3.zero; // 중심점
+        vertices[0] = Vector3.zero;
 
+        float halfAngle = angle / 2f;
         float angleStep = angle / resolution;
-        float startAngle = -angle / 2f;
+
+        Vector3 baseDir = Vector3.right;
+        float baseAngle = Vector2.SignedAngle(Vector2.right, direction); // 기준 방향 회전량
 
         for (int i = 0; i <= resolution; i++)
         {
-            float currentAngle = startAngle + i * angleStep;
-            float rad = Mathf.Deg2Rad * currentAngle;
+            float currentAngle = -halfAngle + i * angleStep;
+            float totalAngle = baseAngle + currentAngle;
 
-            Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-            vertices[i + 1] = dir * radius;
+            Vector3 rotatedDir = Quaternion.Euler(0, 0, totalAngle) * baseDir;
+            vertices[i + 1] = rotatedDir.normalized * radius;
         }
 
         for (int i = 0; i < resolution; i++)
@@ -54,14 +49,10 @@ public class FieldOfViewMesh2D : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    /// <summary>
-    /// 메쉬 초기화
-    /// </summary>
+
+
     public void ClearMesh()
     {
-        if (mesh != null)
-        {
-            mesh.Clear();
-        }
+        mesh.Clear();
     }
 }

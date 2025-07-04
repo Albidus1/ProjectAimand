@@ -19,7 +19,7 @@ public class RangedAttack : MonoBehaviour
 
             isCharging = true;
             currentCharge += Time.deltaTime;
-            Debug.Log($"차징 중... {currentCharge:F2}s");
+            //Debug.Log($"차징 중... {currentCharge:F2}s");
         }
 
         if (Input.GetKeyUp(KeyCode.A))

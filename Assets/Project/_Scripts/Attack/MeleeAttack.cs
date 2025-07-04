@@ -1,70 +1,110 @@
 using UnityEngine;
+using static PlayerStates;
+using System.Collections;
 
 public class MeleeAttack : MonoBehaviour
 {
     [Header("공격 범위 설정")]
-    [Range(1f, 360f)] public float viewAngle = 90f;     // 부채꼴 각도
-    public float viewRadius = 5f;                        // 부채꼴 반지름
-    public int resolution = 30;                          // 부채꼴 세분화 정도
-    public int damage = 20;                              // 데미지량
+    [Range(1f, 360f)] public float viewAngle = 90f;
+    public float viewRadius = 5f;
+    public int resolution = 30;
+    public int damage = 20;
 
-    public float attackInterval = 0.5f;                  // 공격 주기
-    private float lastAttackTime = 0f;                   // 마지막 공격 시간
+    public float attackInterval = 0.5f;
+    private float lastAttackTime = 0f;
 
-    private GameObject fovMeshObject;                    // 부채꼴 시각화 오브젝트
-    private FieldOfViewMesh2D fovScript;                 // 부채꼴 메쉬 그리는 스크립트
+    private GameObject fovMeshObject;
+    private FieldOfViewMesh2D fovScript;
+
+    private PlayerMovement playerMovement;
+
+    [Header("하강 공격 설정")]
+    public float downwardAttackDamage = 10f;
+    public float downwardAttackSpeed = -15f;
+    public float maxFallSpeed = -40f;
+    private bool downwardAttacking = false;
+
+    [SerializeField] private float invincibleDurationAfterHit = 0.2f;
+    private Health playerHealth;
 
     void Start()
     {
-        // 부채꼴 시각화용 오브젝트 생성 및 설정
         fovMeshObject = new GameObject("FOV_Mesh");
         fovMeshObject.transform.SetParent(transform);
         fovMeshObject.transform.localPosition = new Vector3(0, 0, -0.1f);
 
-        // MeshRenderer 및 Filter 구성
         var mf = fovMeshObject.AddComponent<MeshFilter>();
         var mr = fovMeshObject.AddComponent<MeshRenderer>();
         fovScript = fovMeshObject.AddComponent<FieldOfViewMesh2D>();
 
-        // 머티리얼 설정 (반투명 빨강)
         Material mat = new Material(Shader.Find("Sprites/Default"));
         mat.color = new Color(1f, 0f, 0f, 0.3f);
         mr.material = mat;
 
-        // SpriteRenderer 뒤에 렌더링되도록 정렬
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         mr.sortingOrder = sr != null ? sr.sortingOrder - 1 : -10;
+
+        playerMovement = GetComponent<PlayerMovement>();
+        playerHealth = GetComponentInParent<Health>();
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.A))
-        {
-            // 실시간으로 반지름, 각도, 해상도 전달
-            fovScript.DrawFOV(viewRadius, viewAngle, resolution);
+        MovementStates playerState = GetPlayerMovementState();
 
-            // 공격 쿨타임 체크
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (playerState == MovementStates.Jumping)
+            {
+                PerformUpwardAttack();
+                Debug.Log("점프 중 위쪽 타격");
+                return;
+            }
+
+            if (playerState == MovementStates.Falling)
+            {
+                PerformDownwardAttack();
+                Debug.Log("낙하 공격 실행");
+                return;
+            }
+
+            // 지상 근거리 공격
+            Vector2 attackDir = transform.localScale.x > 0 ? Vector2.right : Vector2.right;
+            fovScript.DrawFOV(viewRadius, viewAngle, resolution, attackDir);
+            fovMeshObject.transform.position = transform.position;
+
             if (Time.time >= lastAttackTime + attackInterval)
             {
                 DetectAndDamageEnemies();
-                Debug.Log("근거리 공격 완료");
+                Debug.Log("지상 근거리 공격 완료");
                 lastAttackTime = Time.time;
             }
         }
         else if (Input.GetKeyUp(KeyCode.A))
         {
-            // 키에서 손 뗐을 때 Mesh 숨기기
             fovScript.ClearMesh();
         }
     }
 
+    // PlayerMovement 스크립트에 점프와 떨어지는 스테이트가 구현이 안되어 있어서 임시 조치 함수
+    private MovementStates GetPlayerMovementState()
+    {
+        if (playerMovement == null) throw new System.Exception("PlayerMovement 스크립트가 없습니다.");
+        float verticalSpeed = playerMovement.rb.linearVelocity.y;
 
-    // 범위 내 적을 감지하고 데미지를 주는 함수
-    void DetectAndDamageEnemies()
+        MovementStates tempState = verticalSpeed switch
+        {
+            > 0.1f => MovementStates.Jumping,
+            < -0.1f => MovementStates.Falling,
+            _ => MovementStates.Idle
+        };
+
+        return tempState;
+    }
+
+    private void DetectAndDamageEnemies()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, viewRadius);
-
-        // 여기서 실제 바라보는 방향을 계산
         Vector3 facingDirection = transform.localScale.x > 0 ? Vector3.right : Vector3.left;
 
         foreach (Collider2D hit in hits)
@@ -72,17 +112,13 @@ public class MeleeAttack : MonoBehaviour
             if (hit.CompareTag("Enemy"))
             {
                 Vector3 dirToTarget = (hit.transform.position - transform.position).normalized;
-                float angleToTarget = Vector3.Angle(facingDirection, dirToTarget); // ← 수정된 부분
+                float angleToTarget = Vector3.Angle(facingDirection, dirToTarget);
 
                 if (angleToTarget < viewAngle / 2f)
                 {
                     Debug.DrawLine(transform.position, hit.transform.position, Color.blue, 0.5f);
-
-                    Enemy enemy = hit.GetComponent<Enemy>();
-                    if (enemy != null)
-                    {
-                        enemy.TakeDamage(damage);
-                    }
+                    Health enemyHealth = hit.GetComponent<Health>();
+                    if (enemyHealth != null) enemyHealth.currentHP -= damage;
                 }
                 else
                 {
@@ -90,5 +126,105 @@ public class MeleeAttack : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void PerformUpwardAttack()
+    {
+        float attackRange = 2f;
+        float attackAngle = 60f;
+        Vector2 origin = (Vector2)transform.position + Vector2.up * 1.0f;
+        Vector2 attackDirection = Vector2.up;
+
+        fovScript.DrawFOV(attackRange, attackAngle, resolution, attackDirection);
+        fovMeshObject.transform.position = transform.position + Vector3.up * 1.0f;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(origin, attackRange);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                Vector2 toTarget = ((Vector2)hit.transform.position - origin).normalized;
+                float dot = Vector2.Dot(attackDirection, toTarget);
+                float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+
+                if (angle <= attackAngle / 2f)
+                {
+                    Health enemyHealth = hit.GetComponent<Health>();
+                    if (enemyHealth != null)
+                    {
+                        enemyHealth.currentHP -= damage;
+                        Debug.DrawLine(origin, hit.transform.position, Color.red, 0.5f);
+                        Debug.Log("위쪽 적에게 공격 성공!");
+                    }
+                }
+                else
+                {
+                    Debug.DrawLine(origin, hit.transform.position, Color.gray, 0.5f);
+                }
+            }
+        }
+    }
+
+    private void PerformDownwardAttack()
+    {
+        if (downwardAttacking) return;
+
+        Debug.Log("낙하 공격 시작");
+
+        downwardAttacking = true;
+        StartCoroutine(CheckAfterPerformDownardAttack());
+
+        Vector2 currentVelocity = playerMovement.rb.linearVelocity;
+        float boostedFallSpeed = currentVelocity.y + downwardAttackSpeed;
+        boostedFallSpeed = Mathf.Max(boostedFallSpeed, maxFallSpeed);
+        playerMovement.rb.linearVelocity = new Vector2(currentVelocity.x, boostedFallSpeed);
+
+        if (playerHealth != null)
+        {
+            playerHealth.invincible = true;
+            Debug.Log("낙하 공격 중 무적 활성화");
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            Health enemyHealth = other.GetComponent<Health>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.currentHP -= downwardAttackDamage; // 몬스터는 데미지 받음
+
+                // 하강 공격시 무적 상태 {invincibleDurationAfterHit}초 후 풀리게
+                if (downwardAttacking) {
+                    if (playerHealth != null && playerHealth.invincible)
+                    {
+                        Debug.Log("적과 부딪힘 → 무적 해제 시작");
+                        StartCoroutine(DisableInvincibilityAfterDelay());
+                    }
+                }
+            }
+        }
+    }
+
+    // 하강 공격 후 지면에 닿았는지 체크용
+    private IEnumerator CheckAfterPerformDownardAttack()
+    {
+        while (true)
+        {
+            if (playerMovement.lastOnGroundTime > 0 && GetPlayerMovementState() == MovementStates.Idle)
+                break;
+            yield return null;
+        }
+
+        playerHealth.invincible = false;
+        downwardAttacking = false;
+    }
+
+    private IEnumerator DisableInvincibilityAfterDelay()
+    {
+        yield return new WaitForSeconds(invincibleDurationAfterHit);
+        playerHealth.invincible = false;
+
+        Debug.Log("무적 해제 및 점프 상태 초기화됨");
     }
 }
