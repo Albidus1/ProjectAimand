@@ -187,23 +187,27 @@ public class MeleeAttack : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if(downwardAttacking == true)
         {
-            Health enemyHealth = other.GetComponent<Health>();
-            if (enemyHealth != null)
+            if (other.CompareTag("Enemy"))
             {
-                enemyHealth.currentHP -= downwardAttackDamage; // 몬스터는 데미지 받음
-
-                // 하강 공격시 무적 상태 {invincibleDurationAfterHit}초 후 풀리게
-                if (downwardAttacking) {
-                    if (playerHealth != null && playerHealth.invincible)
+                Health enemyHealth = other.GetComponent<Health>();
+                if (enemyHealth != null)
                     {
-                        Debug.Log("적과 부딪힘 → 무적 해제 시작");
-                        StartCoroutine(DisableInvincibilityAfterDelay());
+                        enemyHealth.currentHP -= downwardAttackDamage; // 몬스터는 데미지 받음
+
+                        // 하강 공격시 무적 상태 {invincibleDurationAfterHit}초 후 풀리게
+                        if (downwardAttacking) {
+                        if (playerHealth != null && playerHealth.invincible)
+                            {
+                                Debug.Log("적과 부딪힘 → 무적 해제 시작");
+                                StartCoroutine(DisableInvincibilityAfterDelay());
+                            }
                     }
                 }
             }
         }
+        
     }
 
     // 하강 공격 후 지면에 닿았는지 체크용
