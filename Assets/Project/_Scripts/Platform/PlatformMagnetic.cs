@@ -62,8 +62,8 @@ public class PlatformMagnetic : MonoBehaviour
         {
             Health health = collision.gameObject.GetComponent<Health>();
 
-            Debug.Log($"속도1 : {Mathf.Abs(rb.linearVelocity.x)}");
-            Debug.Log($"속도2 : {m_currentSpeed}");
+            //Debug.Log($"속도1 : {Mathf.Abs(rb.linearVelocity.x)}");
+            //Debug.Log($"속도2 : {m_currentSpeed}");
 
             if (m_currentSpeed > minKillSpeed)
             {
