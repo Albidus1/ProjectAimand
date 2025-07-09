@@ -15,6 +15,8 @@ public class MeleeAttack : MonoBehaviour
 
     private GameObject fovMeshObject;
     private FieldOfViewMesh2D fovScript;
+    [SerializeField]
+    private float fovDisplayTime = 0.5f;
 
     private PlayerMovement playerMovement;
 
@@ -26,6 +28,8 @@ public class MeleeAttack : MonoBehaviour
 
     [SerializeField] private float invincibleDurationAfterHit = 0.2f;
     private Health playerHealth;
+
+    private float pressButtonTime;
 
     void Start()
     {
@@ -54,6 +58,9 @@ public class MeleeAttack : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
+            // 버튼 누른 시각
+            pressButtonTime = Time.time;
+
             if (playerState == MovementStates.Jumping)
             {
                 PerformUpwardAttack();
@@ -83,6 +90,15 @@ public class MeleeAttack : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.A))
         {
             fovScript.ClearMesh();
+        }
+
+        // 근접 공격 범위가 활성화 되어 있을때 버튼을 누르고 있어도 일정 시간 지나면 비활성화
+        if (fovScript.IsActivating)
+        {
+            if (Time.time - pressButtonTime > fovDisplayTime)
+            {
+                fovScript.ClearMesh();
+            }
         }
     }
 
@@ -124,6 +140,7 @@ public class MeleeAttack : MonoBehaviour
                 {
                     Debug.DrawLine(transform.position, hit.transform.position, Color.gray, 0.5f);
                 }
+                return; // 공격을 1회만 하기 위한 강제 종료
             }
         }
     }
@@ -161,6 +178,7 @@ public class MeleeAttack : MonoBehaviour
                 {
                     Debug.DrawLine(origin, hit.transform.position, Color.gray, 0.5f);
                 }
+                return; // 공격을 1회만 하기 위한 강제 종료
             }
         }
     }
@@ -205,6 +223,7 @@ public class MeleeAttack : MonoBehaviour
                             }
                     }
                 }
+                return; // 공격을 1회만 하기 위한 강제 종료
             }
         }
         

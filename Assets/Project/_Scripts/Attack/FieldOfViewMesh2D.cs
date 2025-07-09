@@ -4,6 +4,8 @@ using UnityEngine;
 public class FieldOfViewMesh2D : MonoBehaviour
 {
     private Mesh mesh;
+    private bool isActivating = false;
+    public bool IsActivating => isActivating;
 
     void Awake()
     {
@@ -47,6 +49,8 @@ public class FieldOfViewMesh2D : MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
+
+        isActivating = true;
     }
 
 
@@ -54,5 +58,7 @@ public class FieldOfViewMesh2D : MonoBehaviour
     public void ClearMesh()
     {
         mesh.Clear();
+
+        isActivating = false;
     }
 }
