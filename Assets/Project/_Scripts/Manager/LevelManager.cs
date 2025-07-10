@@ -25,7 +25,7 @@ public class LevelManager : MySingleton<LevelManager>
 
 
     [Header("플레이어")]
-    public PlayerMovement playerPrefab;
+    public GameObject playerPrefab;
 
 
     [Header("체크 포인트")]
@@ -166,7 +166,7 @@ public class LevelManager : MySingleton<LevelManager>
             return;
         }
 
-        player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity).GetComponent<PlayerMovement>();
         player.name = playerPrefab.name;
         player.movementState.StateChange(PlayerStates.MovementStates.Idle);
     }

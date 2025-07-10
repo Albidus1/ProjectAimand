@@ -47,6 +47,7 @@ public class CMCameraMove : MonoBehaviour
     }
 
 
+
     private IEnumerator SwitchCamera(bool _enable)
     {
         isSwitching = true;
