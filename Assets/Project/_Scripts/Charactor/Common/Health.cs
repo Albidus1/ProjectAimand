@@ -82,11 +82,11 @@ public class Health : MonoBehaviour
         if (m_playerMovement != null)
         {
             m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Die);
-            StartCoroutine(nameof(OnRespawn));
+            StartCoroutine(OnRespawn());
         }
         else if (m_enemyMovement != null)
         {
-            StartCoroutine(nameof(OnDeath));
+            StartCoroutine(OnDeath());
         }       
     }
 
