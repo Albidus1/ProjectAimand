@@ -7,16 +7,15 @@ public class CMCameraMove : MonoBehaviour
     [SerializeField] private PlayerMovement player;
     public GameObject cameraTarget;
 
-    [SerializeField] private GameObject virtualCamera;
-    [SerializeField] private CinemachineBrain cmBrain;
-    private CinemachineCamera m_cinemachineCamera;
-    private CinemachineConfiner2D m_confiner;
+    public CinemachineBrain cmBrain;
+    public CinemachineCamera cinemachineCamera;
+    public CinemachineConfiner2D confiner;
 
     private bool isSwitching;
 
 
 
-    private void Start()
+    private void Awake()
     {
         Initialization();
     }
@@ -28,38 +27,23 @@ public class CMCameraMove : MonoBehaviour
             player = FindAnyObjectByType<PlayerMovement>();
         }
 
-        if (m_cinemachineCamera == null)
+        if (cinemachineCamera == null)
         {
-            m_cinemachineCamera = GetComponent<CinemachineCamera>();
-            m_cinemachineCamera.Target.TrackingTarget = cameraTarget != null ? cameraTarget.transform : player.transform;
+            cinemachineCamera = GetComponent<CinemachineCamera>();
+            cinemachineCamera.Target.TrackingTarget = cameraTarget != null ? cameraTarget.transform : player.transform;
         }
 
         if (cmBrain == null)
         {
             cmBrain = FindAnyObjectByType<CinemachineBrain>();
         }
-    }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player") && !collision.isTrigger && false == isSwitching)
-        {
-            //StartCoroutine(nameof(SwitchCamera), true);
-            m_confiner.BoundingShape2D = GetComponent<BoxCollider2D>();
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player") && !collision.isTrigger && false == isSwitching)
-        {
-            //StartCoroutine(nameof(SwitchCamera), false);
-        }
+        confiner = GetComponent<CinemachineConfiner2D>();
     }
 
     private void OnDisable()
     {
-        StopCoroutine(nameof(SwitchCamera));
+        
     }
 
 
@@ -74,7 +58,7 @@ public class CMCameraMove : MonoBehaviour
             player.enabled = false;
         }
 
-        virtualCamera.SetActive(_enable);
+        //virtualCamera.SetActive(_enable);
 
         float blend_time = cmBrain.ActiveBlend != null ? cmBrain.ActiveBlend.Duration : 0;
         float elapsed_time = 0;
