@@ -65,7 +65,7 @@ public class CinemachineCameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        HandleZoom();
+        //HandleZoom();
     }
 
     private void HandleZoom()
@@ -75,13 +75,14 @@ public class CinemachineCameraController : MonoBehaviour
 
     private void PerformOrthographicZoom()
     {
-        if (targetPlayer == null) 
+        if (playerMovement == null) 
             return;
 
-        float playerSpeed = 5f;
-        //float currentVelocity = Mathf.Max(playerSpeed, )
-        //float targetZoom = Remap(playerSpeed, 5f, 5f, orthographicZoom.x, orthographicZoom.y);
-        m_currentZoom = Mathf.Lerp(m_currentZoom, playerSpeed, Time.deltaTime * orthographicZoomSpeed);
+
+        float playerSpeed = Mathf.Abs(playerMovement.rb.linearVelocity.x);
+        float currentVelocity = Mathf.Max(playerSpeed, 0);
+        float targetZoom = Remap(playerSpeed, 0, 16, orthographicZoom.x, orthographicZoom.y);
+        m_currentZoom = Mathf.Lerp(m_currentZoom, targetZoom, Time.deltaTime * orthographicZoomSpeed);
         m_virtualCamera.Lens.OrthographicSize = m_currentZoom;
     }
 

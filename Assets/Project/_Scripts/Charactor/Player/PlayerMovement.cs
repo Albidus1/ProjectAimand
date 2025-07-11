@@ -272,7 +272,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region COLLISION CHECKS
-        if (false == isJumping && false == isDashing)
+        if (false == isDashing)
         {
             if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
@@ -283,7 +283,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
-                false == isWallJumping)
+                false == isJumping && false == isWallJumping)
             {
                 //Debug.Log("오른쪽 벽 확인");
                 lastOnWallRightTime = data.coyoteTime;
@@ -291,7 +291,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
-                false == isWallJumping)
+                false == isJumping && false == isWallJumping)
             {
                 //Debug.Log("왼쪽 벽 확인");
                 lastOnWallLeftTime = data.coyoteTime;
@@ -305,6 +305,11 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region JUMP CHECK
+        if (lastOnGroundTime > 0 && true == isJumping)
+        {
+            isJumping = false;
+        }
+
         if (true == isJumping && rb.linearVelocity.y < 0)
         {
             isJumping = false;
@@ -332,6 +337,13 @@ public class PlayerMovement : MonoBehaviour
         if (false == isOnMovingPlatform)
         {
             isJumpingOnMovingPlatform = false;
+        }
+
+        if (lastOnGroundTime > 0 &&
+            (true == isJumping || true == isJumpFalling))
+        {
+            isJumping = false;
+            isJumpFalling = false;
         }
 
         if (false == isDashing)
