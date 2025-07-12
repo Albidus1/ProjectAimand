@@ -23,9 +23,9 @@ public class BossAbilitySpawner : BossAbility
 
     private Collider2D m_collider2D;
 
-   
-    private List<GameObject> m_spawnedObjects = new List<GameObject>();
-    private int m_spawnedObjectCount = 3;
+
+    protected List<GameObject> m_spawnedObjects = new List<GameObject>();
+    protected int m_spawnedObjectCount = 3;
 
 
     private void Awake()
@@ -38,7 +38,6 @@ public class BossAbilitySpawner : BossAbility
         base.Start();
 
         Initialization();
-        base.isOnCooldown = true;
     }
 
     public override void Initialization()
@@ -57,12 +56,13 @@ public class BossAbilitySpawner : BossAbility
         base.isAbilityActive = true;
         base.isOnCooldown = (false == base.afterCooldown);
 
+        m_spawnedObjectCount = base.abilityActCount;
+
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
         AbilityRangeVisualizer();
         yield return new WaitForSeconds(base.fadeDuration);
         MoveObjects();
-
         yield return new WaitForSeconds(0.5f);
 
         base.isAbilityActive = false;
@@ -79,7 +79,7 @@ public class BossAbilitySpawner : BossAbility
         if (randomSpawnPoint)
         {
             posX = Random.Range(m_collider2D.bounds.min.x, m_collider2D.bounds.max.x);
-            //posY = Random.Range(m_collider2D.bounds.min.x, m_collider2D.bounds.max.y);
+            posY = Random.Range(m_collider2D.bounds.min.y, m_collider2D.bounds.max.y);
         }
 
         return new Vector2(posX, posY);
@@ -104,7 +104,9 @@ public class BossAbilitySpawner : BossAbility
 
             if (base.autoResize)
             {
-                indicator.transform.localScale = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
+                BoxCollider2D spawnObj = abilityPrefab.GetComponent<BoxCollider2D>();
+
+                indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
                 //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
             }
             else
@@ -138,9 +140,20 @@ public class BossAbilitySpawner : BossAbility
         foreach (GameObject obj in m_spawnedObjects)
         {
             obj.SetActive(true);
-            obj.transform.DOMove((Vector2)obj.transform.position + direction, moveSpeed)
-                .SetEase(moveEase)
-                .OnComplete(() => Object.Destroy(obj));
+
+            if (direction != Vector2.zero)
+            {
+                obj.transform.DOMove((Vector2)obj.transform.position + direction, moveSpeed)
+                    .SetEase(moveEase)
+                    .OnComplete(() => Object.Destroy(obj));
+            }
+            else
+            {
+                SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+
+                spriteRenderer.DOFade(0.4f, disableTime)
+                    .OnComplete(() => Object.Destroy(obj));
+            }
         }
     }
 

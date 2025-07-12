@@ -12,18 +12,23 @@ public class BossAbility : MonoBehaviour
     [Header("보스 세팅")]
     public float damage = 10f;
     public float InitailCooldownTime = 5f;
+    public int abilityActCount = 3;
     public bool afterCooldown = false;
 
     [Header("스킬 범위 표시")]
     public GameObject abilityRangePrefab;
     public Transform initialAbilityRangePosition;
-    public Vector2 abilityRangeSize;
-    public bool autoResize;
+    public float fadeDuration = 2f;
     [Space(5)]
 
-    public float fadeDuration = 1f;
+    public bool autoResize;
+    [MyConditionalHide("autoResize", true, true)]
+    public Vector2 abilityRangeSize;
+    [Space(5)]
+
     public bool AxisXLock;
     public bool AxisYLock;
+
 
     public float cooldownTimer { get; set; }
     public bool isOnCooldown { get; protected set; }
@@ -52,7 +57,7 @@ public class BossAbility : MonoBehaviour
     {
         if (debugText != null)
         {
-            debugText.text = $"Ability Active: {isAbilityActive}    Cooldown: {cooldownTimer:F2}s";
+            debugText.text = $"Name : {gameObject.name}     Ability Active: {isAbilityActive}    Cooldown: {cooldownTimer:F2}s";
         }
     }
 
