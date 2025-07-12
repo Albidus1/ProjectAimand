@@ -1,22 +1,39 @@
 using System.Collections;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
 
 
 public class BossAbility : MonoBehaviour
 {
+    [Header("보스 세팅")]
     public float damage = 10f;
     public float InitailCooldownTime = 5f;
     public bool afterCooldown = false;
 
+    [Header("스킬 범위 표시")]
+    public GameObject abilityRangePrefab;
+    public Transform initialAbilityRangePosition;
+    public Vector2 abilityRangeSize;
+    public bool autoResize;
+    [Space(5)]
+
+    public float fadeDuration = 1f;
+    public bool AxisXLock;
+    public bool AxisYLock;
+
     public float cooldownTimer { get; set; }
     public bool isOnCooldown { get; protected set; }
     public bool isAbilityActive { get; protected set; }
+    protected Vector2 m_spawnPoint;
 
 
+    [Header("디버그용 텍스트")]
     public TextMeshProUGUI debugText;
+
 
 
     protected virtual void Start()
@@ -43,4 +60,9 @@ public class BossAbility : MonoBehaviour
     {
         yield return null;
     }
+
+    //protected void AbilityRangeVisualizer()
+    //{
+        
+    //}
 }
