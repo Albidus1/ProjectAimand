@@ -1,6 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 
@@ -20,6 +23,9 @@ public class BossAbilitySpawner : BossAbility
 
     private Collider2D m_collider2D;
 
+   
+    private List<GameObject> m_spawnedObjects = new List<GameObject>();
+    private int m_spawnedObjectCount = 3;
 
 
     private void Awake()
@@ -53,19 +59,9 @@ public class BossAbilitySpawner : BossAbility
 
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
-        yield return null;
-
-        var sequence = DOTween.Sequence();
-        for (int i = 0; i < 1; i++)
-        {
-            SetSpawnPoint();
-            Vector2 currentSpawnPoint = base.m_spawnPoint;
-
-            sequence.Append(AbilityRangeVisualizer(currentSpawnPoint));
-            sequence.AppendInterval(0.1f);
-            sequence.Append(SpawnObject(currentSpawnPoint));
-            sequence.AppendInterval(appendInterval);
-        }
+        AbilityRangeVisualizer();
+        yield return new WaitForSeconds(base.fadeDuration);
+        MoveObjects();
 
         yield return new WaitForSeconds(0.5f);
 
@@ -76,7 +72,7 @@ public class BossAbilitySpawner : BossAbility
         }
     }
 
-    private void SetSpawnPoint()
+    private Vector2 SetSpawnPoint()
     {
         float posX = m_collider2D.bounds.center.x;
         float posY = m_collider2D.bounds.center.y;
@@ -86,57 +82,76 @@ public class BossAbilitySpawner : BossAbility
             //posY = Random.Range(m_collider2D.bounds.min.x, m_collider2D.bounds.max.y);
         }
 
-        base.m_spawnPoint = new Vector2(posX, posY);
-        Debug.Log("스폰 위치: " + base.m_spawnPoint);
+        return new Vector2(posX, posY);
     }
 
-    protected Tween AbilityRangeVisualizer(Vector2 _spawnPoint)
+    protected void AbilityRangeVisualizer()
     {
         if (base.abilityRangePrefab == null)
-            return DOVirtual.DelayedCall(0.01f, () => { }); 
-
-
-        GameObject abilityRange = Object.Instantiate(base.abilityRangePrefab, _spawnPoint, Quaternion.identity);
-        SpriteRenderer abilityRangeSprite = abilityRange.GetComponent<SpriteRenderer>();
-
-        Color color = abilityRangeSprite.color;
-        color.a = 1f;
-        abilityRangeSprite.color = color;
-
-        if (base.autoResize)
         {
-            abilityRange.transform.localScale = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
-            //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
-        }
-        else
-        {
-            abilityRange.transform.localScale = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
-            //abilityRangeSprite.size = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
+            //return DOVirtual.DelayedCall(0.01f, () => { });
+            return;
         }
 
-        Vector2 newPosition = abilityRange.transform.position;
-        if (AxisXLock)
-        {
-            newPosition.x = base.initialAbilityRangePosition.transform.position.x;
-        }
-        if (AxisYLock)
-        {
-            newPosition.y = base.initialAbilityRangePosition.transform.position.y;
-        }
-        abilityRange.transform.position = newPosition;
+        m_spawnedObjects.Clear();
 
-        return abilityRangeSprite.DOFade(0, fadeDuration)
-            .OnComplete(() => Object.Destroy(abilityRange));
+        for (int i = 0; i < m_spawnedObjectCount; i++)
+        {
+            Vector2 spawnPos = SetSpawnPoint();
+
+            GameObject indicator = Instantiate(base.abilityRangePrefab, spawnPos, Quaternion.identity);
+            SpriteRenderer indicatorRenderer = indicator.GetComponent<SpriteRenderer>();
+
+            if (base.autoResize)
+            {
+                indicator.transform.localScale = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
+                //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
+            }
+            else
+            {
+                indicator.transform.localScale = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
+                //abilityRangeSprite.size = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
+            }
+
+            Vector2 newPosition = indicator.transform.position;
+            if (AxisXLock)
+            {
+                newPosition.x = base.initialAbilityRangePosition.transform.position.x;
+            }
+            if (AxisYLock)
+            {
+                newPosition.y = base.initialAbilityRangePosition.transform.position.y;
+            }
+            indicator.transform.position = newPosition;
+
+            indicatorRenderer.DOFade(0, base.fadeDuration)
+                .OnComplete(() => Destroy(indicator, base.fadeDuration));
+
+            GameObject obj = Instantiate(abilityPrefab, spawnPos, Quaternion.identity);
+            obj.SetActive(false);
+            m_spawnedObjects.Add(obj);
+        }
     }
 
-    private Tween SpawnObject(Vector2 _spawnPoint)
+    private void MoveObjects()
     {
-        Debug.Log("생성 위치: " + _spawnPoint);
-
-        GameObject gameObject = Object.Instantiate(abilityPrefab, _spawnPoint, Quaternion.identity);
-
-        return gameObject.transform.DOMove(_spawnPoint + direction, moveSpeed)
-            .SetEase(moveEase)
-            .OnComplete(() => Object.Destroy(gameObject));
+        foreach (GameObject obj in m_spawnedObjects)
+        {
+            obj.SetActive(true);
+            obj.transform.DOMove((Vector2)obj.transform.position + direction, moveSpeed)
+                .SetEase(moveEase)
+                .OnComplete(() => Object.Destroy(obj));
+        }
     }
+
+    //private void SpawnObject()
+    //{
+    //    //Debug.Log("생성 위치: " + m_spawnPoint);
+
+    //    GameObject gameObject = Object.Instantiate(abilityPrefab, m_spawnPoint, Quaternion.identity);
+
+    //    gameObject.transform.DOMove(m_spawnPoint + direction, moveSpeed)
+    //        .SetEase(moveEase)
+    //        .OnComplete(() => Object.Destroy(gameObject));
+    //}
 }
