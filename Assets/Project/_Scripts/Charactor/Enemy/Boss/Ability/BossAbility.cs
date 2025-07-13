@@ -62,9 +62,26 @@ public class BossAbility : MonoBehaviour
         }
     }
 
+    protected void SetAbilityActive(bool _OnOff)
+    {
+        if (_OnOff)
+        {
+            isAbilityActive = true;
+            isOnCooldown = (false == afterCooldown);
+        }
+        else
+        {
+            isAbilityActive = false;
+            if (false == isOnCooldown)
+            {
+                isOnCooldown = true;
+            }
+        }
+    }
+
     public virtual IEnumerator UseAbility()
     {
-        yield return null;
+        yield return new WaitForSeconds(0.5f);
     }
 
     protected virtual void AbilityRangeVisualizer()

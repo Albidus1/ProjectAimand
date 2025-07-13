@@ -52,23 +52,17 @@ public class BossAbilitySpawner : BossAbility
             yield break;
         }
 
-        base.isAbilityActive = true;
-        base.isOnCooldown = (false == base.afterCooldown);
-
-        m_spawnedObjectCount = base.abilityActCount;
-
+        base.SetAbilityActive(true);
+        m_spawnedObjectCount = abilityActCount;
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
         AbilityRangeVisualizer();
         yield return new WaitForSeconds(base.fadeDuration);
-        ObjectsActivate();
-        yield return new WaitForSeconds(0.5f);
 
-        base.isAbilityActive = false;
-        if (false == base.isOnCooldown)
-        {
-            base.isOnCooldown = true;
-        }
+        base.SetAbilityActive(false);
+        ObjectsActivate();
+
+        yield return new WaitForSeconds(0.1f);
     }
 
     private Vector2 SetSpawnPoint()

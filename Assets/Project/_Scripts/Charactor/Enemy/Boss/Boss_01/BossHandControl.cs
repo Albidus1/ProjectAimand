@@ -50,27 +50,22 @@ public class BossHandControl : BossAbility
             yield break;
         }
 
-        base.isAbilityActive = true;
-        base.isOnCooldown = (false == base.afterCooldown);
-
-
+        base.SetAbilityActive(true);
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
         AbilityRangeVisualizer();
         yield return new WaitForSeconds(base.fadeDuration);
-        yield return StartCoroutine(ObjectsActivate());
-        yield return new WaitForSeconds(0.5f);
 
-        base.isAbilityActive = false;
-        if (false == base.isOnCooldown)
-        {
-            base.isOnCooldown = true;
-        }
+        yield return StartCoroutine(ObjectsActivate());
+        base.SetAbilityActive(false);
+
+        yield return new WaitForSeconds(0.1f);
     }
 
     private void RandomPosition()
     {
         m_currentPositionIndex = Random.Range(0, movePosition.Length);
+        m_spawnPoint = movePosition[m_currentPositionIndex].position;
     }
 
     protected override void AbilityRangeVisualizer()
