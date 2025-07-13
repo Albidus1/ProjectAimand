@@ -6,10 +6,15 @@ using TMPro;
 
 public class BossAIController : MonoBehaviour
 {
+    [Header("보스 능력 설정")]
     public bool randomAbilityUsage = false;
     public List<BossAbility> abilities = new List<BossAbility>();
 
+    [Header("보스 페이즈 설정")]
     public float[] phaseThresholds = { 0.75f, 0.5f, 0.25f };
+
+    [Header("디버그용 텍스트")]
+    public TextMeshProUGUI debugText;
 
 
     private Health m_health;
@@ -18,9 +23,9 @@ public class BossAIController : MonoBehaviour
 
     private BossAbility m_currentAbility = null;
     private bool m_isAbilityActive = false;
+    private float m_waitTime = 1f;
+    private float m_waitTimer;
 
-
-    public TextMeshProUGUI debugText;
 
 
     private void Awake()
@@ -31,6 +36,9 @@ public class BossAIController : MonoBehaviour
     private void Start()
     {
         Initialization();
+
+        m_waitTimer = m_waitTime;
+        m_isAbilityActive = true;
     }
 
     private void Initialization()
@@ -38,6 +46,8 @@ public class BossAIController : MonoBehaviour
         m_health.currentHP = m_health.maxHP;
         m_hpRatio = m_health.currentHP / m_health.maxHP;
         m_currentPhase = 0;
+
+
     }
 
     private void Update()
@@ -52,6 +62,21 @@ public class BossAIController : MonoBehaviour
             debugText.text = $"Skill : {m_currentAbility.name}  ";
         }
 
+        if (m_currentAbility != null && false == m_currentAbility.isAbilityActive)
+        {
+            m_waitTimer = m_waitTime;
+            m_currentAbility = null;
+        }
+
+        if (m_waitTimer > 0)
+        {
+            m_waitTimer -= Time.deltaTime;
+
+            if (m_waitTimer <= 0)
+            {
+                m_isAbilityActive = false;
+            }
+        }
 
         UseAbility();
         UpdateCooldownTimers();
@@ -66,20 +91,17 @@ public class BossAIController : MonoBehaviour
             return;
         }
 
-        //if (m_currentAbility != null && false == m_currentAbility.isAbilityActive)
-        //{
-        //    m_isAbilityActive = false;
-        //}
-
-        //if (m_isAbilityActive)
-        //{
-        //    return;
-        //}
+        if (m_isAbilityActive)
+        {
+            return;
+        }
 
         foreach (BossAbility ab in abilities)
         {
             if (false == ab.isOnCooldown && false == ab.isAbilityActive)
             {
+                Debug.Log($"보스 능력 사용: {ab.name}");
+
                 StartCoroutine(ab.UseAbility());
 
                 m_currentAbility = ab;

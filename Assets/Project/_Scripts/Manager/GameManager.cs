@@ -64,10 +64,10 @@ public class GameManager : MySingleton<GameManager>,
 
     public virtual void OnEvent(GameEvent _gameEvent)
     {
-        switch (_gameEvent.eventName)
-        {
+        //switch (_gameEvent.eventName)
+        //{
 
-        }
+        //}
     }
 
     public virtual void OnEvent(MainEvent _mainEvent)

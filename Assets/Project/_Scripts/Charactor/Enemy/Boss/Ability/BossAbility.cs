@@ -9,7 +9,8 @@ using UnityEngine.UI;
 
 public class BossAbility : MonoBehaviour
 {
-    [Header("보스 세팅")]
+    [Header("스킬 세팅")]
+    public GameObject abilityPrefab;
     public float damage = 10f;
     public float InitailCooldownTime = 5f;
     public int abilityActCount = 3;
@@ -66,8 +67,36 @@ public class BossAbility : MonoBehaviour
         yield return null;
     }
 
-    //protected void AbilityRangeVisualizer()
-    //{
-        
-    //}
+    protected virtual void AbilityRangeVisualizer()
+    {
+        GameObject indicator = Instantiate(abilityRangePrefab, m_spawnPoint, Quaternion.identity);
+        SpriteRenderer indicatorRenderer = indicator.GetComponent<SpriteRenderer>();
+
+        if (autoResize)
+        {
+            BoxCollider2D spawnObj = abilityPrefab.GetComponent<BoxCollider2D>();
+
+            indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
+            //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
+        }
+        else
+        {
+            indicator.transform.localScale = new Vector2(abilityRangeSize.x, abilityRangeSize.y);
+            //abilityRangeSprite.size = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
+        }
+
+        Vector2 newPosition = indicator.transform.position;
+        if (AxisXLock)
+        {
+            newPosition.x = initialAbilityRangePosition.transform.position.x;
+        }
+        if (AxisYLock)
+        {
+            newPosition.y = initialAbilityRangePosition.transform.position.y;
+        }
+        indicator.transform.position = newPosition;
+
+        indicatorRenderer.DOFade(0, fadeDuration)
+            .OnComplete(() => Destroy(indicator, fadeDuration));
+    }
 }

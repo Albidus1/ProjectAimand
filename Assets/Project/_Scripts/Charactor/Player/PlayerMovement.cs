@@ -161,11 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        CMCameraMove camera = FindAnyObjectByType<CMCameraMove>();
-        if (camera != null )
-        {
-            camera.Initialization();
-        }
+
     }
 
     private void Update()

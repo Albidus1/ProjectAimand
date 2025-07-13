@@ -11,7 +11,6 @@ using UnityEngine.EventSystems;
 public class BossAbilitySpawner : BossAbility
 {
     [Header("스폰 오브젝트")]
-    public GameObject abilityPrefab;
     public bool randomSpawnPoint = false;
     public float appendInterval = 0.5f;
 
@@ -47,9 +46,9 @@ public class BossAbilitySpawner : BossAbility
 
     public override IEnumerator UseAbility()
     {
-        if (abilityPrefab == null)
+        if (base.abilityPrefab == null)
         {
-            Debug.LogWarning("Ability Prefab is not assigned.");
+            Debug.LogWarning("능력 오브젝트 없음");
             yield break;
         }
 
@@ -62,7 +61,7 @@ public class BossAbilitySpawner : BossAbility
 
         AbilityRangeVisualizer();
         yield return new WaitForSeconds(base.fadeDuration);
-        MoveObjects();
+        ObjectsActivate();
         yield return new WaitForSeconds(0.5f);
 
         base.isAbilityActive = false;
@@ -85,7 +84,7 @@ public class BossAbilitySpawner : BossAbility
         return new Vector2(posX, posY);
     }
 
-    protected void AbilityRangeVisualizer()
+    protected override void AbilityRangeVisualizer()
     {
         if (base.abilityRangePrefab == null)
         {
@@ -97,45 +96,17 @@ public class BossAbilitySpawner : BossAbility
 
         for (int i = 0; i < m_spawnedObjectCount; i++)
         {
-            Vector2 spawnPos = SetSpawnPoint();
+            m_spawnPoint = SetSpawnPoint();
 
-            GameObject indicator = Instantiate(base.abilityRangePrefab, spawnPos, Quaternion.identity);
-            SpriteRenderer indicatorRenderer = indicator.GetComponent<SpriteRenderer>();
+            base.AbilityRangeVisualizer();
 
-            if (base.autoResize)
-            {
-                BoxCollider2D spawnObj = abilityPrefab.GetComponent<BoxCollider2D>();
-
-                indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
-                //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
-            }
-            else
-            {
-                indicator.transform.localScale = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
-                //abilityRangeSprite.size = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
-            }
-
-            Vector2 newPosition = indicator.transform.position;
-            if (AxisXLock)
-            {
-                newPosition.x = base.initialAbilityRangePosition.transform.position.x;
-            }
-            if (AxisYLock)
-            {
-                newPosition.y = base.initialAbilityRangePosition.transform.position.y;
-            }
-            indicator.transform.position = newPosition;
-
-            indicatorRenderer.DOFade(0, base.fadeDuration)
-                .OnComplete(() => Destroy(indicator, base.fadeDuration));
-
-            GameObject obj = Instantiate(abilityPrefab, spawnPos, Quaternion.identity);
+            GameObject obj = Instantiate(base.abilityPrefab, m_spawnPoint, Quaternion.identity);
             obj.SetActive(false);
             m_spawnedObjects.Add(obj);
         }
     }
 
-    private void MoveObjects()
+    private void ObjectsActivate()
     {
         foreach (GameObject obj in m_spawnedObjects)
         {
@@ -156,15 +127,4 @@ public class BossAbilitySpawner : BossAbility
             }
         }
     }
-
-    //private void SpawnObject()
-    //{
-    //    //Debug.Log("생성 위치: " + m_spawnPoint);
-
-    //    GameObject gameObject = Object.Instantiate(abilityPrefab, m_spawnPoint, Quaternion.identity);
-
-    //    gameObject.transform.DOMove(m_spawnPoint + direction, moveSpeed)
-    //        .SetEase(moveEase)
-    //        .OnComplete(() => Object.Destroy(gameObject));
-    //}
 }
