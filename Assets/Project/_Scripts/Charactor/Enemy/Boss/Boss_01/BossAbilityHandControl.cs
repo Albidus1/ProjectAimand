@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
-public class BossHandControl : BossAbility
+public class BossAbilityHandControl : BossAbility
 {
     [Header("손 오브젝트")]
     public GameObject leftHand;

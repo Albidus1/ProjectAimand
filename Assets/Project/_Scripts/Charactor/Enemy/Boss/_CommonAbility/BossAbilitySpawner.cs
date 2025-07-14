@@ -7,10 +7,12 @@ using UnityEngine.EventSystems;
 
 
 
-[RequireComponent(typeof(Collider2D))]
 public class BossAbilitySpawner : BossAbility
 {
+    public enum SpawnType { None, Control }
+
     [Header("스폰 오브젝트")]
+    public SpawnType spawnType = SpawnType.None;
     public bool randomSpawnPoint = false;
     public float appendInterval = 0.5f;
 
@@ -80,10 +82,9 @@ public class BossAbilitySpawner : BossAbility
 
     protected override void AbilityRangeVisualizer()
     {
-        if (base.abilityRangePrefab == null)
+        if (m_spawnedObjectCount <= 1)
         {
-            //return DOVirtual.DelayedCall(0.01f, () => { });
-            return;
+            m_spawnedObjectCount = 1;
         }
 
         m_spawnedObjects.Clear();
@@ -92,7 +93,10 @@ public class BossAbilitySpawner : BossAbility
         {
             m_spawnPoint = SetSpawnPoint();
 
-            base.AbilityRangeVisualizer();
+            if (base.abilityRangePrefab != null)
+            {
+                base.AbilityRangeVisualizer();
+            }
 
             GameObject obj = Instantiate(base.abilityPrefab, m_spawnPoint, Quaternion.identity);
             obj.SetActive(false);
@@ -112,7 +116,7 @@ public class BossAbilitySpawner : BossAbility
                     .SetEase(moveEase)
                     .OnComplete(() => Object.Destroy(obj));
             }
-            else
+            else if (direction == Vector2.zero && spawnType == SpawnType.None) 
             {
                 SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
 
