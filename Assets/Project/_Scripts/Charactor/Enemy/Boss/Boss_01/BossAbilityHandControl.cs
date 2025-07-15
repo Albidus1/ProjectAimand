@@ -11,22 +11,26 @@ public class BossAbilityHandControl : BossAbility
     public GameObject lazerBeamObject;
 
     [Header("지정 좌표")]
+    [MyReadOnly]
     public Transform[] movePosition = new Transform[6];
+    public Transform[] leftHandMovePosition = new Transform[3];
+    public Transform[] rightHandMovePosition = new Transform[3];
 
     [Header("이동 설정")]
     public Ease moveEase = Ease.Linear;
     public float moveSpeed;
 
+    private bool isRightHand = false;
     private Vector2 m_initialLeftHandPosition;
     private Vector2 m_initialRightHandPosition;
     private int m_currentPositionIndex = 0;
-    private BoxCollider2D m_col;
+ 
 
 
 
     private void Awake()
     {
-        m_col = lazerBeamObject.GetComponent<BoxCollider2D>();
+        
     }
 
     protected override void Start()
@@ -64,8 +68,20 @@ public class BossAbilityHandControl : BossAbility
 
     private void RandomPosition()
     {
-        m_currentPositionIndex = Random.Range(0, movePosition.Length);
-        m_spawnPoint = movePosition[m_currentPositionIndex].position;
+        isRightHand = Random.Range(0, 2) == 0;
+
+        if (isRightHand)
+        {
+            m_currentPositionIndex = Random.Range(0, rightHandMovePosition.Length);
+            movePosition = rightHandMovePosition;
+            m_spawnPoint = movePosition[m_currentPositionIndex].position;
+        }
+        else
+        {
+            m_currentPositionIndex = Random.Range(0, leftHandMovePosition.Length);
+            movePosition = leftHandMovePosition;
+            m_spawnPoint = movePosition[m_currentPositionIndex].position;
+        }
     }
 
     protected override void AbilityRangeVisualizer()
@@ -82,10 +98,9 @@ public class BossAbilityHandControl : BossAbility
     {
         var sequence = DOTween.Sequence();
 
-        var hand = (m_currentPositionIndex < movePosition.Length * 0.5f) ? leftHand : rightHand;
-        var initialPosition = (m_currentPositionIndex < movePosition.Length * 0.5f) ?
-            m_initialLeftHandPosition : m_initialRightHandPosition;
-
+        var hand = isRightHand ? rightHand : leftHand;
+        var initialPosition = isRightHand ?
+            m_initialRightHandPosition : m_initialLeftHandPosition;
 
         sequence.Append(MoveTo(hand, movePosition[m_currentPositionIndex].position));
         sequence.AppendInterval(0.1f);
@@ -105,15 +120,18 @@ public class BossAbilityHandControl : BossAbility
 
     private void LazerBeam()
     {     
+        if (lazerBeamObject == null)
+        {
+            return;
+        }
+
         if (false == lazerBeamObject.activeSelf)
         {
-            bool isLeftHand = (m_currentPositionIndex < movePosition.Length * 0.5f);
-
             Vector3 half = new Vector2(lazerBeamObject.transform.localScale.x * 0.5f, 0);
-            Vector2 position = isLeftHand ?
-                leftHand.transform.position + half :
-                rightHand.transform.position - half;
-
+            Vector2 position = isRightHand ?
+                rightHand.transform.position - half :
+                leftHand.transform.position + half;
+            
             lazerBeamObject.transform.position = position;
 
             lazerBeamObject.SetActive(true);
