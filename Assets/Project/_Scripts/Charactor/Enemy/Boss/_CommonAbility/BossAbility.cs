@@ -5,6 +5,30 @@ using UnityEngine;
 
 
 
+public struct AbilityEvent
+{
+    static AbilityEvent e;
+
+    public bool singleUsage;
+    public bool isAcivate;
+    public BossAbility ab;
+
+    public AbilityEvent(bool _flag,  bool _act, BossAbility _ab)
+    {
+        singleUsage = _flag;
+        isAcivate = _act;
+        ab = _ab;
+    }
+
+    public static void Trigger(bool _flag, bool _act, BossAbility _ab)
+    {
+        e.singleUsage = _flag;
+        e.isAcivate = _act;
+        e.ab = _ab;
+        EventManager.TriggerEvent(e);
+    }
+}
+
 public class BossAbility : MonoBehaviour
 {
     [Header("스킬 세팅")]
@@ -38,6 +62,7 @@ public class BossAbility : MonoBehaviour
     protected Vector2 m_spawnPoint;
 
 
+
     [Header("디버그용 텍스트")]
     public TextMeshProUGUI debugText;
 
@@ -69,15 +94,20 @@ public class BossAbility : MonoBehaviour
         {
             isAbilityActive = true;
             isOnCooldown = (false == afterCooldown);
-            
+
+            AbilityEvent.Trigger(singleSkill, true, this);
+
         }
         else
         {
-            isAbilityActive = false;
+            //isAbilityActive = false;
+
             if (false == isOnCooldown)
             {
                 isOnCooldown = true;
             }
+
+            AbilityEvent.Trigger(singleSkill, false, null);
         }
     }
 

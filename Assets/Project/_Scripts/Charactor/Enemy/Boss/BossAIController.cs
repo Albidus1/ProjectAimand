@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using System.Collections;
 
 
 
-public class BossAIController : MonoBehaviour
+public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 {
     [Header("보스 능력 설정")]
     public bool randomAbilityUsage = false;
@@ -21,9 +22,10 @@ public class BossAIController : MonoBehaviour
     private float m_hpRatio;
     private int m_currentPhase = 0;
 
-    private BossAbility m_currentAbility = null;
-    private bool m_isAbilityActive = false;
-    private float m_waitTime = 0.5f;
+    [MyReadOnly]
+    public BossAbility m_currentAbility = null;
+    //private bool m_isAbilityActive = false;
+    private float m_waitTime = 1f;
     private float m_waitTimer;
 
 
@@ -38,7 +40,7 @@ public class BossAIController : MonoBehaviour
         Initialization();
 
         m_waitTimer = m_waitTime;
-        m_isAbilityActive = true;
+        //m_isAbilityActive = true;
     }
 
     private void Initialization()
@@ -62,26 +64,26 @@ public class BossAIController : MonoBehaviour
             debugText.text = $"Skill : {m_currentAbility.name}  ";
         }
 
-        if (m_currentAbility != null && false == m_currentAbility.isAbilityActive)
-        {
-            m_waitTimer = m_waitTime;
-            m_currentAbility = null;
-        }
+        //if (m_currentAbility != null && false == m_currentAbility.isAbilityActive)
+        //{
+        //    m_waitTimer = m_waitTime;
+        //    m_currentAbility = null;
+        //}
 
         if (m_waitTimer > 0)
         {
             m_waitTimer -= Time.deltaTime;
-
-            if (m_waitTimer <= 0)
-            {
-                m_isAbilityActive = false;
-            }
         }
 
-        UseAbility();
+        if (m_waitTimer <= 0)
+        {
+            UseAbility();
+        }
+
         UpdateCooldownTimers();
         UpdateHealth();
     }
+
 
     private void UseAbility()
     {
@@ -91,28 +93,27 @@ public class BossAIController : MonoBehaviour
             return;
         }
 
-        if (m_isAbilityActive)
-        {
-            return;
-        }
-
+        // 스킬 수정해야함
+        bool useSingleSkill = false;
         foreach (BossAbility ab in abilities)
         {
-            if (false == ab.isOnCooldown && false == ab.isAbilityActive)
+            if (false == useSingleSkill)
             {
-                Debug.Log($"보스 능력 사용: {ab.name}");
+                useSingleSkill = (ab.singleSkill && ab.isAbilityActive && ab.isOnCooldown);
+            }
 
+            if (false == useSingleSkill && false == ab.isOnCooldown && false == ab.isAbilityActive)
+            {
                 StartCoroutine(ab.UseAbility());
-
-                m_currentAbility = ab;
-                m_isAbilityActive = true;
 
                 if (ab.singleSkill)
                 {
-                    break;
+                    useSingleSkill = true;
                 }
             }
         }
+
+        m_waitTimer = m_waitTime;
     }
 
     private void UpdateCooldownTimers()
@@ -148,5 +149,21 @@ public class BossAIController : MonoBehaviour
                 m_currentPhase = phaseThresholds.Length - 1;
             }
         }
+    }
+
+    public virtual void OnEvent(AbilityEvent _ab)
+    {
+        m_currentAbility = _ab.ab;
+        Debug.Log(_ab.ab != null ? _ab.ab.name : null);
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<AbilityEvent>();
+    }
+
+    public virtual void OnDisable()
+    {
+        this.EventStopListening<AbilityEvent>();
     }
 }

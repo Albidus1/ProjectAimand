@@ -57,7 +57,6 @@ public class BossAbilityHandControl : BossAbility
     private void SetHandPosition()
     {
         int randomPattern = Random.Range(0, patterns.Count);
-        Debug.Log(patterns.Count + " " + randomPattern);
 
         var pattern = patterns[randomPattern];
 
@@ -86,9 +85,9 @@ public class BossAbilityHandControl : BossAbility
         yield return new WaitForSeconds(base.fadeDuration);
 
         yield return StartCoroutine(ObjectsActivate());
+        yield return new WaitForSeconds(0.2f);
         base.SetAbilityActive(false);
-
-        yield return new WaitForSeconds(0.1f);
+        base.isAbilityActive = false;
     }
 
     private void RandomPosition()
@@ -146,18 +145,6 @@ public class BossAbilityHandControl : BossAbility
         }
     }
 
-    private Vector3 GetVectorCenter(Vector3 _pos1,  Vector3 _pos2)
-    {
-        float x = (_pos1.x + _pos2.x) * 0.5f;
-        float y = (_pos1.y + _pos2.y) * 0.5f;
-        return new Vector3(x, y, 0);
-    }
-
-    private Vector3 GetMirrorXPosition(Vector3 _orgin, Vector3 _target)
-    {
-        return new Vector3((2 * _orgin.x) - _target.x, _target.y, 0);
-    }
-
     private void HandIndicatorRender(GameObject _obj, Vector3 _pos, Vector3 _dir)
     {
         GameObject indicator = Instantiate(_obj, m_spawnPoint, Quaternion.identity);
@@ -200,12 +187,11 @@ public class BossAbilityHandControl : BossAbility
     {
         var sequence = DOTween.Sequence();
 
-        var hand = isRightHand ? rightHand : leftHand;
-        var initialPosition = isRightHand ?
-            m_initialRightHandPosition : m_initialLeftHandPosition;
-
         if (lazerPattern)
         {
+            var hand = isRightHand ? rightHand : leftHand;
+            var initialPosition = isRightHand ?
+                m_initialRightHandPosition : m_initialLeftHandPosition;
             var element = moveElements[m_currentPositionIndex];
 
             sequence.Append(MoveTo(hand, element.movePosition, element.moveSpeed, element.moveEase));
@@ -214,6 +200,7 @@ public class BossAbilityHandControl : BossAbility
             sequence.AppendInterval(3f);
             sequence.AppendCallback(LazerBeam);
             sequence.Append(MoveTo(hand, initialPosition, moveSpeed, moveEase));
+            sequence.AppendInterval(0.1f);
         }
         else
         {
@@ -233,6 +220,7 @@ public class BossAbilityHandControl : BossAbility
             sequence.Join(rightHand.transform.DORotate(Vector3.zero, 0));
             sequence.Append(MoveTo(leftHand, m_initialLeftHandPosition, moveSpeed, moveEase));
             sequence.Join(MoveTo(rightHand, m_initialRightHandPosition, moveSpeed, moveEase));
+            sequence.AppendInterval(0.1f);
         }
 
         yield return sequence.WaitForCompletion();
@@ -267,4 +255,19 @@ public class BossAbilityHandControl : BossAbility
             lazerBeamObject.SetActive(false);
         }
     }
+
+    #region GENERAL METHODS
+    private Vector3 GetVectorCenter(Vector3 _pos1, Vector3 _pos2)
+    {
+        float x = (_pos1.x + _pos2.x) * 0.5f;
+        float y = (_pos1.y + _pos2.y) * 0.5f;
+        return new Vector3(x, y, 0);
+    }
+
+    private Vector3 GetMirrorXPosition(Vector3 _orgin, Vector3 _target)
+    {
+        return new Vector3((2 * _orgin.x) - _target.x, _target.y, 0);
+    }
+    #endregion
+
 }
