@@ -9,8 +9,7 @@ using UnityEngine;
 public class BossAbilityHandControl : BossAbility
 {
     [Header("손 오브젝트")]
-    public GameObject leftHand;
-    public GameObject rightHand;
+    public BossHands hands;
     public GameObject lazerBeamObject;
 
     [Header("지정 좌표")]
@@ -37,7 +36,7 @@ public class BossAbilityHandControl : BossAbility
 
     private void Awake()
     {
-        
+        //hands = transform.parent.GetComponent<BossHands>();
     }
 
     protected override void Start()
@@ -48,8 +47,8 @@ public class BossAbilityHandControl : BossAbility
     public override void Initialization()
     {
         base.Initialization();
-        m_initialLeftHandPosition = leftHand.transform.position;
-        m_initialRightHandPosition = rightHand.transform.position;
+        m_initialLeftHandPosition = hands.leftHand.transform.position;
+        m_initialRightHandPosition = hands.rightHand.transform.position;
 
         lazerBeamObject.SetActive(false);
     }
@@ -72,10 +71,12 @@ public class BossAbilityHandControl : BossAbility
 
     public override IEnumerator UseAbility()
     {
-        if (isAbilityActive)
+        if (isAbilityActive || hands.isAbilityActive)
         {
             yield break;
         }
+
+        hands.isAbilityActive = true;
 
         base.SetAbilityActive(true);
 
@@ -87,7 +88,8 @@ public class BossAbilityHandControl : BossAbility
         yield return StartCoroutine(ObjectsActivate());
         yield return new WaitForSeconds(0.2f);
         base.SetAbilityActive(false);
-        base.isAbilityActive = false;
+
+        hands.isAbilityActive = false;
     }
 
     private void RandomPosition()
@@ -115,7 +117,7 @@ public class BossAbilityHandControl : BossAbility
             RandomPosition();
 
             base.abilityPrefab = isRightHand ?
-                rightHand : leftHand;
+                hands.rightHand : hands.leftHand;
 
             base.AbilityRangeVisualizer();
         }
@@ -189,7 +191,7 @@ public class BossAbilityHandControl : BossAbility
 
         if (lazerPattern)
         {
-            var hand = isRightHand ? rightHand : leftHand;
+            var hand = isRightHand ? hands.rightHand : hands.leftHand;
             var initialPosition = isRightHand ?
                 m_initialRightHandPosition : m_initialLeftHandPosition;
             var element = moveElements[m_currentPositionIndex];
@@ -208,18 +210,18 @@ public class BossAbilityHandControl : BossAbility
             {
                 Vector2 mirrorPosition = new Vector2((2 * initialAbilityRangePosition.position.x) - e.movePosition.x, e.movePosition.y);
 
-                sequence.Append(leftHand.transform.DORotate(new Vector3(0, 0, e.rotate), 0));
-                sequence.Join(rightHand.transform.DORotate(new Vector3(0, 0, -e.rotate), 0));
+                sequence.Append(hands.leftHand.transform.DORotate(new Vector3(0, 0, e.rotate), 0));
+                sequence.Join(hands.rightHand.transform.DORotate(new Vector3(0, 0, -e.rotate), 0));
 
-                sequence.Append(MoveTo(leftHand, e.movePosition, e.moveSpeed, e.moveEase));
-                sequence.Join(MoveTo(rightHand, mirrorPosition, e.moveSpeed, e.moveEase));
+                sequence.Append(MoveTo(hands.leftHand, e.movePosition, e.moveSpeed, e.moveEase));
+                sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase));
                 sequence.AppendInterval(e.waitTime);
             }
 
-            sequence.Append(leftHand.transform.DORotate(Vector3.zero, 0));
-            sequence.Join(rightHand.transform.DORotate(Vector3.zero, 0));
-            sequence.Append(MoveTo(leftHand, m_initialLeftHandPosition, moveSpeed, moveEase));
-            sequence.Join(MoveTo(rightHand, m_initialRightHandPosition, moveSpeed, moveEase));
+            sequence.Append(hands.leftHand.transform.DORotate(Vector3.zero, 0));
+            sequence.Join(hands.rightHand.transform.DORotate(Vector3.zero, 0));
+            sequence.Append(MoveTo(hands.leftHand, m_initialLeftHandPosition, moveSpeed, moveEase));
+            sequence.Join(MoveTo(hands.rightHand, m_initialRightHandPosition, moveSpeed, moveEase));
             sequence.AppendInterval(0.1f);
         }
 
@@ -243,8 +245,8 @@ public class BossAbilityHandControl : BossAbility
         {
             Vector3 half = new Vector2(lazerBeamObject.transform.localScale.x * 0.5f, 0);
             Vector2 position = isRightHand ?
-                rightHand.transform.position - half :
-                leftHand.transform.position + half;
+                hands.rightHand.transform.position - half :
+                hands.leftHand.transform.position + half;
             
             lazerBeamObject.transform.position = position;
 
@@ -269,5 +271,4 @@ public class BossAbilityHandControl : BossAbility
         return new Vector3((2 * _orgin.x) - _target.x, _target.y, 0);
     }
     #endregion
-
 }

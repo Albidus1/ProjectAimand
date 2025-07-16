@@ -100,7 +100,7 @@ public class BossAbility : MonoBehaviour
         }
         else
         {
-            //isAbilityActive = false;
+            isAbilityActive = false;
 
             if (false == isOnCooldown)
             {

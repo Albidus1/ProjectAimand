@@ -93,27 +93,16 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
             return;
         }
 
-        // 스킬 수정해야함
-        bool useSingleSkill = false;
         foreach (BossAbility ab in abilities)
         {
-            if (false == useSingleSkill)
-            {
-                useSingleSkill = (ab.singleSkill && ab.isAbilityActive && ab.isOnCooldown);
-            }
-
-            if (false == useSingleSkill && false == ab.isOnCooldown && false == ab.isAbilityActive)
+            if (false == ab.isOnCooldown && false == ab.isAbilityActive && false == ab.isOnCooldown)
             {
                 StartCoroutine(ab.UseAbility());
 
-                if (ab.singleSkill)
-                {
-                    useSingleSkill = true;
-                }
+                m_waitTimer = m_waitTime;
+                break;
             }
         }
-
-        m_waitTimer = m_waitTime;
     }
 
     private void UpdateCooldownTimers()
