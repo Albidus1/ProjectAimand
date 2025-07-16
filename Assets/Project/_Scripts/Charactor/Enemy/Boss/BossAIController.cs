@@ -23,7 +23,7 @@ public class BossAIController : MonoBehaviour
 
     private BossAbility m_currentAbility = null;
     private bool m_isAbilityActive = false;
-    private float m_waitTime = 1f;
+    private float m_waitTime = 0.5f;
     private float m_waitTimer;
 
 
@@ -106,7 +106,11 @@ public class BossAIController : MonoBehaviour
 
                 m_currentAbility = ab;
                 m_isAbilityActive = true;
-                break;
+
+                if (ab.singleSkill)
+                {
+                    break;
+                }
             }
         }
     }

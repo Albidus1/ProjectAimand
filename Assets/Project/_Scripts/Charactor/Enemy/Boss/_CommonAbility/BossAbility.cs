@@ -2,14 +2,15 @@ using System.Collections;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using UnityEngine.UI;
 
 
 
 public class BossAbility : MonoBehaviour
 {
     [Header("스킬 세팅")]
+    public bool singleSkill = true;
+    [Space(10)]
+
     public GameObject abilityPrefab;
     public float damage = 10f;
     public float InitailCooldownTime = 5f;
@@ -68,6 +69,7 @@ public class BossAbility : MonoBehaviour
         {
             isAbilityActive = true;
             isOnCooldown = (false == afterCooldown);
+            
         }
         else
         {

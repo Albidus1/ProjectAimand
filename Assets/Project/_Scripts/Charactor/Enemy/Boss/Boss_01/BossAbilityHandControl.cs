@@ -1,7 +1,10 @@
-using System.Collections;
 using DG.Tweening;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+
+
+
 
 public class BossAbilityHandControl : BossAbility
 {
@@ -12,13 +15,17 @@ public class BossAbilityHandControl : BossAbility
 
     [Header("지정 좌표")]
     [MyReadOnly]
-    public Transform[] movePosition = new Transform[6];
-    public Transform[] leftHandMovePosition = new Transform[3];
-    public Transform[] rightHandMovePosition = new Transform[3];
+    public List<MoveElement> moveElements = new List<MoveElement>();
+    public List<MoveElement> moveLeftElements = new List<MoveElement>();
+    public List<MoveElement> moveRightElements = new List<MoveElement>();
+
+    [Header("이동 패턴")]
+    public List<MovePattern> patterns = new List<MovePattern>();
 
     [Header("이동 설정")]
-    public Ease moveEase = Ease.Linear;
     public float moveSpeed;
+    public Ease moveEase = Ease.Linear;
+    public bool lazerPattern;
 
     private bool isRightHand = false;
     private Vector2 m_initialLeftHandPosition;
@@ -47,6 +54,23 @@ public class BossAbilityHandControl : BossAbility
         lazerBeamObject.SetActive(false);
     }
 
+    private void SetHandPosition()
+    {
+        int randomPattern = Random.Range(0, patterns.Count);
+        Debug.Log(patterns.Count + " " + randomPattern);
+
+        var pattern = patterns[randomPattern];
+
+        moveLeftElements.Clear();
+        moveRightElements.Clear();
+        for (int i = 0; i < pattern.moveElements.Count; i++)
+        {
+            moveLeftElements.Add((MoveElement)pattern.moveElements[i].Clone());
+            moveRightElements.Add((MoveElement)pattern.moveElements[i].Clone());
+            moveRightElements[i].movePosition = GetMirrorXPosition(base.initialAbilityRangePosition.position, moveLeftElements[i].movePosition);
+        }
+    }
+
     public override IEnumerator UseAbility()
     {
         if (isAbilityActive)
@@ -55,6 +79,7 @@ public class BossAbilityHandControl : BossAbility
         }
 
         base.SetAbilityActive(true);
+
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
         AbilityRangeVisualizer();
@@ -72,26 +97,103 @@ public class BossAbilityHandControl : BossAbility
 
         if (isRightHand)
         {
-            m_currentPositionIndex = Random.Range(0, rightHandMovePosition.Length);
-            movePosition = rightHandMovePosition;
-            m_spawnPoint = movePosition[m_currentPositionIndex].position;
+            m_currentPositionIndex = Random.Range(0, moveRightElements.Count);
+            moveElements = moveRightElements;
+            m_spawnPoint = moveRightElements[m_currentPositionIndex].movePosition;
         }
         else
         {
-            m_currentPositionIndex = Random.Range(0, leftHandMovePosition.Length);
-            movePosition = leftHandMovePosition;
-            m_spawnPoint = movePosition[m_currentPositionIndex].position;
+            m_currentPositionIndex = Random.Range(0, moveLeftElements.Count);
+            moveElements = moveLeftElements;
+            m_spawnPoint = moveLeftElements[m_currentPositionIndex].movePosition;
         }
     }
 
     protected override void AbilityRangeVisualizer()
     {
-        RandomPosition();
+        if (lazerPattern)
+        {
+            RandomPosition();
 
-        base.abilityPrefab = (m_currentPositionIndex < movePosition.Length * 0.5f) ?
-            leftHand : rightHand;
+            base.abilityPrefab = isRightHand ?
+                rightHand : leftHand;
 
-        base.AbilityRangeVisualizer();
+            base.AbilityRangeVisualizer();
+        }
+        else
+        {
+            SetHandPosition();
+
+            moveElements = moveLeftElements;
+            m_spawnPoint = moveLeftElements[0].movePosition;
+
+            if (moveLeftElements.Count > 1)
+            {
+                Vector3 dir1 = (moveLeftElements[1].movePosition - moveLeftElements[0].movePosition).normalized;
+                Vector3 dir2 = (moveRightElements[1].movePosition - moveRightElements[0].movePosition).normalized;
+
+                Vector3 pos1 = GetVectorCenter(moveLeftElements[0].movePosition, moveLeftElements[1].movePosition);
+                Vector3 pos2 = GetVectorCenter(moveRightElements[0].movePosition, moveRightElements[1].movePosition);
+
+                HandIndicatorRender(base.abilityRangePrefab, pos1, dir1);
+                HandIndicatorRender(base.abilityRangePrefab, pos2, dir2);
+            }
+            else
+            {
+                HandIndicatorRender(base.abilityRangePrefab, moveLeftElements[0].movePosition, Vector3.zero);
+                HandIndicatorRender(base.abilityRangePrefab, moveRightElements[0].movePosition, Vector3.zero);
+            }
+        }
+    }
+
+    private Vector3 GetVectorCenter(Vector3 _pos1,  Vector3 _pos2)
+    {
+        float x = (_pos1.x + _pos2.x) * 0.5f;
+        float y = (_pos1.y + _pos2.y) * 0.5f;
+        return new Vector3(x, y, 0);
+    }
+
+    private Vector3 GetMirrorXPosition(Vector3 _orgin, Vector3 _target)
+    {
+        return new Vector3((2 * _orgin.x) - _target.x, _target.y, 0);
+    }
+
+    private void HandIndicatorRender(GameObject _obj, Vector3 _pos, Vector3 _dir)
+    {
+        GameObject indicator = Instantiate(_obj, m_spawnPoint, Quaternion.identity);
+
+        float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg;
+        indicator.transform.rotation = Quaternion.Euler(0, 0, angle);
+        indicator.transform.position = _pos;
+
+        SpriteRenderer indicatorRenderer = indicator.GetComponent<SpriteRenderer>();
+
+        if (autoResize)
+        {
+            BoxCollider2D spawnObj = _obj.GetComponent<BoxCollider2D>();
+
+            indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
+            //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
+        }
+        else
+        {
+            indicator.transform.localScale = new Vector2(abilityRangeSize.x, abilityRangeSize.y);
+            //abilityRangeSprite.size = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
+        }
+
+        Vector2 newPosition = indicator.transform.position;
+        if (AxisXLock)
+        {
+            newPosition.x = initialAbilityRangePosition.transform.position.x;
+        }
+        if (AxisYLock)
+        {
+            newPosition.y = initialAbilityRangePosition.transform.position.y;
+        }
+        indicator.transform.position = newPosition;
+
+        indicatorRenderer.DOFade(0, fadeDuration)
+            .OnComplete(() => Destroy(indicator, fadeDuration));
     }
 
     private IEnumerator ObjectsActivate()
@@ -102,20 +204,44 @@ public class BossAbilityHandControl : BossAbility
         var initialPosition = isRightHand ?
             m_initialRightHandPosition : m_initialLeftHandPosition;
 
-        sequence.Append(MoveTo(hand, movePosition[m_currentPositionIndex].position));
-        sequence.AppendInterval(0.1f);
-        sequence.AppendCallback(LazerBeam);
-        sequence.AppendInterval(3f);
-        sequence.AppendCallback(LazerBeam);
-        sequence.Append(MoveTo(hand, initialPosition));
+        if (lazerPattern)
+        {
+            var element = moveElements[m_currentPositionIndex];
+
+            sequence.Append(MoveTo(hand, element.movePosition, element.moveSpeed, element.moveEase));
+            sequence.AppendInterval(0.1f);
+            sequence.AppendCallback(LazerBeam);
+            sequence.AppendInterval(3f);
+            sequence.AppendCallback(LazerBeam);
+            sequence.Append(MoveTo(hand, initialPosition, moveSpeed, moveEase));
+        }
+        else
+        {
+            foreach ( var e in moveElements)
+            {
+                Vector2 mirrorPosition = new Vector2((2 * initialAbilityRangePosition.position.x) - e.movePosition.x, e.movePosition.y);
+
+                sequence.Append(leftHand.transform.DORotate(new Vector3(0, 0, e.rotate), 0));
+                sequence.Join(rightHand.transform.DORotate(new Vector3(0, 0, -e.rotate), 0));
+
+                sequence.Append(MoveTo(leftHand, e.movePosition, e.moveSpeed, e.moveEase));
+                sequence.Join(MoveTo(rightHand, mirrorPosition, e.moveSpeed, e.moveEase));
+                sequence.AppendInterval(e.waitTime);
+            }
+
+            sequence.Append(leftHand.transform.DORotate(Vector3.zero, 0));
+            sequence.Join(rightHand.transform.DORotate(Vector3.zero, 0));
+            sequence.Append(MoveTo(leftHand, m_initialLeftHandPosition, moveSpeed, moveEase));
+            sequence.Join(MoveTo(rightHand, m_initialRightHandPosition, moveSpeed, moveEase));
+        }
 
         yield return sequence.WaitForCompletion();
     }
 
-    private Tween MoveTo(GameObject _obj, Vector2 _target)
+    private Tween MoveTo(GameObject _obj, Vector2 _target, float _moveSpeed, Ease _moveEase)
     {
-        return _obj.transform.DOMove(_target, moveSpeed)
-            .SetEase(moveEase);
+        return _obj.transform.DOMove(_target, _moveSpeed)
+            .SetEase(_moveEase);
     }
 
     private void LazerBeam()
