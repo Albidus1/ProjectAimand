@@ -6,6 +6,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
+[System.Serializable]
+public class SpawnerPhase
+{
+    public int spawnCount;
+    public float disalbeTime;
+}
+
 
 public class BossAbilitySpawner : BossAbility
 {
@@ -14,7 +21,7 @@ public class BossAbilitySpawner : BossAbility
     [Header("스폰 오브젝트")]
     public SpawnType spawnType = SpawnType.None;
     public bool randomSpawnPoint = false;
-    public float appendInterval = 0.5f;
+    public float spawnInterval = 0.5f;
 
     [Header("이동 설정")]
     public Ease moveEase = Ease.Linear;
@@ -22,16 +29,20 @@ public class BossAbilitySpawner : BossAbility
     public float moveSpeed;
     public float disableTime;
 
-    private Collider2D m_collider2D;
+    public List<Vector2> spawnPoint = new List<Vector2>();
+    public List<SpawnerPhase> spawnerPhases = new List<SpawnerPhase>();
+    [MyReadOnly]
+    public int currentPhaseIndex = 0;
 
-
+    protected bool[] m_spawnedPoint;
     protected List<GameObject> m_spawnedObjects = new List<GameObject>();
-    protected int m_spawnedObjectCount = 3;
-
+    protected int m_spawnedObjectCount = 1;
+    protected Collider2D m_collider2D;
 
     private void Awake()
     {
-        m_collider2D = GetComponent<Collider2D>();
+        m_collider2D = GetComponent<BoxCollider2D>();
+        m_spawnedPoint = new bool[spawnPoint.Count];
     }
 
     protected override void Start()
@@ -44,6 +55,22 @@ public class BossAbilitySpawner : BossAbility
     public override void Initialization()
     {
         base.Initialization();
+
+        currentPhaseIndex = 0;
+
+        m_spawnedObjectCount = base.abilityActCount;
+        if (spawnerPhases.Count > 0)
+        {
+            m_spawnedObjectCount = spawnerPhases[0].spawnCount;
+            disableTime = spawnerPhases[0].disalbeTime;
+        }
+    }
+
+    public override void SkillReset()
+    {
+        base.SkillReset();
+
+
     }
 
     public override IEnumerator UseAbility()
@@ -55,7 +82,6 @@ public class BossAbilitySpawner : BossAbility
         }
 
         base.SetAbilityActive(true);
-        m_spawnedObjectCount = abilityActCount;
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
         AbilityRangeVisualizer();
@@ -69,15 +95,32 @@ public class BossAbilitySpawner : BossAbility
 
     private Vector2 SetSpawnPoint()
     {
-        float posX = m_collider2D.bounds.center.x;
-        float posY = m_collider2D.bounds.center.y;
-        if (randomSpawnPoint)
+        if (spawnPoint.Count == 0)
         {
-            posX = Random.Range(m_collider2D.bounds.min.x, m_collider2D.bounds.max.x);
-            posY = Random.Range(m_collider2D.bounds.min.y, m_collider2D.bounds.max.y);
+            float posX = m_collider2D.bounds.center.x;
+            float posY = m_collider2D.bounds.center.y;
+            if (randomSpawnPoint)
+            {
+                posX = Random.Range(m_collider2D.bounds.min.x, m_collider2D.bounds.max.x);
+                posY = Random.Range(m_collider2D.bounds.min.y, m_collider2D.bounds.max.y);
+            }
+
+            return new Vector2(posX, posY);
         }
 
-        return new Vector2(posX, posY);
+        int index;
+        while (true)
+        {
+            index = Random.Range(0, spawnPoint.Count);
+
+            if (m_spawnedPoint[index] == false)
+            {
+                m_spawnedPoint[index] = true;
+                break;
+            }
+        }
+
+        return spawnPoint[index];
     }
 
     protected override void AbilityRangeVisualizer()
@@ -88,6 +131,7 @@ public class BossAbilitySpawner : BossAbility
         }
 
         m_spawnedObjects.Clear();
+        m_spawnedPoint = new bool[spawnPoint.Count];
 
         for (int i = 0; i < m_spawnedObjectCount; i++)
         {
@@ -124,5 +168,19 @@ public class BossAbilitySpawner : BossAbility
                     .OnComplete(() => Object.Destroy(obj));
             }
         }
+    }
+
+    public override void PhaseChange()
+    {
+        if (currentPhaseIndex >= spawnerPhases.Count - 1)
+        {
+            return;
+        }
+
+        Debug.Log($"스폰 능력 페이즈 변경: {currentPhaseIndex} -> {currentPhaseIndex + 1}");
+
+        currentPhaseIndex++;
+        m_spawnedObjectCount = spawnerPhases[currentPhaseIndex].spawnCount;
+        disableTime = spawnerPhases[currentPhaseIndex].disalbeTime;
     }
 }

@@ -47,9 +47,16 @@ public class BossAbilityHandControl : BossAbility
     public override void Initialization()
     {
         base.Initialization();
+
         m_initialLeftHandPosition = hands.leftHand.transform.position;
         m_initialRightHandPosition = hands.rightHand.transform.position;
 
+        lazerBeamObject.SetActive(false);
+    }
+
+    public override void SkillReset()
+    {
+        base.SkillReset();
         lazerBeamObject.SetActive(false);
     }
 

@@ -75,6 +75,11 @@ public class BossAbility : MonoBehaviour
 
     public virtual void Initialization()
     {
+
+    }
+
+    public virtual void SkillReset()
+    {
         cooldownTimer = InitailCooldownTime;
         isOnCooldown = false;
         isAbilityActive = false;
@@ -147,5 +152,10 @@ public class BossAbility : MonoBehaviour
 
         indicatorRenderer.DOFade(0, fadeDuration)
             .OnComplete(() => Destroy(indicator, fadeDuration));
+    }
+
+    public virtual void PhaseChange()
+    {
+        
     }
 }

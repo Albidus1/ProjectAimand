@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,7 @@ public class Health : MonoBehaviour
 
             if (healthSlider != null)
             {
+                healthSlider.maxValue = 1;
                 healthSlider.value = m_HP / maxHP;
             }
 
@@ -35,7 +37,7 @@ public class Health : MonoBehaviour
 
     private ReSpawner m_respawner;
 
-    private float m_HP;
+    public float m_HP;
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
     private EnemyMovement m_enemyMovement;
@@ -94,6 +96,12 @@ public class Health : MonoBehaviour
         Destroy(this.gameObject);
 
         yield return new WaitForSeconds(3f);
-
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        currentHP = m_HP;
+    }
+#endif
 }

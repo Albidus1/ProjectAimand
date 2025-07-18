@@ -19,7 +19,7 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
 
     private Health m_health;
-    private float m_hpRatio;
+    public float m_hpRatio;
     private int m_currentPhase = 0;
 
     [MyReadOnly]
@@ -115,7 +115,7 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
                 if (ab.cooldownTimer <= 0)
                 {
-                    ab.Initialization();
+                    ab.SkillReset();
                 }
             }
         }
@@ -137,13 +137,18 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
             {
                 m_currentPhase = phaseThresholds.Length - 1;
             }
+
+            foreach (BossAbility ab in abilities)
+            {
+                ab.PhaseChange();
+            }
         }
     }
 
     public virtual void OnEvent(AbilityEvent _ab)
     {
         m_currentAbility = _ab.ab;
-        Debug.Log(_ab.ab != null ? _ab.ab.name : null);
+        //Debug.Log(_ab.ab != null ? _ab.ab.name : null);
     }
 
     protected virtual void OnEnable()
