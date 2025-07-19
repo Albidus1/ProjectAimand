@@ -101,22 +101,9 @@ public class DamageOnTouch : MonoBehaviour
 
     private void ApplyDamage(Collider2D _col)
     {
-        if (false == this.isActiveAndEnabled)
-        {
-            return;
-        }
-
-        if (false == _col.CompareTag("Player"))
-        {
-            return;
-        }
-
-        if (m_doKnockback)
-        {
-            return;
-        }
-
-        //Debug.Log("데미지");
+        if (!this.isActiveAndEnabled) return;
+        if (!_col.CompareTag("Player")) return;
+        if (m_doKnockback) return;
 
         if (m_playerMovement == null)
         {
@@ -130,10 +117,18 @@ public class DamageOnTouch : MonoBehaviour
             m_health = _col.GetComponent<Health>();
         }
 
+        // ✅ 무적 상태일 경우 데미지 및 넉백 모두 무시
+        if (m_health != null && m_health.invincible)
+        {
+            Debug.Log("[DamageOnTouch] 무적 상태로 데미지 무시됨");
+            return;
+        }
+
         m_health.currentHP -= 10;
 
         ApplyDamageCausedKnockback();
     }
+
 
     private void ApplyDamageCausedKnockback()
     {

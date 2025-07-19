@@ -1,32 +1,33 @@
 using System.Collections;
 using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
     public float maxHP = 100;
     public Slider healthSlider;
+
+    public bool invincible = false;
     public float currentHP
     {
-        get
-        {
-            return m_HP;
-        }
+        get { return m_HP; }
         set
         {
+            if (invincible) return; // ✅ 무적일 땐 체력 변경 안 함
+
             m_HP = Mathf.Clamp(value, 0, maxHP);
 
             if (healthSlider != null)
-            {
                 healthSlider.value = m_HP / maxHP;
-            }
 
-            Debug.Log($"현재 체력: {currentHP}");
+            OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
+
+            Debug.Log($"현재 체력: {m_HP}");
 
             if (m_HP <= 0)
             {
-                m_HP = 0;
                 Kill();
             }
         }
@@ -40,8 +41,8 @@ public class Health : MonoBehaviour
     private PlayerMovement m_playerMovement;
     private EnemyMovement m_enemyMovement;
     private GameObject m_owner;
- 
 
+    public UnityEvent<float> OnDamageEvent;
 
     private void Awake()
     {
@@ -81,11 +82,11 @@ public class Health : MonoBehaviour
         if (m_playerMovement != null)
         {
             m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Die);
-            StartCoroutine(nameof(OnRespawn));
+            StartCoroutine(OnRespawn());
         }
         else if (m_enemyMovement != null)
         {
-            StartCoroutine(nameof(OnDeath));
+            StartCoroutine(OnDeath());
         }       
     }
 
