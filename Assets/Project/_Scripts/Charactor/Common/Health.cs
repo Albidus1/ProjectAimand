@@ -16,7 +16,9 @@ public class Health : MonoBehaviour
         get { return m_HP; }
         set
         {
-            if (invincible) return; // ✅ 무적일 땐 체력 변경 안 함
+            if (invincible) 
+                return; // ✅ 무적일 땐 체력 변경 안 함
+
 
             m_HP = Mathf.Clamp(value, 0, maxHP);
 
@@ -25,17 +27,17 @@ public class Health : MonoBehaviour
                 healthSlider.maxValue = 1;
                 healthSlider.value = m_HP / maxHP;
 
-            OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
+                OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
 
-            Debug.Log($"현재 체력: {m_HP}");
+                Debug.Log($"현재 체력: {m_HP}");
 
-            if (m_HP <= 0)
-            {
-                Kill();
+                if (m_HP <= 0)
+                {
+                    Kill();
+                }
             }
         }
     }
-
 
     private ReSpawner m_respawner;
 
