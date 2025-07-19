@@ -130,6 +130,13 @@ public class DamageOnTouch : MonoBehaviour
             m_health = _col.GetComponent<Health>();
         }
 
+        // ✅ 무적 상태일 경우 데미지 및 넉백 모두 무시
+        if (m_health != null && m_health.invincible)
+        {
+            Debug.Log("[DamageOnTouch] 무적 상태로 데미지 무시됨");
+            return;
+        }
+
         if (false == killPlayer)
         {
             m_health.currentHP -= 10;
@@ -139,9 +146,9 @@ public class DamageOnTouch : MonoBehaviour
             m_health.currentHP -= 99999;
         }
 
-
         ApplyDamageCausedKnockback();
     }
+
 
     private void ApplyDamageCausedKnockback()
     {
