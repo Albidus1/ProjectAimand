@@ -28,6 +28,8 @@ public class PlayerMovement : MonoBehaviour
 
     public Rigidbody2D rb { get; private set; }
 
+    public Animator animator;
+
     [Header("움직임 제어")]
     public bool CanWallJumping = true;
     public bool CanWallSliding = true;
@@ -123,7 +125,10 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask platform;
     public LayerMask movingPlatform;
     public LayerMask onewayPlatform;
+    public LayerMask magnetPlatform;
+
     [SerializeField] private LayerMask groundLayer;
+    [MyReadOnly] public LayerMask m_currentPlatform;
 
     [Header("이벤트")]
     public bool SendStateChangeEvents = true;
@@ -131,6 +136,8 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        animator = GetComponent<Animator>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
@@ -140,12 +147,18 @@ public class PlayerMovement : MonoBehaviour
         //groundLayer |= platform;
         //groundLayer |= movingPlatform;
         //groundLayer |= onewayPlatform;
+        //groundLayer |= magnetPlatform;
     }
     private void Start()
     {
         SetGravityScale(data.gravityScale);
 
         isFacingRight = true;   
+    }
+
+    private void OnEnable()
+    {
+
     }
 
     private void Update()
@@ -166,9 +179,16 @@ public class PlayerMovement : MonoBehaviour
                 SetGravityScale(0);
                 rb.linearVelocity = Vector2.zero;
             }
+            else
+            {
+                SetGravityScale(data.gravityScale * data.fastFallGravityMult);
+
+                rb.linearVelocity =
+                    new Vector2(0, Mathf.Max(rb.linearVelocity.y, -data.maxFastFallSpeed));
+            }
 
             return;
-        }
+        }    
 
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
@@ -197,10 +217,6 @@ public class PlayerMovement : MonoBehaviour
                 CheckDirectionToFace(moveInput.x > 0);
 
                 currentDirection = (moveInput.x > 0) ? 1 : -1;
-            }
-            else if (moveInput.x == 0)
-            {
-                movementState.StateChange(PlayerStates.MovementStates.Idle);
             }
 
             if (true == isWallGrabbing && false == isLookingOther)
@@ -249,7 +265,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region COLLISION CHECKS
-        if (false == isJumping && false == isDashing)
+        if (false == isDashing)
         {
             if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
@@ -260,7 +276,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
-                false == isWallJumping)
+                false == isJumping && false == isWallJumping)
             {
                 //Debug.Log("오른쪽 벽 확인");
                 lastOnWallRightTime = data.coyoteTime;
@@ -268,7 +284,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
-                false == isWallJumping)
+                false == isJumping && false == isWallJumping)
             {
                 //Debug.Log("왼쪽 벽 확인");
                 lastOnWallLeftTime = data.coyoteTime;
@@ -282,10 +298,19 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region JUMP CHECK
+        if (lastOnGroundTime > 0 && true == isJumping)
+        {
+            isJumping = false;
+        }
+
         if (true == isJumping && rb.linearVelocity.y < 0)
         {
             isJumping = false;
+            isJumpFalling = true;
+        }
 
+        if (rb.linearVelocity.y < 0 && lastOnGroundTime < 0)
+        {
             isJumpFalling = true;
         }
 
@@ -305,6 +330,13 @@ public class PlayerMovement : MonoBehaviour
         if (false == isOnMovingPlatform)
         {
             isJumpingOnMovingPlatform = false;
+        }
+
+        if (lastOnGroundTime > 0 &&
+            (true == isJumping || true == isJumpFalling))
+        {
+            isJumping = false;
+            isJumpFalling = false;
         }
 
         if (false == isDashing)
@@ -509,6 +541,38 @@ public class PlayerMovement : MonoBehaviour
             SetGravityScale(0);
         }
         #endregion
+
+
+
+        if (isJumping && false == isJumpFalling)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Jumping);
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isJumping", true);
+            animator.SetBool("isFalling", false);
+        }
+        else if ((isJumpFalling && false == isJumping)
+            || (isJumpFalling && rb.linearVelocityY < 0))
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Falling);
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isJumping", false);
+            animator.SetBool("isFalling", true);
+        }
+        else if (moveInput.x != 0 && lastOnGroundTime > 0)
+        {       
+            movementState.StateChange(PlayerStates.MovementStates.Running);
+            animator.SetBool("isRunning", true);
+            animator.SetBool("isJumping", false);
+            animator.SetBool("isFalling", false);
+        }
+        else
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Idle);
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isJumping", false);
+            animator.SetBool("isFalling", false);
+        }
     }
 
     private void FixedUpdate()
@@ -621,8 +685,6 @@ public class PlayerMovement : MonoBehaviour
     #region RUN METHODS
     private void Run(float _lerpAmount)
     {
-        movementState.StateChange(PlayerStates.MovementStates.Running);
-
         // 이동하고자 하는 방향과 원하는 속도 계산
         float targetSpeed = moveInput.x * data.runMaxSpeed;
 
@@ -699,8 +761,6 @@ public class PlayerMovement : MonoBehaviour
     #region JUMP METHODS
     public void Jump(float _force, Vector2 _dir = default)
     {
-        //Debug.Log("점프");
-      
         lastPressedJumpTime = 0;
         lastOnGroundTime = 0;
 
@@ -1070,7 +1130,7 @@ public class PlayerMovement : MonoBehaviour
     {
 #if UNITY_EDITOR
         BoxCollider2D col = GetComponent<BoxCollider2D>();
-        Vector2 size = new Vector2 (col.size.x, col.size.y * 1.2f);
+        Vector2 size = new Vector2 (col.size.x, col.size.y);
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position, size);

@@ -2,9 +2,7 @@ using UnityEngine;
 
 public class ReSpawner : MonoBehaviour
 {
-    public Transform respawnPosition;
-
-    private GameObject m_owner;
+    private PlayerMovement m_owner;
     private Collider2D m_collider;
 
 
@@ -13,29 +11,19 @@ public class ReSpawner : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             OnDestroyObject(collision);
-
-            Invoke(nameof(OnReSpawn), 2f);
+            OnReSpawn();
         }
     }
 
     protected virtual void OnDestroyObject(Collider2D _col)
     {
-        m_owner = _col.gameObject;
+        m_owner = _col.GetComponent<PlayerMovement>();
         m_collider = _col;
         m_collider.enabled = false;
     }
 
     public virtual void OnReSpawn()
     {
-        m_owner.transform.position = respawnPosition.position;
-
-        m_collider.enabled = true;
-
-        Health health = m_owner.GetComponent<Health>();
-
-        if (health != null)
-        {
-            health.InitializeCurrentHealth();
-        }
+        LevelManager.Instance.PlayerDead(m_owner);
     }
 }

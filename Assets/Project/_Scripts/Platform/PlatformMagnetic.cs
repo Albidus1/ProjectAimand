@@ -4,41 +4,61 @@ using UnityEngine;
 
 public class PlatformMagnetic : MonoBehaviour
 {
+    public enum BoxSize
+    {
+        m1x1, m2x1, m3x1,
+        m1x2, m2x2, m3x2,
+        m1x3, m2x3, m3x3
+    }
     public enum PoleType { NPole, SPole }
-    [Header("극성")]
+
+    [Header("자력블록")]
+    public BoxSize boxSize = BoxSize.m2x2;
     public PoleType Pole;
     public bool isActive { get; set; }
 
-    [Header("중력")]
-    public float gravityScale = 1;
+    //[Header("중력")]
+    private float gravityScale = 1;
     private float gravityStrength = 0;
 
     [Header("힘")]
     public float minKillSpeed = 5f;
-    public float forceLimit = 5f;
+    [Range(0f, 2f)]
+    public float forceLimit = 1f;
     //public float acceleration = 1.5f;
     //public float decceleration = 3f;
 
 
-    private PlayerMovement playerData;
-    [HideInInspector] public Rigidbody2D rb;
+    private Rigidbody2D rb;
+    private Collider2D col;
     private SpriteRenderer spriteRenderer;
 
     private Vector2 m_magnetForce;
     private float m_currentSpeed;
-
+    private float m_activateTime;
 
     private void Awake()
     {
-        playerData = FindAnyObjectByType<PlayerMovement>();
         rb = GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+        col = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = Pole == PoleType.NPole ? Color.red : Color.blue; // 🔴 N극 = 빨강, 🔵 S극 = 파랑
     }
 
     private void Update()
     {
+        m_activateTime -= Time.deltaTime;
+
+        if (m_activateTime < 0 && isActive)
+        {
+            rb.linearVelocity = Vector2.zero;
+            m_magnetForce = Vector2.zero;
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+
+            isActive = false;
+        }
+
         Gravity();
     }
 
@@ -67,7 +87,7 @@ public class PlatformMagnetic : MonoBehaviour
 
             if (m_currentSpeed > minKillSpeed)
             {
-                health.currentHP -= 10;
+                health.Kill();
             }
         }
 
@@ -79,14 +99,14 @@ public class PlatformMagnetic : MonoBehaviour
 
     public void Gravity()
     {
-        gravityStrength = gravityScale * playerData.data.gravityScale;
+        gravityStrength = gravityScale * 8f;
 
         if (rb.linearVelocity.y < 0)
         {
-            SetGravityScale(gravityStrength * playerData.data.fallGravityMult);
+            SetGravityScale(gravityStrength * 1.5f);
 
             rb.linearVelocity =
-                new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -playerData.data.maxFallSpeed));
+                new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -20));
         }
         else
         {
@@ -94,12 +114,16 @@ public class PlatformMagnetic : MonoBehaviour
         }
     }
 
-
-    public float spd;
     public void Move(Vector2 _force)
     {
-        spd = _force.magnitude;
-        rb.AddForce(_force);
+        rb.AddForce(_force, ForceMode2D.Force);
+
+        //float targetSpeed = Mathf.Lerp(rb.linearVelocity.x, _force.magnitude, 1);
+        //float movement = targetSpeed - rb.linearVelocity.x;
+
+        //rb.AddForce(movement * _force.normalized);
+
+        //transform.Translate(_force * Time.deltaTime);
 
         //float f = _force.x > 0 ? _force.magnitude : -_force.magnitude;
         //float targetSpeed = f;
@@ -121,34 +145,35 @@ public class PlatformMagnetic : MonoBehaviour
 
         //rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
         ////transform.Translate(new Vector2((rb.linearVelocity.x + movement) * Time.deltaTime, 0));
-
-        isActive = false;
     }
 
-    public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isNPole)
+    public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isSamePole)
     {
         isActive = _isActive;
-        rb.constraints = RigidbodyConstraints2D.None | RigidbodyConstraints2D.FreezeRotation;
-
-        float distance = _direction.magnitude;
 
         if (false == _isActive)
         {
+            rb.linearVelocity = Vector2.zero;
+            m_magnetForce = Vector2.zero;
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
             return;
         }
 
-        bool isSamePole = (Pole == PoleType.NPole && _isNPole) ||
-                         (Pole == PoleType.SPole && !_isNPole);
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        if (isSamePole && distance < 1f)
+        m_activateTime = 0.1f;
+
+        float distance = _direction.magnitude;
+
+        m_magnetForce = _direction * _pullForce * forceLimit;
+
+        if (_isSamePole)
         {
-            m_magnetForce = Vector2.zero;
+            Debug.DrawRay(transform.position, _pullForce * Vector2.up, Color.cyan);
         }
         else
         {
-            _pullForce = Mathf.Clamp(_pullForce, -forceLimit, forceLimit);
-            m_magnetForce = isSamePole ? _direction * _pullForce : -_direction * _pullForce;
+            Debug.DrawRay(transform.position, _pullForce * Vector2.down, Color.magenta);
         }
     }
 

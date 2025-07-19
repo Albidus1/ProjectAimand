@@ -17,7 +17,7 @@ public class CheckPoint : MonoBehaviour
     public bool forceAssignation = false;
 
     [Tooltip("체크포인트의 순서")]
-    public int checkPointOrder;
+    public int checkpointOrder;
 
     [Tooltip("이 체크포인트에 여러 번 도달할 수 있는지 여부")]
     public bool canBeReachedMoreThanOnce = true;
@@ -54,7 +54,7 @@ public class CheckPoint : MonoBehaviour
 
     public void SpawnPlayer(PlayerMovement _player)
     {
-        _player.RespawnAt(transform, isFacingRight);
+        _player.RespawnAt(transform, !isFacingRight);
 
         foreach(RespawnAble listener in m_listeners)
         {
@@ -74,20 +74,20 @@ public class CheckPoint : MonoBehaviour
         if (false == LevelManager.HasInstance)
             return;
 
-        if (LevelManager.Instance.checkPoints == null)
+        if (LevelManager.Instance.m_checkPoints == null)
             return;
 
-        if (LevelManager.Instance.checkPoints.Count == 0 )
+        if (LevelManager.Instance.m_checkPoints.Count == 0 )
             return;
 
-        for (int i = 0; i < LevelManager.Instance.checkPoints.Count; i++)
+        for (int i = 0; i < LevelManager.Instance.m_checkPoints.Count; i++)
         {
-            if ((i + 1) <  LevelManager.Instance.checkPoints.Count)
+            if ((i + 1) <  LevelManager.Instance.m_checkPoints.Count)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(
-                    LevelManager.Instance.checkPoints[i].transform.position, 
-                    LevelManager.Instance.checkPoints[i + 1].transform.position);
+                    LevelManager.Instance.m_checkPoints[i].transform.position, 
+                    LevelManager.Instance.m_checkPoints[i + 1].transform.position);
             }
         }
 #endif

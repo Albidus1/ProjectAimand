@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -20,6 +21,8 @@ public class Health : MonoBehaviour
             m_HP = Mathf.Clamp(value, 0, maxHP);
 
             if (healthSlider != null)
+            {
+                healthSlider.maxValue = 1;
                 healthSlider.value = m_HP / maxHP;
 
             OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
@@ -36,7 +39,7 @@ public class Health : MonoBehaviour
 
     private ReSpawner m_respawner;
 
-    private float m_HP;
+    public float m_HP;
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
     private EnemyMovement m_enemyMovement;
@@ -56,8 +59,6 @@ public class Health : MonoBehaviour
 
     private void Start()
     {
-        currentHP = maxHP;
-
         InitializeCurrentHealth();
     }
 
@@ -68,7 +69,7 @@ public class Health : MonoBehaviour
 
     public void InitializeCurrentHealth()
     {
-        Debug.Log($"현재 체력: {currentHP}");
+        //Debug.Log($"현재 체력: {currentHP}");
         m_HP = maxHP;
 
         if(healthSlider != null)
@@ -77,33 +78,17 @@ public class Health : MonoBehaviour
         }
     }
 
-    private void Kill()
+    public void Kill()
     {
         if (m_playerMovement != null)
         {
-            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Die);
-            StartCoroutine(OnRespawn());
+            LevelManager.Instance.PlayerDead(m_playerMovement);
+            InitializeCurrentHealth();
         }
         else if (m_enemyMovement != null)
         {
             StartCoroutine(OnDeath());
         }       
-    }
-
-    private IEnumerator OnRespawn()
-    {
-        m_collider.enabled = false;
-
-        yield return new WaitForSeconds(3f);
-
-        InitializeCurrentHealth();
-        transform.position = m_respawner.respawnPosition.position;
-        m_collider.enabled = true;
-
-        if (m_playerMovement != null)
-        {
-            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Idle);
-        }
     }
 
     private IEnumerator OnDeath()
@@ -113,6 +98,12 @@ public class Health : MonoBehaviour
         Destroy(this.gameObject);
 
         yield return new WaitForSeconds(3f);
-
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        currentHP = m_HP;
+    }
+#endif
 }

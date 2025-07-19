@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class DamageOnTouch : MonoBehaviour
 {
+    public bool killPlayer = false;
+
     [Header("대상")]
     //public LayerMask targetLayerMask;
     public bool applyDamageOnTriggerEnter = true;
@@ -101,9 +103,20 @@ public class DamageOnTouch : MonoBehaviour
 
     private void ApplyDamage(Collider2D _col)
     {
-        if (!this.isActiveAndEnabled) return;
-        if (!_col.CompareTag("Player")) return;
-        if (m_doKnockback) return;
+        if (false == this.isActiveAndEnabled)
+        {
+            return;
+        }
+
+        if (false == _col.CompareTag("Player"))
+        {
+            return;
+        }
+
+        if (m_doKnockback)
+        {
+            return;
+        }
 
         if (m_playerMovement == null)
         {
@@ -124,7 +137,14 @@ public class DamageOnTouch : MonoBehaviour
             return;
         }
 
-        m_health.currentHP -= 10;
+        if (false == killPlayer)
+        {
+            m_health.currentHP -= 10;
+        }
+        else
+        {
+            m_health.currentHP -= 99999;
+        }
 
         ApplyDamageCausedKnockback();
     }
@@ -133,6 +153,11 @@ public class DamageOnTouch : MonoBehaviour
     private void ApplyDamageCausedKnockback()
     {
         //Debug.Log("넉백");
+
+        if (damageCausedKnockbackForce == Vector2.zero)
+        {
+            return;
+        }
 
         m_knockbackForce.x = damageCausedKnockbackForce.x;
 

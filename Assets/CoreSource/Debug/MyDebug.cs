@@ -48,6 +48,12 @@ public static class MyDebug
         Gizmos.DrawRay(_arrowEndPosition + _direction, up * _arrowHeadLength);
         Gizmos.DrawRay(_arrowEndPosition + _direction, down * _arrowHeadLength);
     }
+
+    public static void DrawGizmoPoint(Vector2 _position, float _size, Color _color)
+    {
+        Gizmos.color = _color;
+        Gizmos.DrawSphere(_position, _size);
+    }
     #endregion
 
     #region CASTs
