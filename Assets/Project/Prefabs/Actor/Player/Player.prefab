@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 7710291584736515603}
   - component: {fileID: 3747102144972331660}
   - component: {fileID: 5901639331388997926}
+  - component: {fileID: 4685906566959424586}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -73,6 +74,8 @@ Transform:
   - {fileID: 6134208151264342079}
   - {fileID: 8580654847347840764}
   - {fileID: 7571400136711506304}
+  - {fileID: 7607491822134029762}
+  - {fileID: 314134653377386826}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &9144257462320758668
@@ -324,6 +327,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 30
   healthSlider: {fileID: 0}
+  invincible: 0
+  m_HP: 0
+  OnDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &4685906566959424586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636643584472994324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e22b522061c5a604abf0c83a6f9f7db9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewAngle: 90
+  viewRadius: 5
+  resolution: 30
+  damage: 20
+  attackInterval: 0.5
+  fovDisplayTime: 0.5
+  downwardAttackDamage: 10
+  downwardAttackSpeed: -15
+  maxFallSpeed: -40
+  invincibleDurationAfterHit: 0.2
 --- !u!1 &2046126471057462264
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,14 +1054,3 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7975143708878473422, guid: 26998ce310b7e3e40ade45edc9a6103d, type: 3}
   m_PrefabInstance: {fileID: 7706047362536804740}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4945884945807995712 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3337784253730644676, guid: 26998ce310b7e3e40ade45edc9a6103d, type: 3}
-  m_PrefabInstance: {fileID: 7706047362536804740}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3585e27c47e40541b1657e67a9ed149, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

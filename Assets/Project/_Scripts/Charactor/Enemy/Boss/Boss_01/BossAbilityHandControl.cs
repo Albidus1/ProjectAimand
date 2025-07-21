@@ -11,6 +11,7 @@ public class BossAbilityHandControl : BossAbility
     [Header("손 오브젝트")]
     public BossHands hands;
     public GameObject lazerBeamObject;
+    public float lazerBeamDuration = 2f;
 
     [Header("지정 좌표")]
     [MyReadOnly]
@@ -30,7 +31,7 @@ public class BossAbilityHandControl : BossAbility
     private Vector2 m_initialLeftHandPosition;
     private Vector2 m_initialRightHandPosition;
     private int m_currentPositionIndex = 0;
- 
+    private int m_currnetPatternIndex = 0;
 
 
 
@@ -50,21 +51,18 @@ public class BossAbilityHandControl : BossAbility
 
         m_initialLeftHandPosition = hands.leftHand.transform.position;
         m_initialRightHandPosition = hands.rightHand.transform.position;
-
-        lazerBeamObject.SetActive(false);
     }
 
     public override void SkillReset()
     {
         base.SkillReset();
-        lazerBeamObject.SetActive(false);
     }
 
     private void SetHandPosition()
     {
-        int randomPattern = Random.Range(0, patterns.Count);
+        m_currnetPatternIndex = Random.Range(0, patterns.Count);
 
-        var pattern = patterns[randomPattern];
+        var pattern = patterns[m_currnetPatternIndex];
 
         moveLeftElements.Clear();
         moveRightElements.Clear();
@@ -205,24 +203,48 @@ public class BossAbilityHandControl : BossAbility
 
             sequence.Append(MoveTo(hand, element.movePosition, element.moveSpeed, element.moveEase));
             sequence.AppendInterval(0.1f);
-            sequence.AppendCallback(LazerBeam);
-            sequence.AppendInterval(3f);
-            sequence.AppendCallback(LazerBeam);
+            sequence.AppendCallback(SpawnLazerBeam);
+            sequence.AppendInterval(lazerBeamDuration);
             sequence.Append(MoveTo(hand, initialPosition, moveSpeed, moveEase));
             sequence.AppendInterval(0.1f);
         }
         else
         {
-            foreach ( var e in moveElements)
+            var currentPattern = patterns[m_currnetPatternIndex];
+            if (currentPattern.isSyncMoving)
             {
-                Vector2 mirrorPosition = new Vector2((2 * initialAbilityRangePosition.position.x) - e.movePosition.x, e.movePosition.y);
+                foreach (var e in moveElements)
+                {
+                    Vector2 mirrorPosition = new Vector2((2 * initialAbilityRangePosition.position.x) - e.movePosition.x, e.movePosition.y);
 
-                sequence.Append(hands.leftHand.transform.DORotate(new Vector3(0, 0, e.rotate), 0));
-                sequence.Join(hands.rightHand.transform.DORotate(new Vector3(0, 0, -e.rotate), 0));
+                    sequence.Append(hands.leftHand.transform.DORotate(new Vector3(0, 0, e.rotate), 0));
+                    sequence.Join(hands.rightHand.transform.DORotate(new Vector3(0, 0, -e.rotate), 0));
 
-                sequence.Append(MoveTo(hands.leftHand, e.movePosition, e.moveSpeed, e.moveEase));
-                sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase));
-                sequence.AppendInterval(e.waitTime);
+                    sequence.Append(MoveTo(hands.leftHand, e.movePosition, e.moveSpeed, e.moveEase));
+                    sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase));
+                    sequence.AppendInterval(e.waitTime);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    var hand = i == 0 ? (currentPattern.isRightFirst ? hands.rightHand : hands.leftHand)
+                  : (currentPattern.isRightFirst ? hands.leftHand : hands.rightHand);
+
+                    foreach (var e in moveElements)
+                    {
+                        Vector2 position = hand == hands.leftHand ?
+                            e.movePosition :
+                            new Vector2((2 * initialAbilityRangePosition.position.x) - e.movePosition.x, e.movePosition.y);
+
+                        float rotate = hand == hands.leftHand ? e.rotate : -e.rotate;
+
+                        sequence.Append(hand.transform.DORotate(new Vector3(0, 0, rotate), 0));
+                        sequence.Join(MoveTo(hand, position, e.moveSpeed, e.moveEase));
+                        sequence.AppendInterval(e.waitTime);
+                    }
+                }
             }
 
             sequence.Append(hands.leftHand.transform.DORotate(Vector3.zero, 0));
@@ -241,28 +263,21 @@ public class BossAbilityHandControl : BossAbility
             .SetEase(_moveEase);
     }
 
-    private void LazerBeam()
+    private void SpawnLazerBeam()
     {     
         if (lazerBeamObject == null)
         {
             return;
         }
 
-        if (false == lazerBeamObject.activeSelf)
-        {
-            Vector3 half = new Vector2(lazerBeamObject.transform.localScale.x * 0.5f, 0);
-            Vector2 position = isRightHand ?
-                hands.rightHand.transform.position - half :
-                hands.leftHand.transform.position + half;
-            
-            lazerBeamObject.transform.position = position;
+        Vector3 half = new Vector2(lazerBeamObject.transform.localScale.x * 0.5f, 0);
+        Vector2 position = isRightHand ?
+            hands.rightHand.transform.position - half :
+            hands.leftHand.transform.position + half;
 
-            lazerBeamObject.SetActive(true);
-        }
-        else
-        {
-            lazerBeamObject.SetActive(false);
-        }
+
+        BossVanishingObject obj = Instantiate(lazerBeamObject, position, Quaternion.identity).GetComponent<BossVanishingObject>();
+        obj.StartVanishing(lazerBeamDuration);
     }
 
     #region GENERAL METHODS

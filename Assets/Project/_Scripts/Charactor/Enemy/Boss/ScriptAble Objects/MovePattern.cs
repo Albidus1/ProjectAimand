@@ -22,5 +22,9 @@ public class MoveElement : ICloneable
 [CreateAssetMenu(menuName = "보스 이동 패턴")]
 public class MovePattern : ScriptableObject
 {
+    public bool isSyncMoving = true;
+    [MyConditionalHide("isSyncMoving", true, true)]
+    public bool isRightFirst = false;
+
     public List<MoveElement> moveElements = new List<MoveElement>();
 }

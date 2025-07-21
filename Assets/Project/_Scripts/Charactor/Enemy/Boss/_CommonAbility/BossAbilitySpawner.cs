@@ -16,10 +16,7 @@ public class SpawnerPhase
 
 public class BossAbilitySpawner : BossAbility
 {
-    public enum SpawnType { None, Control }
-
     [Header("스폰 오브젝트")]
-    public SpawnType spawnType = SpawnType.None;
     public bool randomSpawnPoint = false;
     public float spawnInterval = 0.5f;
 
@@ -69,8 +66,6 @@ public class BossAbilitySpawner : BossAbility
     public override void SkillReset()
     {
         base.SkillReset();
-
-
     }
 
     public override IEnumerator UseAbility()
@@ -160,12 +155,16 @@ public class BossAbilitySpawner : BossAbility
                     .SetEase(moveEase)
                     .OnComplete(() => Object.Destroy(obj));
             }
-            else if (direction == Vector2.zero && spawnType == SpawnType.None) 
+            else
             {
-                SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
-
-                spriteRenderer.DOFade(0.4f, disableTime)
-                    .OnComplete(() => Object.Destroy(obj));
+                if (obj.TryGetComponent<BossVanishingObject>(out BossVanishingObject vanishingObject))
+                {
+                    vanishingObject.StartVanishing(disableTime);
+                }
+                else
+                {
+                    Destroy(obj, disableTime);
+                }
             }
         }
     }
