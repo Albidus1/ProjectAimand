@@ -298,19 +298,9 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region JUMP CHECK
-        if (lastOnGroundTime > 0 && true == isJumping)
-        {
-            isJumping = false;
-        }
-
         if (true == isJumping && rb.linearVelocity.y < 0)
         {
             isJumping = false;
-            isJumpFalling = true;
-        }
-
-        if (rb.linearVelocity.y < 0 && lastOnGroundTime < 0)
-        {
             isJumpFalling = true;
         }
 
@@ -323,7 +313,6 @@ public class PlayerMovement : MonoBehaviour
         if (lastOnGroundTime > 0 && false == isJumping && false == isWallJumping)
         {
             isJumpCut = false;
-
             isJumpFalling = false;
         }
         
@@ -352,10 +341,12 @@ public class PlayerMovement : MonoBehaviour
 
                 if (true == isJumpingOnMovingPlatform)
                 {
+                    Debug.Log("이동 플랫폼에서 점프");
                     Jump(data.jumpForce, platformDirection);
                 }
                 else
                 {
+                    Debug.Log("일반 점프");
                     Jump(data.jumpForce);
                 }               
             }
@@ -542,17 +533,19 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
 
-
-
-        if (isJumping && false == isJumpFalling)
+        #region STATE CHANGE
+        if (isDashing)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Dashing);
+        }
+        else if (isJumping)
         {
             movementState.StateChange(PlayerStates.MovementStates.Jumping);
             animator.SetBool("isRunning", false);
             animator.SetBool("isJumping", true);
             animator.SetBool("isFalling", false);
         }
-        else if ((isJumpFalling && false == isJumping)
-            || (isJumpFalling && rb.linearVelocityY < 0))
+        else if (isJumpFalling)
         {
             movementState.StateChange(PlayerStates.MovementStates.Falling);
             animator.SetBool("isRunning", false);
@@ -573,6 +566,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("isJumping", false);
             animator.SetBool("isFalling", false);
         }
+        #endregion
     }
 
     private void FixedUpdate()
@@ -621,8 +615,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnJumpUpInput()
     {
-        if (true == CanJumpCut() || true == CanWallJumpCut())
+        if (CanJumpCut() || CanWallJumpCut())
         {
+            Debug.Log("점프 컷");
             isJumpCut = true;
         }
     }

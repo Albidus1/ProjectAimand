@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 
 
@@ -26,6 +27,10 @@ public class BossAbilityHandControl : BossAbility
     public float moveSpeed;
     public Ease moveEase = Ease.Linear;
     public bool lazerPattern;
+
+    private bool isRightFirst = false;
+    private GameObject m_currentHand;
+    private MovePattern m_currentPattern;
 
     private bool isRightHand = false;
     private Vector2 m_initialLeftHandPosition;
@@ -58,22 +63,6 @@ public class BossAbilityHandControl : BossAbility
         base.SkillReset();
     }
 
-    private void SetHandPosition()
-    {
-        m_currnetPatternIndex = Random.Range(0, patterns.Count);
-
-        var pattern = patterns[m_currnetPatternIndex];
-
-        moveLeftElements.Clear();
-        moveRightElements.Clear();
-        for (int i = 0; i < pattern.moveElements.Count; i++)
-        {
-            moveLeftElements.Add((MoveElement)pattern.moveElements[i].Clone());
-            moveRightElements.Add((MoveElement)pattern.moveElements[i].Clone());
-            moveRightElements[i].movePosition = GetMirrorXPosition(base.initialAbilityRangePosition.position, moveLeftElements[i].movePosition);
-        }
-    }
-
     public override IEnumerator UseAbility()
     {
         if (isAbilityActive || hands.isAbilityActive)
@@ -97,6 +86,55 @@ public class BossAbilityHandControl : BossAbility
         hands.isAbilityActive = false;
     }
 
+    protected override void AbilityRangeVisualizer()
+    {
+        if (lazerPattern)
+        {
+            RandomPosition();
+
+            base.abilityPrefab = isRightHand ?
+                hands.rightHand : hands.leftHand;
+
+            base.AbilityRangeVisualizer();
+        }
+        else
+        {
+            SetHandPosition();
+
+            m_currentPattern = patterns[m_currnetPatternIndex];
+
+            moveElements = moveLeftElements;
+            m_spawnPoint = moveLeftElements[0].movePosition;
+
+            if (moveLeftElements.Count > 1)
+            {
+                Vector3 dir1 = (moveLeftElements[1].movePosition - moveLeftElements[0].movePosition).normalized;
+                Vector3 dir2 = (moveRightElements[1].movePosition - moveRightElements[0].movePosition).normalized;
+
+                Vector3 pos1 = GetVectorCenter(moveLeftElements[0].movePosition, moveLeftElements[1].movePosition);
+                Vector3 pos2 = GetVectorCenter(moveRightElements[0].movePosition, moveRightElements[1].movePosition);
+
+                if (m_currentPattern.randomMirroring)
+                {
+                    isRightFirst = Random.Range(0, 2) == 0;
+                    if (isRightFirst)
+                    {
+                        HandIndicatorRender(base.abilityRangePrefab, pos2, dir2);
+                    }
+                    else
+                    {
+                        HandIndicatorRender(base.abilityRangePrefab, pos1, dir1);
+                    }
+                }
+                else
+                {
+                    HandIndicatorRender(base.abilityRangePrefab, pos1, dir1);
+                    HandIndicatorRender(base.abilityRangePrefab, pos2, dir2);
+                }
+            }
+        }
+    }
+
     private void RandomPosition()
     {
         isRightHand = Random.Range(0, 2) == 0;
@@ -115,40 +153,19 @@ public class BossAbilityHandControl : BossAbility
         }
     }
 
-    protected override void AbilityRangeVisualizer()
+    private void SetHandPosition()
     {
-        if (lazerPattern)
+        m_currnetPatternIndex = Random.Range(0, patterns.Count);
+
+        var pattern = patterns[m_currnetPatternIndex];
+
+        moveLeftElements.Clear();
+        moveRightElements.Clear();
+        for (int i = 0; i < pattern.moveElements.Count; i++)
         {
-            RandomPosition();
-
-            base.abilityPrefab = isRightHand ?
-                hands.rightHand : hands.leftHand;
-
-            base.AbilityRangeVisualizer();
-        }
-        else
-        {
-            SetHandPosition();
-
-            moveElements = moveLeftElements;
-            m_spawnPoint = moveLeftElements[0].movePosition;
-
-            if (moveLeftElements.Count > 1)
-            {
-                Vector3 dir1 = (moveLeftElements[1].movePosition - moveLeftElements[0].movePosition).normalized;
-                Vector3 dir2 = (moveRightElements[1].movePosition - moveRightElements[0].movePosition).normalized;
-
-                Vector3 pos1 = GetVectorCenter(moveLeftElements[0].movePosition, moveLeftElements[1].movePosition);
-                Vector3 pos2 = GetVectorCenter(moveRightElements[0].movePosition, moveRightElements[1].movePosition);
-
-                HandIndicatorRender(base.abilityRangePrefab, pos1, dir1);
-                HandIndicatorRender(base.abilityRangePrefab, pos2, dir2);
-            }
-            else
-            {
-                HandIndicatorRender(base.abilityRangePrefab, moveLeftElements[0].movePosition, Vector3.zero);
-                HandIndicatorRender(base.abilityRangePrefab, moveRightElements[0].movePosition, Vector3.zero);
-            }
+            moveLeftElements.Add((MoveElement)pattern.moveElements[i].Clone());
+            moveRightElements.Add((MoveElement)pattern.moveElements[i].Clone());
+            moveRightElements[i].movePosition = GetMirrorXPosition(base.initialAbilityRangePosition.position, moveLeftElements[i].movePosition);
         }
     }
 
@@ -227,21 +244,29 @@ public class BossAbilityHandControl : BossAbility
             }
             else
             {
-                for (int i = 0; i < 2; i++)
+                int index = 2;
+
+                if (currentPattern.randomMirroring)
                 {
-                    var hand = i == 0 ? (currentPattern.isRightFirst ? hands.rightHand : hands.leftHand)
-                  : (currentPattern.isRightFirst ? hands.leftHand : hands.rightHand);
+                    index = 1;
+                }
+
+                for (int i = 0; i < index; i++)
+                {
+                    m_currentHand = i == 0 ? 
+                        (isRightFirst ? hands.rightHand : hands.leftHand)
+                        : (isRightFirst ? hands.leftHand : hands.rightHand);
 
                     foreach (var e in moveElements)
                     {
-                        Vector2 position = hand == hands.leftHand ?
+                        Vector2 position = m_currentHand == hands.leftHand ?
                             e.movePosition :
                             new Vector2((2 * initialAbilityRangePosition.position.x) - e.movePosition.x, e.movePosition.y);
 
-                        float rotate = hand == hands.leftHand ? e.rotate : -e.rotate;
+                        float rotate = m_currentHand == hands.leftHand ? e.rotate : -e.rotate;
 
-                        sequence.Append(hand.transform.DORotate(new Vector3(0, 0, rotate), 0));
-                        sequence.Join(MoveTo(hand, position, e.moveSpeed, e.moveEase));
+                        sequence.Append(m_currentHand.transform.DORotate(new Vector3(0, 0, rotate), 0));
+                        sequence.Join(MoveTo(m_currentHand, position, e.moveSpeed, e.moveEase));
                         sequence.AppendInterval(e.waitTime);
                     }
                 }

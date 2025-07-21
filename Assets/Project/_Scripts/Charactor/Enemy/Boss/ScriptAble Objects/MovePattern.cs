@@ -23,6 +23,9 @@ public class MoveElement : ICloneable
 public class MovePattern : ScriptableObject
 {
     public bool isSyncMoving = true;
+
+    [MyConditionalHide("isSyncMoving", true, true)]
+    public bool randomMirroring = false;
     [MyConditionalHide("isSyncMoving", true, true)]
     public bool isRightFirst = false;
 
