@@ -18,21 +18,15 @@ public class BossAbilitySpawner : BossAbility
 {
     [Header("스폰 오브젝트")]
     public bool randomSpawnPoint = false;
-    public float spawnInterval = 0.5f;
 
-    [Header("이동 설정")]
-    public Ease moveEase = Ease.Linear;
-    public Vector2 direction;
-    public float moveSpeed;
-    public float disableTime;
-
+    [Header("스폰 위치")]
     public List<Vector2> spawnPoint = new List<Vector2>();
     public List<SpawnerPhase> spawnerPhases = new List<SpawnerPhase>();
     [MyReadOnly]
     public int currentPhaseIndex = 0;
 
     protected bool[] m_spawnedPoint;
-    protected List<GameObject> m_spawnedObjects = new List<GameObject>();
+    protected List<BossSkillBase> m_spawnedObjects = new List<BossSkillBase>();
     protected int m_spawnedObjectCount = 1;
     protected Collider2D m_collider2D;
 
@@ -59,7 +53,7 @@ public class BossAbilitySpawner : BossAbility
         if (spawnerPhases.Count > 0)
         {
             m_spawnedObjectCount = spawnerPhases[0].spawnCount;
-            disableTime = spawnerPhases[0].disalbeTime;
+
         }
     }
 
@@ -137,35 +131,20 @@ public class BossAbilitySpawner : BossAbility
                 base.AbilityRangeVisualizer();
             }
 
-            GameObject obj = Instantiate(base.abilityPrefab, m_spawnPoint, Quaternion.identity);
-            obj.SetActive(false);
+            BossSkillBase obj = Instantiate(base.abilityPrefab, m_spawnPoint, Quaternion.identity).GetComponent<BossSkillBase>();
+            obj.gameObject.SetActive(false);
             m_spawnedObjects.Add(obj);
         }
     }
 
     private void ObjectsActivate()
     {
-        foreach (GameObject obj in m_spawnedObjects)
+        foreach (BossSkillBase obj in m_spawnedObjects)
         {
-            obj.SetActive(true);
+            obj.gameObject.SetActive(true);
 
-            if (direction != Vector2.zero)
-            {
-                obj.transform.DOMove((Vector2)obj.transform.position + direction, moveSpeed)
-                    .SetEase(moveEase)
-                    .OnComplete(() => Object.Destroy(obj));
-            }
-            else
-            {
-                if (obj.TryGetComponent<BossVanishingObject>(out BossVanishingObject vanishingObject))
-                {
-                    vanishingObject.StartVanishing(disableTime);
-                }
-                else
-                {
-                    Destroy(obj, disableTime);
-                }
-            }
+            obj.disableTime = spawnerPhases[currentPhaseIndex].disalbeTime;
+            obj.UseSkill();
         }
     }
 
@@ -180,6 +159,5 @@ public class BossAbilitySpawner : BossAbility
 
         currentPhaseIndex++;
         m_spawnedObjectCount = spawnerPhases[currentPhaseIndex].spawnCount;
-        disableTime = spawnerPhases[currentPhaseIndex].disalbeTime;
     }
 }

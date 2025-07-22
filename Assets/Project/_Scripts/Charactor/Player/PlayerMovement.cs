@@ -343,12 +343,12 @@ public class PlayerMovement : MonoBehaviour
 
                 if (true == isJumpingOnMovingPlatform)
                 {
-                    Debug.Log("이동 플랫폼에서 점프");
+                    //Debug.Log("이동 플랫폼에서 점프");
                     Jump(data.jumpForce, platformDirection);
                 }
                 else
                 {
-                    Debug.Log("일반 점프");
+                    //Debug.Log("일반 점프");
                     Jump(data.jumpForce);
                 }               
             }
