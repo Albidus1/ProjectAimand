@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BossHands : MonoBehaviour
+public class BossHands : BossSkillBase
 {
     public GameObject rightHand;
     public GameObject leftHand;

@@ -1,11 +1,7 @@
 using UnityEngine;
 
-public class BossSniper : MonoBehaviour
+public class BossSniper : BossSkillBase
 {
-    [Header("타겟 - 플레이어")]
-    public Transform target;
-    public LayerMask playerMask;
-
     [Header("타이머")]
     public float trackingTime = 3f;
     public float shotTime = 1f;
@@ -20,19 +16,20 @@ public class BossSniper : MonoBehaviour
 
 
 
-    private void Awake()
+    protected override void Awake()
     {
-
+        base.Awake();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         Initialization();
     }
 
     public void Initialization()
     {
-        target = null;
+        target = FindFirstObjectByType<PlayerMovement>().transform;
         m_trackingTimer = trackingTime;
         m_shotTimer = shotTime;
         m_destroyTime = 0.1f;
@@ -86,7 +83,7 @@ public class BossSniper : MonoBehaviour
         {
             if (hit.collider.CompareTag("Player"))
             {
-                Debug.Log("맞음");
+                Debug.Log($"{gameObject.name} - {hit.collider.gameObject.name}에게 {damage} 피해");
                 break;
             }
         }
