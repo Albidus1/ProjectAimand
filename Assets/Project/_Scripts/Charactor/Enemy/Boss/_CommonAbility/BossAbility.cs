@@ -36,6 +36,7 @@ public class BossAbility : MonoBehaviour
     [Space(10)]
 
     public GameObject abilityPrefab;
+    public float damage = 10f;
     public float InitailCooldownTime = 5f;
     public int abilityActCount = 3;
     public bool afterCooldown = false;

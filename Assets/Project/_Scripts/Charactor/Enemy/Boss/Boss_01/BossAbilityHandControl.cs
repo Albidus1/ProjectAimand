@@ -302,7 +302,7 @@ public class BossAbilityHandControl : BossAbility
 
 
         BossVanishingObject obj = Instantiate(lazerBeamObject, position, Quaternion.identity).GetComponent<BossVanishingObject>();
-        obj.UseSkill();
+        obj.StartVanishing(lazerBeamDuration);
     }
 
     #region GENERAL METHODS
