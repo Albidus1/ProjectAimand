@@ -1,5 +1,4 @@
 using System.Collections;
-using System.ComponentModel;
 using UnityEngine;
 
 
@@ -69,6 +68,8 @@ public class PlayerMovement : MonoBehaviour
     // 점프
     private bool isJumpCut;
     private bool isJumpFalling;
+    private float m_jumpDisableGroundCheckTime = 0.1f;
+    private float m_jumpEndIgnoreGroundUntil = -1f;
 
     // 벽 점프
     private float wallJumpStartTime;
@@ -267,7 +268,8 @@ public class PlayerMovement : MonoBehaviour
         #region COLLISION CHECKS
         if (false == isDashing)
         {
-            if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
+            if (Time.time > m_jumpEndIgnoreGroundUntil &&
+                Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
                 lastOnGroundTime = data.coyoteTime;
                 lastOnGrabTime = data.grabStamina;
@@ -615,9 +617,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnJumpUpInput()
     {
-        if (CanJumpCut() || CanWallJumpCut())
+        if ((CanJumpCut() || CanWallJumpCut()))
         {
-            Debug.Log("점프 컷");
             isJumpCut = true;
         }
     }
@@ -763,6 +764,8 @@ public class PlayerMovement : MonoBehaviour
         isWallJumping = false;
         isJumpCut = false;
         isJumpFalling = false;
+
+        m_jumpEndIgnoreGroundUntil = Time.time + m_jumpDisableGroundCheckTime;
 
         if (rb.linearVelocity.y < 0)
         {
