@@ -227,6 +227,8 @@ public class BossAbilityHandControl : BossAbility
         }
         else
         {
+            sequence.AppendCallback(() => SetHandsCollision(true));
+
             var currentPattern = patterns[m_currnetPatternIndex];
             if (currentPattern.isSyncMoving)
             {
@@ -272,6 +274,7 @@ public class BossAbilityHandControl : BossAbility
                 }
             }
 
+            sequence.AppendCallback(() => SetHandsCollision(false));
             sequence.Append(hands.leftHand.transform.DORotate(Vector3.zero, 0));
             sequence.Join(hands.rightHand.transform.DORotate(Vector3.zero, 0));
             sequence.Append(MoveTo(hands.leftHand, m_initialLeftHandPosition, moveSpeed, moveEase));
@@ -280,6 +283,12 @@ public class BossAbilityHandControl : BossAbility
         }
 
         yield return sequence.WaitForCompletion();
+    }
+
+    private void SetHandsCollision(bool _OnOff)
+    {
+        hands.isOnCollision = _OnOff;
+        //Debug.Log($"손 충돌 {_OnOff}");
     }
 
     private Tween MoveTo(GameObject _obj, Vector2 _target, float _moveSpeed, Ease _moveEase)

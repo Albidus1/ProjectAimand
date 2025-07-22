@@ -29,7 +29,10 @@ public class Health : MonoBehaviour
 
                 OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
 
-                Debug.Log($"현재 체력: {m_HP}");
+                if (Application.isPlaying)
+                {
+                    Debug.Log($"현재 체력: {m_HP}");
+                }
 
                 if (m_HP <= 0)
                 {

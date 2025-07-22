@@ -16,7 +16,7 @@ public class SpawnerPhase
 
 public class BossAbilitySpawner : BossAbility
 {
-    [Header("스폰 오브젝트")]
+    [Header("랜덤 스폰")]
     public bool randomSpawnPoint = false;
 
     [Header("스폰 위치")]
@@ -29,6 +29,8 @@ public class BossAbilitySpawner : BossAbility
     protected List<BossSkillBase> m_spawnedObjects = new List<BossSkillBase>();
     protected int m_spawnedObjectCount = 1;
     protected Collider2D m_collider2D;
+
+
 
     private void Awake()
     {
