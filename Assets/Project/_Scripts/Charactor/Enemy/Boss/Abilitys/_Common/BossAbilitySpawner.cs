@@ -145,7 +145,11 @@ public class BossAbilitySpawner : BossAbility
         {
             obj.gameObject.SetActive(true);
 
-            obj.disableTime = spawnerPhases[currentPhaseIndex].disalbeTime;
+            if (spawnerPhases.Count > 0)
+            {
+                obj.disableTime = spawnerPhases[currentPhaseIndex].disalbeTime;
+            }
+
             obj.UseSkill();
         }
     }
