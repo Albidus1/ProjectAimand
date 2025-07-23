@@ -12,6 +12,7 @@ public class MoveElement : ICloneable
     public float moveSpeed;
     public float rotate;
     public float waitTime;
+    public bool isOnCollision;
 
     public object Clone()
     {

@@ -26,24 +26,30 @@ public class BossAbilityHandControlEditor : Editor
 
         patternIndex = EditorGUILayout.IntField("수정할 패턴 인덱스", patternIndex);
         EditorGUILayout.Space();
+
+        bool exitGUIRequested = false;
+
         using (new EditorGUI.DisabledScope(patternIndex < 0 || patternIndex >= targetHandControl.patterns.Count))
         {
             if (GUILayout.Button($"패턴_{patternIndex} 수정"))
             {
                 doChange = true;
-
-                GUIUtility.ExitGUI();
+                exitGUIRequested = true;
             }
 
             if (GUILayout.Button($"수정 완료"))
             {
                 doChange = false;
-
-                GUIUtility.ExitGUI();
+                exitGUIRequested = true;
             }
         }
 
         serializedObject.ApplyModifiedProperties();
+
+        if (exitGUIRequested)
+        {
+            GUIUtility.ExitGUI();
+        }
     }
 
     private void OnSceneGUI()

@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     public PlayerData data;
 
     public Rigidbody2D rb { get; private set; }
+    public Collider2D col { get; private set; }
 
     public Animator animator;
 
@@ -137,6 +138,7 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<BoxCollider2D>();
 
         animator = GetComponent<Animator>();
 

@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8c9f91b3d876fe4391c8bbed201feb0, type: 3}
   m_Name: Pattern_01
   m_EditorClassIdentifier: 
+  isSyncMoving: 1
+  randomMirroring: 0
+  isRightFirst: 0
   moveElements:
   - movePosition: {x: -10, y: 0.5}
     moveEase: 1
     moveSpeed: 0.8
     rotate: 0
     waitTime: 1
+    isOnCollision: 1
   - movePosition: {x: 8, y: 0.5}
     moveEase: 1
     moveSpeed: 0.4
     rotate: 0
     waitTime: 2
+    isOnCollision: 0

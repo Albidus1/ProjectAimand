@@ -147,7 +147,7 @@ public class PlatformMagnetic : MonoBehaviour
         ////transform.Translate(new Vector2((rb.linearVelocity.x + movement) * Time.deltaTime, 0));
     }
 
-    public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isSamePole)
+    public void MagneticActivate(bool _isActive, Vector3 _direction, float _pullForce, bool _isPulling)
     {
         isActive = _isActive;
 
@@ -167,7 +167,7 @@ public class PlatformMagnetic : MonoBehaviour
 
         m_magnetForce = _direction * _pullForce * forceLimit;
 
-        if (_isSamePole)
+        if (_isPulling)
         {
             Debug.DrawRay(transform.position, _pullForce * Vector2.up, Color.cyan);
         }

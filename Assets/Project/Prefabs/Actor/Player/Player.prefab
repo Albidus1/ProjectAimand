@@ -44,10 +44,10 @@ GameObject:
   - component: {fileID: 5787603568156332245}
   - component: {fileID: 5420508453523551463}
   - component: {fileID: 7135715311573208887}
-  - component: {fileID: 7710291584736515603}
-  - component: {fileID: 3747102144972331660}
   - component: {fileID: 5901639331388997926}
+  - component: {fileID: 7710291584736515603}
   - component: {fileID: 4685906566959424586}
+  - component: {fileID: 1528961912313230829}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -228,6 +228,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &5901639331388997926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636643584472994324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e0d992acc2d6f47a4cbae6e946371e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 30
+  healthSlider: {fileID: 0}
+  invincible: 0
+  m_HP: 0
+  OnDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7710291584736515603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,61 +296,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   SendStateChangeEvents: 1
---- !u!114 &3747102144972331660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1636643584472994324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdf17ed3c9fd7724b9332ed192fd6927, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 0
-  visionRadius: 20
-  visionAngle: 60
-  angleOffset: 0
-  direction: {x: 0, y: 0, z: 0}
-  eulerAngles: {x: 0, y: 0, z: 0}
-  shouldScanForTargets: 0
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  scanFrequencyInSeconds: 0.1
-  visibleTargets: []
-  shouldDrawMesh: 1
-  meshDensity: 1
-  edgePrecision: 3
-  edgeThreshold: 0.5
-  visionMeshFilter: {fileID: 4234814298208232969}
-  playerController: {fileID: 7710291584736515603}
-  spriteRenderer: {fileID: 3697946856084699757}
-  pullForce: 30
-  minAdjust: 0.1
-  easeType: 4
---- !u!114 &5901639331388997926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1636643584472994324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0e0d992acc2d6f47a4cbae6e946371e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHP: 30
-  healthSlider: {fileID: 0}
-  invincible: 0
-  m_HP: 0
-  OnDamageEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &4685906566959424586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,6 +318,41 @@ MonoBehaviour:
   downwardAttackSpeed: -15
   maxFallSpeed: -40
   invincibleDurationAfterHit: 0.2
+--- !u!114 &1528961912313230829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636643584472994324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35b87f87a4e55e44a8400d1653dfd41a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  visionRadius: 20
+  visionAngle: 60
+  angleOffset: 0
+  direction: {x: 0, y: 0, z: 0}
+  eulerAngles: {x: 0, y: 0, z: 0}
+  shouldScanForTargets: 1
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 2048
+  scanFrequencyInSeconds: 0.1
+  visibleTargets: []
+  shouldDrawMesh: 1
+  meshDensity: 1
+  edgePrecision: 3
+  edgeThreshold: 0.5
+  visionMeshFilter: {fileID: 4234814298208232969}
+  playerController: {fileID: 7710291584736515603}
+  spriteRenderer: {fileID: 3697946856084699757}
+  moveEase: 1
+  pullForce: 30
 --- !u!1 &2046126471057462264
 GameObject:
   m_ObjectHideFlags: 0

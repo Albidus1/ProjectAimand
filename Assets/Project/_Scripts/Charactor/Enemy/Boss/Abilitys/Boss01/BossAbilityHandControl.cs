@@ -227,8 +227,6 @@ public class BossAbilityHandControl : BossAbility
         }
         else
         {
-            sequence.AppendCallback(() => SetHandsCollision(true));
-
             var currentPattern = patterns[m_currnetPatternIndex];
             if (currentPattern.isSyncMoving)
             {
@@ -240,7 +238,8 @@ public class BossAbilityHandControl : BossAbility
                     sequence.Join(hands.rightHand.transform.DORotate(new Vector3(0, 0, -e.rotate), 0));
 
                     sequence.Append(MoveTo(hands.leftHand, e.movePosition, e.moveSpeed, e.moveEase));
-                    sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase));
+                    sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase)
+                        .OnComplete(() => SetHandsCollision(e.isOnCollision)));
                     sequence.AppendInterval(e.waitTime);
                 }
             }
@@ -268,7 +267,8 @@ public class BossAbilityHandControl : BossAbility
                         float rotate = m_currentHand == hands.leftHand ? e.rotate : -e.rotate;
 
                         sequence.Append(m_currentHand.transform.DORotate(new Vector3(0, 0, rotate), 0));
-                        sequence.Join(MoveTo(m_currentHand, position, e.moveSpeed, e.moveEase));
+                        sequence.Join(MoveTo(m_currentHand, position, e.moveSpeed, e.moveEase)
+                            .OnComplete(() => SetHandsCollision(e.isOnCollision)));
                         sequence.AppendInterval(e.waitTime);
                     }
                 }
@@ -287,8 +287,8 @@ public class BossAbilityHandControl : BossAbility
 
     private void SetHandsCollision(bool _OnOff)
     {
+        Debug.Log($"손 콜리전 {_OnOff}");
         hands.isOnCollision = _OnOff;
-        //Debug.Log($"손 충돌 {_OnOff}");
     }
 
     private Tween MoveTo(GameObject _obj, Vector2 _target, float _moveSpeed, Ease _moveEase)
