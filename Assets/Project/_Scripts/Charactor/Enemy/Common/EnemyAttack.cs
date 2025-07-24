@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
@@ -5,6 +6,9 @@ public class EnemyAttack : MonoBehaviour
     public EnemyMovementControl enemyMovement;
 
     public Health health;
+
+    [Header("공격 설정")]
+    public float damage = 10f;
 
     [Header("범위")]
     public float activityRange = 13f;
@@ -16,6 +20,7 @@ public class EnemyAttack : MonoBehaviour
     public float selfDestructWaitTime = 2f;
     public float selfDestructRange = 8f;
     public float selfDestructDamage = 80f;
+    public GameObject selfDestructEffect;
 
     [Header("타이머")]
     public float attackTime;
@@ -74,6 +79,8 @@ public class EnemyAttack : MonoBehaviour
 
         Debug.Log("자폭");
 
+        ShowExplosion();
+
         Collider2D[] col = Physics2D.OverlapCircleAll(transform.position, selfDestructRange);
 
         foreach (Collider2D obj in col)
@@ -90,6 +97,17 @@ public class EnemyAttack : MonoBehaviour
         health.Kill();
 
         return true;
+    }
+
+    private void ShowExplosion()
+    {
+        GameObject explosionSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        explosionSphere.transform.position = transform.position;
+        explosionSphere.transform.localScale = Vector3.one * selfDestructRange * 2;
+        explosionSphere.GetComponent<Renderer>().material.color = Color.red;
+        explosionSphere.GetComponent<Collider>().enabled = false;
+
+        Destroy(explosionSphere, 0.1f);
     }
 
     protected virtual void Attack()

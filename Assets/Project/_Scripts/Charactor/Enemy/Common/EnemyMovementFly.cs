@@ -29,6 +29,11 @@ public class EnemyMovementFly : EnemyMovementControl
 
     private void FixedUpdate()
     {
+        if (target != null && Mathf.Abs(target.transform.position.x - transform.position.x) > 0.1f)
+        {
+            CheckDirectionToFace(target.transform.position.x > transform.position.x);
+        }
+
         Move();
     }
 
