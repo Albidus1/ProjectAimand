@@ -9,13 +9,7 @@ public class Enemy : MonoBehaviour
     public float normalSpeed;
     public float chaseSpeed;
 
-    [Header("범위")]
-    public float activityRange;
-    public float detectRange;
-    public float attackRange;
-    [Space(10)]
 
-    public float chaseWaitTime;
 
 
 
@@ -23,6 +17,12 @@ public class Enemy : MonoBehaviour
     public bool isFalling { get; protected set; }
     public bool isAttacking { get; protected set; }
     public bool isStunned { get; set; }
+
+    public float activityRange { get; set; }
+    public float detectRange { get; set; }
+    public float attackRange { get; set; }
+    public float chaseWaitTime { get; set; }
+
     public GameObject target { get; protected set; }
     public Rigidbody2D rb { get; protected set; }
     public BoxCollider2D boxCollider { get; protected set; }

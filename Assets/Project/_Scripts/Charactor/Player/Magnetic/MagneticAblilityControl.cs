@@ -69,7 +69,6 @@ public class MagneticAblilityControl : ConeOfVision2D
     public void Initializaion()
     {
         playerController = GetComponent<PlayerMovement>();
-        base.visionMeshFilter = transform.Find("MagneticAbilityMesh").GetComponent<MeshFilter>();
         base.Awake();
     }
 

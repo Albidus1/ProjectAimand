@@ -6,11 +6,10 @@ public class EnemyAttack : MonoBehaviour
 
     public Health health;
 
-    [Header("범위 - 지상")]
-    public float chaseRange = 12f;
-    public Transform chaseRangeCenter;
+    [Header("범위")]
+    public float activityRange = 13f;
+    public float detectRange = 12f;
     public float attackRange = 6f;
-    public Transform attackRangeCenter;
 
     [Header("자폭")]
     public bool isSelfDestruct = false;
@@ -40,7 +39,7 @@ public class EnemyAttack : MonoBehaviour
     {
         if (enemyMovement != null)
         {
-            enemyMovement.detectRange = chaseRange;
+            enemyMovement.detectRange = detectRange;
             enemyMovement.attackRange = attackRange;
             //enemyMovement.chaseRangePosition = chaseRangeCenter.position;
             //enemyMovement.attackRangePosition = attackRangeCenter.position;
@@ -114,7 +113,7 @@ public class EnemyAttack : MonoBehaviour
 
     private void OnValidate()
     {
-        attackRange = Mathf.Clamp(attackRange, 0, chaseRange - 0.5f);
+        attackRange = Mathf.Clamp(attackRange, 0, detectRange - 0.5f);
 
         if (enemyMovement == null)
         {
@@ -134,6 +133,13 @@ public class EnemyAttack : MonoBehaviour
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, selfDestructRange);
+        }
+
+        if (TryGetComponent<EnemyMovementFly>(out var e))
+        {
+            e.activityRange = activityRange;
+            e.detectRange = detectRange;
+            e.attackRange = attackRange;
         }
     }
 }

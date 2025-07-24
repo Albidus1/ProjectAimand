@@ -7,8 +7,6 @@ public class EnemyMovement : Enemy
     public Transform checkHoles;
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
     public Vector3 colliderCenterPosition => boxCollider.bounds.center;
-    public Vector2 chaseRangePosition { get; set; }
-    public Vector2 attackRangePosition { get; set; }
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;

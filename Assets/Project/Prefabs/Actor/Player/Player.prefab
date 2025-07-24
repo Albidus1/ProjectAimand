@@ -242,7 +242,6 @@ MonoBehaviour:
   maxHP: 30
   healthSlider: {fileID: 0}
   invincible: 0
-  m_HP: 0
   OnDamageEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -341,7 +340,7 @@ MonoBehaviour:
   targetMask:
     serializedVersion: 2
     m_Bits: 2048
-  scanFrequencyInSeconds: 1
+  scanFrequencyInSeconds: 0.1
   visibleTargets: []
   shouldDrawMesh: 1
   meshDensity: 1
@@ -350,15 +349,15 @@ MonoBehaviour:
   visionMeshFilter: {fileID: 0}
   playerController: {fileID: 0}
   spriteRenderer: {fileID: 0}
-  pullRadius: 0
-  pullAngle: 0
-  pullPower: 0
-  pullMoveEase: 0
-  pushRadius: 0
-  pushRadiusLimit: 0
-  pushAngle: 0
-  pushPower: 0
-  pushMoveEase: 0
+  pullRadius: 20
+  pullAngle: 60
+  pullPower: 20
+  pullMoveEase: 1
+  pushRadius: 5
+  pushRadiusLimit: 20
+  pushAngle: 360
+  pushPower: 20
+  pushMoveEase: 1
   pushableTime: 0.5
 --- !u!1 &2046126471057462264
 GameObject:
