@@ -211,7 +211,7 @@ public class MagneticAblilityControl : ConeOfVision2D
         {
             if (col.TryGetComponent<PlatformMagnetic>(out var pole) && pole.isActive)
             {
-                pole.MagneticActivate(false, Vector3.zero);
+                pole.MagneticActivate(false, Vector3.zero, 0, false);
             }
         }
     }
