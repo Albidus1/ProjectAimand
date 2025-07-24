@@ -154,10 +154,13 @@ public class EnemyMovement : EnemyMovementControl
         float raysDistance = boundsHeight / raysCount;
         for (int i = 0; i < raysCount; i++)
         {
-            Vector2 position = boundsCenter;
+            Vector2 position = facingDirection > 0 ?
+                new Vector2((boundsCenter.x + boundsWidth * 0.51f), boundsCenter.y) :
+                new Vector2((boundsCenter.x - boundsWidth * 0.51f), boundsCenter.y);
+
             position.y = boundsTopLeftCorner.y - (raysDistance * i);
 
-            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, boundsWidth * 0.5f + 0.1f, groundLayer, Color.blue, true);
+            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, 0.2f, groundLayer | LayerMask.GetMask("Enemy"), Color.blue, true);
             if (hitWall)
             {
                 hitObject = true;
