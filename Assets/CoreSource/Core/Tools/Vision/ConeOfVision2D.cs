@@ -98,6 +98,11 @@ public class ConeOfVision2D : MonoBehaviour
         }
     }
 
+    protected virtual void OnEnable()
+    {
+        
+    }
+
     protected virtual void LateUpdate()
     {
         if ((Time.time - lastScanTime > scanFrequencyInSeconds) && shouldScanForTargets)
