@@ -127,4 +127,13 @@ public class EnemyAttack : MonoBehaviour
             Initialize();
         }
     }
+
+    private void OnDrawGizmos()
+    {
+        if (isSelfDestruct)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, selfDestructRange);
+        }
+    }
 }
