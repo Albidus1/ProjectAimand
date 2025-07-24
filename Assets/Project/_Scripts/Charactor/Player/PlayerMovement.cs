@@ -29,7 +29,8 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb { get; private set; }
     public Collider2D col { get; private set; }
 
-    public Animator animator;
+    private SpriteRenderer playerRenderer;
+    private Animator animator;
 
     [Header("움직임 제어")]
     public bool CanWallJumping = true;
@@ -142,7 +143,8 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
 
-        animator = GetComponent<Animator>();
+        playerRenderer = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
@@ -675,9 +677,9 @@ public class PlayerMovement : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    private void ControllSleep(float _duration)
+    private void ControlSleep(float _duration)
     {
-        StartCoroutine(nameof(PerformControllSleep), _duration);
+        StartCoroutine(nameof(PerformControlSleep), _duration);
     }
 
     private IEnumerator DownJump(Collider2D _col)
@@ -687,7 +689,7 @@ public class PlayerMovement : MonoBehaviour
         Physics2D.IgnoreCollision(col, _col, false);
     }
 
-    private IEnumerator PerformControllSleep(float _duration)
+    private IEnumerator PerformControlSleep(float _duration)
     {
         isControlSleep = true;
 
@@ -698,7 +700,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void RespawnAt(Transform _spawnPoint, bool _facingDirection)
     {
-        ControllSleep(0.5f);
+        ControlSleep(0.5f);
 
         CheckDirectionToFace(_facingDirection);
 
@@ -772,13 +774,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Turn()
+    private void TurnToRightDirection(bool isRight)
     {
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
+        Vector3 scale = Vector3.one;
+        if (!isRight)
+            scale.x *= -1;
+        playerRenderer.transform.localScale = scale;
 
-        isFacingRight = !isFacingRight;
+        isFacingRight = isRight;
     }
     #endregion
 
@@ -917,7 +920,7 @@ public class PlayerMovement : MonoBehaviour
                 Vector2 diagonalForce = new Vector2(dir.x, dir.y * 0.6f).normalized * climbForce;
                 rb.AddForce(diagonalForce, ForceMode2D.Impulse);
 
-                ControllSleep(0.2f);
+                ControlSleep(0.2f);
             }
             else
             {
@@ -1066,7 +1069,7 @@ public class PlayerMovement : MonoBehaviour
     {     
         if (_isMovingRight != isFacingRight)
         {
-            Turn();
+            TurnToRightDirection(_isMovingRight);
         }
     }
 

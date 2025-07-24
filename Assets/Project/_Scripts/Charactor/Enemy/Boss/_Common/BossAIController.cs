@@ -45,8 +45,8 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
     private void Initialization()
     {
-        m_health.currentHP = m_health.maxHP;
-        m_hpRatio = m_health.currentHP / m_health.maxHP;
+        m_health.InitializeCurrentHealth();
+        m_hpRatio = m_health.CurrentHP / m_health.MaxHP;
         m_currentPhase = 0;
 
 
@@ -54,7 +54,7 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
     private void Update()
     {
-        if (m_health.currentHP <= 0)
+        if (m_health.CurrentHP <= 0)
         {
             return;
         }
@@ -123,7 +123,7 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
     private void UpdateHealth()
     {
-        m_hpRatio = m_health.currentHP / m_health.maxHP;
+        m_hpRatio = m_health.CurrentHP / m_health.MaxHP;
         PhaseChange();
     }
 

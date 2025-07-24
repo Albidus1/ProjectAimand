@@ -39,7 +39,7 @@ public class Bullet : MonoBehaviour
             Health enemy = collision.GetComponent<Health>();
             if (enemy != null)
             {
-                enemy.currentHP -= damage;
+                enemy.Damaged(damage);
             }
 
             Destroy(gameObject);

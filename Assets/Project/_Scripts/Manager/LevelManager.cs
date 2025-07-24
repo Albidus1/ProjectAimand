@@ -62,7 +62,10 @@ public class LevelManager : MySingleton<LevelManager>
 
     private void Start()
     {
-        InstantiatePlayableCharacters();
+        // 플레이어를 씬에 미리 배치하거나 LevelManager에서 배치하거나 하나만 해야하는데
+        // 다른 스크립트에서 Awake 함수에서 플레이어 관련 스크립트를 참조하는 부분이 많음
+        // 일관성 부족
+        //InstantiatePlayableCharacters();
 
         if (player == null)
             return;

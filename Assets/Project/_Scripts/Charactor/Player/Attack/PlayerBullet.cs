@@ -49,7 +49,7 @@ public class PlayerBullet : Product
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Health enemyHealth = collision.gameObject.GetComponent<Health>();
-            enemyHealth.currentHP -= damage;
+            enemyHealth.Damaged(damage);
             this.gameObject.SetActive(false);
             isHit = true;
         }

@@ -82,12 +82,12 @@ public class EnemyAttack : MonoBehaviour
 
             if (health != null)
             {
-                health.currentHP -= selfDestructDamage;
+                health.Damaged(selfDestructDamage);
                 Debug.Log($"{obj.name}에게 {selfDestructDamage}의 피해");
             }
         }
 
-        health.Kill();
+        this.health.Damaged(float.MaxValue);
 
         return true;
     }

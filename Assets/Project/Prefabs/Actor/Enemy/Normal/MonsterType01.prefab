@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 4954674746246858785}
   - component: {fileID: 8195350653198856450}
   - component: {fileID: 6768781748381541695}
+  - component: {fileID: 1009027104415579089}
   m_Layer: 25
   m_Name: MonsterType01
   m_TagString: Enemy
@@ -214,7 +215,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 10
   healthSlider: {fileID: 0}
-  m_HP: 0
+  OnDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeathEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &4954674746246858785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,7 +233,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd7ce66575538e49a537d83b9437351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  normalSpeed: 0
+  chaseSpeed: 0
+  chaseWaitTime: 0
   checkHoles: {fileID: 6151065915528001975}
   groundLayer:
     serializedVersion: 2
@@ -245,10 +256,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMovement: {fileID: 4954674746246858785}
-  chaseRange: {x: 12, y: 12}
-  chaseRangeCenter: {fileID: 0}
-  attackRange: {x: 6, y: 6}
-  attackRangeCenter: {fileID: 0}
+  health: {fileID: 0}
+  activityRange: 13
+  detectRange: 12
+  attackRange: 6
+  isSelfDestruct: 0
+  selfDestructWaitTime: 2
+  selfDestructRange: 8
+  selfDestructDamage: 80
   attackTime: 3
 --- !u!114 &6768781748381541695
 MonoBehaviour:
@@ -262,12 +277,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  killPlayer: 0
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
   damageCausedKnockbackForce: {x: 15, y: 2.5}
   invincibilityDuration: 1
   owner: {fileID: 0}
+--- !u!114 &1009027104415579089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862029570782637524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5caee767a2a2d7a44875893fe36b7b56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3860398935951475972
 GameObject:
   m_ObjectHideFlags: 0

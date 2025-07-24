@@ -134,7 +134,7 @@ public class PlayerRangeAttack : MonoBehaviour
         bullet.transform.position = bulletPos.position;
         // 회전 부분은 플레이어가 flip 되었을때 rotation으로 도는게 아닌 scale로 반전시켜서 수정이 필요함
         bullet.transform.rotation = bulletPos.rotation;
-        if (this.transform.localScale.x < 0) bullet.transform.Rotate(Vector3.up, 180f, Space.Self);
+        if (!playerMovement.isFacingRight) bullet.transform.Rotate(Vector3.up, 180f, Space.Self);
 
         HideChargeBar();
     }
@@ -164,6 +164,7 @@ public class PlayerRangeAttack : MonoBehaviour
 
         // 범위 활성화
         rangeAttackSquareObject.SetActive(true);
+        rangeAttackSquareObject.transform.localScale = new Vector3(playerMovement.isFacingRight ? 1f : -1f, 1f, 1f);
     }
 
     private void HideChargeBar()
@@ -175,7 +176,7 @@ public class PlayerRangeAttack : MonoBehaviour
         rangeAttackSquareObject.SetActive(false);
     }
 
-    private void OnDamaged(float damage)
+    private void OnDamaged(float damage, DamageSource source = DamageSource.UNKNOWN)
     {
         isCharging = false;
         HideChargeBar();

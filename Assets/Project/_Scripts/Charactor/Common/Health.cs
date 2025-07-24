@@ -1,75 +1,47 @@
 using System.Collections;
 using System.Linq.Expressions;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
+
+public enum DamageSource
+{
+    UNKNOWN,
+    PLATFORM,
+    MONSTER,
+    BULLET
+}
 
 public class Health : MonoBehaviour
 {
-    public float maxHP = 100;
-    public Slider healthSlider;
-
-    public bool invincible = false;
-    public float currentHP
-    {
-        get { return m_HP; }
-        set
-        {
-            if (invincible) 
-                return; // ✅ 무적일 땐 체력 변경 안 함
-
-
-            m_HP = Mathf.Clamp(value, 0, maxHP);
-
-            if (healthSlider != null)
-            {
-                healthSlider.maxValue = 1;
-                healthSlider.value = m_HP / maxHP;
-            }
-
-            OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
-
-            if (Application.isPlaying)
-            {
-                Debug.Log($"현재 체력: {m_HP}");
-            }
-
-            if (m_HP <= 0)
-            {
-                Kill();
-            }
-        }
-    }
-
-    private ReSpawner m_respawner;
-
+    [SerializeField]
+    private float maxHP = 100;
+    public float MaxHP { get { return maxHP; } }
     private float m_HP;
+    public float CurrentHP { get { return m_HP; } }
+    [SerializeField]
+    private Slider healthSlider;
+
+    private bool invincible = false;
+    public bool IsInvincible {  get { return invincible; } }
+
     private Collider2D m_collider;
-    private PlayerMovement m_playerMovement;
-    private Enemy m_enemyMovement;
     private GameObject m_owner;
 
-    public UnityEvent<float> OnDamageEvent;
+    public UnityEvent<float, DamageSource> OnDamageEvent;
+    public UnityEvent OnDeathEvent;
 
     private void Awake()
     {
         m_collider = GetComponent<Collider2D>();
-        m_playerMovement = GetComponent<PlayerMovement>();
-
-        if (m_playerMovement == null)
-        {
-            m_enemyMovement = GetComponent<EnemyMovement>();
-            m_enemyMovement = m_enemyMovement == null ? GetComponent<EnemyMovementFly>() : m_enemyMovement;
-        }
-
         m_owner = this.gameObject;
-
-        m_respawner = FindFirstObjectByType<ReSpawner>();
     }
 
     private void Start()
     {
+        m_HP = maxHP;
+
         InitializeCurrentHealth();
     }
 
@@ -80,42 +52,47 @@ public class Health : MonoBehaviour
 
     public void InitializeCurrentHealth()
     {
-        //Debug.Log($"현재 체력: {currentHP}");
+        Debug.Log($"현재 체력: {CurrentHP}");
         m_HP = maxHP;
 
         if(healthSlider != null)
         {
-            healthSlider.value = currentHP / maxHP;
+            healthSlider.value = CurrentHP / maxHP;
         }
     }
 
-    public void Kill()
+    public int Damaged(float damage, DamageSource source = DamageSource.UNKNOWN)
     {
-        if (m_playerMovement != null)
+        if (damage < 0) return -1; // 데미지는 음수가 될 수 없음
+        if (m_HP <= 0) return -2; // 이미 죽은 상태에서 데미지를 받을 수 없음 (사망 이벤트 중복 발생 방지)
+        if (invincible) return 1; // 무적일 때
+
+        m_HP -= damage;
+        m_HP = Mathf.Max(m_HP, 0);
+
+        // 체력바 표시
+        if (healthSlider != null)
+            healthSlider.value = m_HP / maxHP;
+
+        OnDamageEvent.Invoke(damage, source); // 데미지 이벤트 실행
+
+        if (m_HP <= 0)
         {
-            Debug.Log("플레이어 사망");
-            LevelManager.Instance.PlayerDead(m_playerMovement);
-            InitializeCurrentHealth();
+            OnDeathEvent.Invoke();
+            return 2; // 죽었을 때
         }
-        else if (m_enemyMovement != null)
-        {
-            StartCoroutine(OnDeath());
-        }       
+
+        return 0; // 데미지를 받았지만 살아남았을 때
     }
 
-    private IEnumerator OnDeath()
+    public void SetInvincible(bool invincible)
     {
-        m_collider.enabled = false;
-
-        Destroy(this.gameObject);
-
-        yield return new WaitForSeconds(3f);
+        this.invincible = invincible;
     }
 
-#if UNITY_EDITOR
-    private void OnValidate()
+    [ContextMenu("KillTest")]
+    private void KillTest()
     {
-        currentHP = m_HP;
+        Damaged(1000f);
     }
-#endif
 }
