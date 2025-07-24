@@ -12,7 +12,7 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
 
     private float bulletAngle;
-    private bool isWeaponReady = true;
+
 
     protected override void Awake()
     {
@@ -31,45 +31,36 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
     private void UpdateRangedWeapon()
     {
-        if (enemyMovement.target == null)
-        {
-            ResetWeaponRotation();
-            return;
-        }
-
         var target = base.enemyMovement.target;
-
-        Vector2 direction = rangedWeapon.transform.position - target.transform.position;
-        bulletAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        if (transform.localScale.x > 0)
+        if (base.enemyMovement.target != null)
         {
-            bulletAngle += 180f;
+            Vector2 direction = rangedWeapon.transform.position - target.transform.position;
+            bulletAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            if (transform.localScale.x > 0)
+            {
+                bulletAngle += 180f;
+            }
+
+            bulletAngle = Mathf.Clamp(bulletAngle, -89, 89);
+            Quaternion targetRotation = Quaternion.Euler(0, 0, bulletAngle);
+
+            rangedWeapon.transform.rotation = Quaternion.Lerp(
+                rangedWeapon.transform.rotation,
+                targetRotation,
+                10f * Time.deltaTime
+            );
         }
+        else
+        {
+            Quaternion targetRotation = Quaternion.Euler(0, 0, 0);
 
-        bulletAngle = Mathf.Clamp(bulletAngle, -89, 89);
-        Quaternion targetRotation = Quaternion.Euler(0, 0, bulletAngle);
-
-        rangedWeapon.transform.rotation = Quaternion.Lerp(
-            rangedWeapon.transform.rotation,
-            targetRotation,
-            10f * Time.deltaTime
-        );
-
-        float angleDifference = Quaternion.Angle(rangedWeapon.transform.rotation, targetRotation);
-    }
-
-    private void ResetWeaponRotation()
-    {
-        Quaternion targetRotation = Quaternion.Euler(0, 0, 0);
-
-        rangedWeapon.transform.rotation = Quaternion.Lerp(
-            rangedWeapon.transform.rotation,
-            targetRotation,
-            10f * Time.deltaTime
-        );
-
-        isWeaponReady = false;
+            rangedWeapon.transform.rotation = Quaternion.Lerp(
+                rangedWeapon.transform.rotation,
+                targetRotation,
+                10f * Time.deltaTime
+            );
+        }
     }
 
     protected override void Attack()
