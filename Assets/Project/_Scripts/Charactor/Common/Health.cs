@@ -26,18 +26,18 @@ public class Health : MonoBehaviour
             {
                 healthSlider.maxValue = 1;
                 healthSlider.value = m_HP / maxHP;
+            }
 
-                OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
+            OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
 
-                if (Application.isPlaying)
-                {
-                    Debug.Log($"현재 체력: {m_HP}");
-                }
+            if (Application.isPlaying)
+            {
+                Debug.Log($"현재 체력: {m_HP}");
+            }
 
-                if (m_HP <= 0)
-                {
-                    Kill();
-                }
+            if (m_HP <= 0)
+            {
+                Kill();
             }
         }
     }
@@ -56,8 +56,13 @@ public class Health : MonoBehaviour
     {
         m_collider = GetComponent<Collider2D>();
         m_playerMovement = GetComponent<PlayerMovement>();
-        m_enemyMovement = GetComponent<EnemyMovement>();
-        m_enemyMovement = m_enemyMovement == null ? GetComponent<EnemyMovementFly>() : m_enemyMovement;
+
+        if (m_playerMovement == null)
+        {
+            m_enemyMovement = GetComponent<EnemyMovement>();
+            m_enemyMovement = m_enemyMovement == null ? GetComponent<EnemyMovementFly>() : m_enemyMovement;
+        }
+
         m_owner = this.gameObject;
 
         m_respawner = FindFirstObjectByType<ReSpawner>();
@@ -88,6 +93,7 @@ public class Health : MonoBehaviour
     {
         if (m_playerMovement != null)
         {
+            Debug.Log("플레이어 사망");
             LevelManager.Instance.PlayerDead(m_playerMovement);
             InitializeCurrentHealth();
         }
