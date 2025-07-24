@@ -5,7 +5,7 @@ public class Bullet : MonoBehaviour
     public LayerMask obstacleLayerMask;
 
     public float speed = 10f; // 총알 이동 속도
-    public int damage = 10;
+    public float damage = 10;
 
     public bool isPlayerBullet = false;
 

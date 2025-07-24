@@ -71,7 +71,8 @@ public class EnemyAttackRangeAttack : EnemyAttack
         if (bullet != null && bulletSpawn != null)
         {
             Quaternion angle = Quaternion.Euler(0, 0, bulletAngle);
-            GameObject b = Instantiate(bullet, bulletSpawn.position, angle);
+            Bullet b = Instantiate(bullet, bulletSpawn.position, angle).GetComponent<Bullet>();
+            b.damage = base.damage;
 
             Vector3 direction = transform.localScale.x > 0 ? Vector3.right : Vector3.left;
             Vector3 moveDirection = angle * direction;
