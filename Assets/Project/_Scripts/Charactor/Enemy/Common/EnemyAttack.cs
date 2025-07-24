@@ -55,9 +55,7 @@ public class EnemyAttack : MonoBehaviour
             return;
         }
 
-        m_attackTime -= Time.deltaTime;
-
-        if (m_attackTime < 0 && enemyMovement.isAttacking)
+        if (m_attackTime < Time.time && enemyMovement.isAttacking)
         {
             Attack();
         }
@@ -97,14 +95,16 @@ public class EnemyAttack : MonoBehaviour
 
     private void Attack()
     {
-        m_attackTime = attackTime;
+        m_attackTime = Time.time + attackTime;
 
         if (false == isSelfDestruct)
         {
             Debug.Log("적 공격");
         }
-        else
+        else if (false == doSelfDestruct)
         {
+            Debug.Log("자폭 시작");
+
             doSelfDestruct = true;
             m_selfDestructTimer = Time.time + selfDestructWaitTime;
 
