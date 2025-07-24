@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -42,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isSliding { get; private set; }
     public bool isWallGrabbing { get; private set; }
     public bool isDashing { get; private set; }
+    public bool checkOneWayPlatformBelow { get; private set; }
     public bool doKnockback { get; private set; }
     public bool isControlSleep { get; private set; }
     public bool ApplyGravityOnDeath;
@@ -262,7 +264,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-
+                checkOneWayPlatformBelow = true;
             }
 
             if (Input.GetKey(KeyCode.C))
@@ -281,6 +283,16 @@ public class PlayerMovement : MonoBehaviour
                 lastOnGroundTime = data.coyoteTime;
                 lastOnGrabTime = data.grabStamina;
                 dashesLeft = data.dashAmount;
+
+                if (checkOneWayPlatformBelow)
+                {
+                    Collider2D oneway = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, onewayPlatform);
+
+                    if (oneway != null)
+                    {
+                        StartCoroutine(DownJump(oneway));
+                    }
+                }
             }
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
@@ -301,6 +313,8 @@ public class PlayerMovement : MonoBehaviour
 
             lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);
         }
+
+        checkOneWayPlatformBelow = false;
 
         EdgeDetection();
 
@@ -664,6 +678,13 @@ public class PlayerMovement : MonoBehaviour
     private void ControllSleep(float _duration)
     {
         StartCoroutine(nameof(PerformControllSleep), _duration);
+    }
+
+    private IEnumerator DownJump(Collider2D _col)
+    {
+        Physics2D.IgnoreCollision(col, _col, true);
+        yield return new WaitForSeconds(0.5f);
+        Physics2D.IgnoreCollision(col, _col, false);
     }
 
     private IEnumerator PerformControllSleep(float _duration)
