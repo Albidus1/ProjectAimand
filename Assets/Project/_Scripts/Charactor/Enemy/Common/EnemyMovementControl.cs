@@ -16,6 +16,7 @@ public class EnemyMovementControl : MonoBehaviour
     public bool isFacingRight { get; protected set; }
     public bool isFalling { get; protected set; }
     public bool isAttacking { get; protected set; }
+    public bool isAttackingPlayer { get; set; }
     public bool isStunned { get; set; }
 
     public float activityRange { get; set; }

@@ -59,6 +59,12 @@ public class EnemyMovement : EnemyMovementControl
     {
         Vector2 direction;
 
+        if (isAttackingPlayer)
+        {
+            Run(Vector2.zero);
+            return;
+        }
+
         if (isChasingPlayer)
         {
             if (hitObject)
