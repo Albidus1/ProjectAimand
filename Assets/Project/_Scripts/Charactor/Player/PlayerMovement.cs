@@ -260,6 +260,11 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+
+            }
+
             if (Input.GetKey(KeyCode.C))
             {
                 OnGrabInput();

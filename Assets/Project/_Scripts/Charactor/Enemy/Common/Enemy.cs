@@ -9,8 +9,8 @@ public class Enemy : MonoBehaviour
     public float normalSpeed;
     public float chaseSpeed;
 
-
-
+    [Header("추격")]
+    public float chaseWaitTime;
 
 
     public bool isFacingRight { get; protected set; }
@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
     public float activityRange { get; set; }
     public float detectRange { get; set; }
     public float attackRange { get; set; }
-    public float chaseWaitTime { get; set; }
+
 
     public GameObject target { get; protected set; }
     public Rigidbody2D rb { get; protected set; }
