@@ -1,32 +1,19 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class EnemyMovement : MonoBehaviour
+public class EnemyMovement : Enemy
 {
-    private int facingDirection = 1;
-    public bool isFacingRight { get; protected set; }
-    public bool isFalling { get; protected set; }
-    public bool isAttacking { get; protected set; }
-
-    [Header("스피드")]
-    public float speed;
-
     [Header("레이캐스트")]
     public Transform checkHoles;
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
     public Vector3 colliderCenterPosition => boxCollider.bounds.center;
-    public Vector2 chaseRange { get; set; }
     public Vector2 chaseRangePosition { get; set; }
-    public Vector2 attackRange { get; set; }
     public Vector2 attackRangePosition { get; set; }
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;
 
     
-
-    private BoxCollider2D boxCollider;
-    private Rigidbody2D rb;
 
     private bool hitObject;
 
@@ -201,6 +188,9 @@ public class EnemyMovement : MonoBehaviour
 
     private void DetectPlayer()
     {
+        Vector2 chaseRange = new Vector2(base.detectRange, base.detectRange);
+        Vector2 attackRange = new Vector2(base.attackRange, base.attackRange);
+
         RaycastHit2D hit1 = MyDebug.BoxCast
             (boundsCenter,
             chaseRange,
@@ -249,7 +239,7 @@ public class EnemyMovement : MonoBehaviour
     #region MOVE METHODS
     private void Run(Vector2 _direction)
     {
-        Vector2 newPosition = _direction.normalized * speed * Time.deltaTime;
+        Vector2 newPosition = _direction.normalized * base.normalSpeed * Time.deltaTime;
 
         transform.Translate(newPosition, Space.Self);
     }

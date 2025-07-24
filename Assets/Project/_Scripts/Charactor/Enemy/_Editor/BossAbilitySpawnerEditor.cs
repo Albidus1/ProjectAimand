@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(BossAbilitySpawner))]
 [InitializeOnLoad]
 public class BossAbilitySpawnerEditor : Editor
@@ -41,3 +42,4 @@ public class BossAbilitySpawnerEditor : Editor
         }
     }
 }
+#endif

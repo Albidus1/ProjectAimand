@@ -44,10 +44,10 @@ public class Health : MonoBehaviour
 
     private ReSpawner m_respawner;
 
-    public float m_HP;
+    private float m_HP;
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
-    private EnemyMovement m_enemyMovement;
+    private Enemy m_enemyMovement;
     private GameObject m_owner;
 
     public UnityEvent<float> OnDamageEvent;
@@ -57,6 +57,7 @@ public class Health : MonoBehaviour
         m_collider = GetComponent<Collider2D>();
         m_playerMovement = GetComponent<PlayerMovement>();
         m_enemyMovement = GetComponent<EnemyMovement>();
+        m_enemyMovement = m_enemyMovement == null ? GetComponent<EnemyMovementFly>() : m_enemyMovement;
         m_owner = this.gameObject;
 
         m_respawner = FindFirstObjectByType<ReSpawner>();

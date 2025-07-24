@@ -3,6 +3,7 @@ using UnityEngine;
 
 
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(BossAbilityHandControl), true)]
 [InitializeOnLoad]
 public class BossAbilityHandControlEditor : Editor
@@ -121,3 +122,4 @@ public class BossAbilityHandControlEditor : Editor
         }
     }
 }
+#endif

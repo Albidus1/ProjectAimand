@@ -100,7 +100,7 @@ public class ConeOfVision2D : MonoBehaviour
 
     protected virtual void LateUpdate()
     {
-        if ((Time.time - lastScanTime > scanFrequencyInSeconds) && true == shouldScanForTargets)
+        if ((Time.time - lastScanTime > scanFrequencyInSeconds) && shouldScanForTargets)
         {
             ScanForTargets();
         }
@@ -144,6 +144,15 @@ public class ConeOfVision2D : MonoBehaviour
     {
         if (false == shouldDrawMesh)
         {
+            if (viewPoints.Count > 0)
+            {
+                viewPoints.Clear();
+            }
+            if (visionMesh != null)
+            {
+                visionMesh.Clear();
+            }
+
             return;
         }
 
