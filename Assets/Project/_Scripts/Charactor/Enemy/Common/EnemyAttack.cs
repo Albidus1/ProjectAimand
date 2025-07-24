@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
-    public Enemy enemyMovement;
+    public EnemyMovementControl enemyMovement;
 
     public Health health;
 
@@ -20,22 +20,22 @@ public class EnemyAttack : MonoBehaviour
     [Header("타이머")]
     public float attackTime;
 
-    private float m_attackTime;
-    private bool doSelfDestruct;
-    private float m_selfDestructTimer = 0.1f;
+    protected float m_attackTime;
+    protected bool doSelfDestruct;
+    protected float m_selfDestructTimer = 0.1f;
 
 
-    private void Awake()
+    protected virtual void Awake()
     {
         health = GetComponent<Health>();
 
         enemyMovement = GetComponent<EnemyMovement>();
         enemyMovement = enemyMovement == null ? GetComponent<EnemyMovementFly>() : enemyMovement;
 
-        Initialize();
+        Initialization();
     }
 
-    private void Initialize()
+    protected virtual void Initialization()
     {
         if (enemyMovement != null)
         {
@@ -46,7 +46,7 @@ public class EnemyAttack : MonoBehaviour
         }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (SelfDestruct())
         {
@@ -92,7 +92,7 @@ public class EnemyAttack : MonoBehaviour
         return true;
     }
 
-    private void Attack()
+    protected virtual void Attack()
     {
         m_attackTime = Time.time + attackTime;
 
@@ -113,20 +113,19 @@ public class EnemyAttack : MonoBehaviour
 
     private void OnValidate()
     {
-        attackRange = Mathf.Clamp(attackRange, 0, detectRange - 0.5f);
-
         if (enemyMovement == null)
         {
             enemyMovement = GetComponent<EnemyMovement>();
 
-            Initialize();
+            Initialization();
         }
         else
         {
-            Initialize();
+            Initialization();
         }
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (isSelfDestruct)
@@ -142,4 +141,5 @@ public class EnemyAttack : MonoBehaviour
             e.attackRange = attackRange;
         }
     }
+#endif
 }

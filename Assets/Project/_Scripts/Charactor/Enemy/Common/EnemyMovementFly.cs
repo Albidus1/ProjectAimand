@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class EnemyMovementFly : Enemy
+public class EnemyMovementFly : EnemyMovementControl
 {
-    protected Vector2 m_initializePosition;
     protected Vector2 m_moveDirection;
     protected Vector2 m_targetPosition;
     protected float m_currentSpeed;
@@ -22,8 +21,9 @@ public class EnemyMovementFly : Enemy
 
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         DetectPlayer();
     }
 

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3576196057864719635}
   - component: {fileID: 1435645342415898819}
   - component: {fileID: 1884523354181877507}
-  - component: {fileID: 4530381173069749590}
   - component: {fileID: 3745951078055666085}
+  - component: {fileID: 4530381173069749590}
   m_Layer: 0
   m_Name: Projectile
   m_TagString: Untagged
@@ -117,21 +117,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &4530381173069749590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8047954322326610999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b120b8467647b84497ae4bb5b96fa58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 10
-  damage: 10
-  maxLifeTime: 5
 --- !u!58 &3745951078055666085
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -167,4 +152,23 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.2
+--- !u!114 &4530381173069749590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8047954322326610999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b120b8467647b84497ae4bb5b96fa58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 3456
+  speed: 10
+  damage: 10
+  isPlayerBullet: 0
+  maxLifeTime: 5

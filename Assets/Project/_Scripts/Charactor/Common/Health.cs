@@ -47,7 +47,7 @@ public class Health : MonoBehaviour
     private float m_HP;
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
-    private Enemy m_enemyMovement;
+    private EnemyMovementControl m_enemyMovement;
     private GameObject m_owner;
 
     public UnityEvent<float> OnDamageEvent;

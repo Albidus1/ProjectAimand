@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class EnemyMovement : Enemy
+public class EnemyMovement : EnemyMovementControl
 {
     [Header("레이캐스트")]
     public Transform checkHoles;
@@ -10,7 +10,7 @@ public class EnemyMovement : Enemy
 
     [Header("레이어")]
     [SerializeField] private LayerMask groundLayer;
-
+    [SerializeField] private LayerMask obstacleLayer;
     
 
     private bool hitObject;
@@ -49,10 +49,9 @@ public class EnemyMovement : Enemy
         SetRaysParameters();
     }
 
-    private void Update()
+    protected override void Update()
     {
-        CheckDirectionToFace(facingDirection > 0);
-
+        base.Update();
         SetRaysParameters();
 
         CastRay();
@@ -63,28 +62,30 @@ public class EnemyMovement : Enemy
     {
         Vector2 direction;
 
-        if (isChasingPlayer && hitObject)
+        if (isChasingPlayer)
         {
-            Run(Vector2.zero);
-        }
-        else if (isChasingPlayer && false == hitObject)
-        {
-            if (Mathf.Abs(playerPosition.x - transform.position.x) > 0.1f)
+            if (hitObject)
             {
-                direction = playerPosition.x > transform.position.x ? Vector2.right : Vector2.left;
-                CheckDirectionToFace(playerPosition.x > transform.position.x);
-
-                Run(direction);
+                Run(Vector2.zero);
             }
             else
             {
-                Run(Vector2.zero);
+                if (Mathf.Abs(playerPosition.x - transform.position.x) > 0.1f)
+                {
+                    direction = playerPosition.x > transform.position.x ? Vector2.right : Vector2.left;
+                    CheckDirectionToFace(playerPosition.x > transform.position.x);
+
+                    Run(direction);
+                }
+                else
+                {
+                    Run(Vector2.zero);
+                }
             }
         }
         else
         {
             direction = Vector2.right * facingDirection;
-
             Run(direction);
         }
 
@@ -128,25 +129,6 @@ public class EnemyMovement : Enemy
         boundsWidth = Vector2.Distance(boundsTopLeftCorner, boundsTopRightCorner);
         boundsHeight = Vector2.Distance(boundsTopLeftCorner, boundsBottomLeftCorner);
     }
-
-    private void CheckDirectionToFace(bool _isMovingRight)
-    {
-        if (_isMovingRight != isFacingRight)
-        {
-            Turn();
-        }
-    }
-
-    private void Turn()
-    {
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        
-        transform.localScale = scale;
-
-        isFacingRight = !isFacingRight;
-        facingDirection = -facingDirection;
-    }
     #endregion
 
     #region RAYCAST METHODS
@@ -186,44 +168,29 @@ public class EnemyMovement : Enemy
 
     private void DetectPlayer()
     {
-        Vector2 chaseRange = new Vector2(base.detectRange, base.detectRange);
-        Vector2 attackRange = new Vector2(base.attackRange, base.attackRange);
-
-        RaycastHit2D hit1 = MyDebug.BoxCast
-            (boundsCenter,
-            chaseRange,
-            Vector2.Angle(transform.up, Vector2.up),
-            transform.right * facingDirection,
-            0,
-            LayerMask.GetMask("Player"),
-            Color.cyan,
-            true);
-        RaycastHit2D hit2 = MyDebug.BoxCast
-            (boundsCenter,
-            attackRange,
-            Vector2.Angle(transform.up, Vector2.up),
-            transform.right * facingDirection,
-            0,
-            LayerMask.GetMask("Player"),
-            Color.red,
-            true);
-
-        if (hit1)
+        Collider2D player = Physics2D.OverlapCircle(transform.position, detectRange, playerLayerMask);
+        if (player != null)
         {
             //Debug.Log("충돌");
+            Vector2 direction = player.transform.position - transform.position;
+            float distance = Vector2.Distance(transform.position, player.transform.position);
+            RaycastHit2D hit = MyDebug.Raycast(transform.position, direction.normalized, distance, obstacleLayer, Color.white, true);
 
-            isChasingPlayer = true;
-
-            playerPosition = hit1.collider.transform.position;
+            if (false == hit)
+            {
+                target = player.gameObject;
+                isChasingPlayer = true;
+                playerPosition = player.transform.position;
+            }
         }
         else
         {
+            target = null;
             isChasingPlayer = false;
-
             playerPosition = Vector2.zero;
         }
 
-        if (hit2)
+        if (Physics2D.OverlapCircle(transform.position, attackRange, playerLayerMask))
         {
             isAttacking = true;
         }
@@ -237,9 +204,23 @@ public class EnemyMovement : Enemy
     #region MOVE METHODS
     private void Run(Vector2 _direction)
     {
-        Vector2 newPosition = _direction.normalized * base.normalSpeed * Time.deltaTime;
+        float speed = target != null ? base.chaseSpeed : normalSpeed;
+
+        Vector2 newPosition = _direction.normalized * speed * Time.deltaTime;
 
         transform.Translate(newPosition, Space.Self);
     }
     #endregion
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(m_initializePosition, activityRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+#endif
 }

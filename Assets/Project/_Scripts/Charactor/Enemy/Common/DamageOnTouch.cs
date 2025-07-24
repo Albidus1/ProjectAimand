@@ -35,6 +35,7 @@ public class DamageOnTouch : MonoBehaviour
 
     private void Awake()
     {
+        owner = this.gameObject;
         m_enemyMovement = GetComponent<EnemyMovement>();
 
         m_lastPosition = transform.position;
