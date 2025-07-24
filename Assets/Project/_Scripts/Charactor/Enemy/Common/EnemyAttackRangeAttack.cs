@@ -83,10 +83,10 @@ public class EnemyAttackRangeAttack : EnemyAttack
                 .OnComplete(() => {
                     if (b != null) 
                     {
-                        Destroy(b);
+                        Destroy(b.gameObject);
                     }
                 })
-                .SetLink(b);
+                .SetLink(b.gameObject);
         }
     }
 }
