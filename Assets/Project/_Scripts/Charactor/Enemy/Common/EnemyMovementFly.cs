@@ -9,10 +9,9 @@ public class EnemyMovementFly : EnemyMovementControl
 
 
 
-    private void Awake()
+    protected override void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        base.Awake();
     }
 
     private void Start()
@@ -23,17 +22,21 @@ public class EnemyMovementFly : EnemyMovementControl
 
     protected override void Update()
     {
-        base.Update();
+        if (target != null && Mathf.Abs(target.transform.position.x - transform.position.x) > 0.1f)
+        {
+            facingDirection = target.transform.position.x < transform.position.x ? 1 : -1;
+        }
+        else
+        {
+            facingDirection = m_moveDirection.x < 0 ? 1 : -1;
+        }
+
         DetectPlayer();
+        base.Update();
     }
 
     private void FixedUpdate()
     {
-        if (target != null && Mathf.Abs(target.transform.position.x - transform.position.x) > 0.1f)
-        {
-            CheckDirectionToFace(target.transform.position.x > transform.position.x);
-        }
-
         Move();
     }
 

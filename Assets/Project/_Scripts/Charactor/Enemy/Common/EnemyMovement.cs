@@ -39,23 +39,20 @@ public class EnemyMovement : EnemyMovementControl
 
 
 
-    private void Awake()
+    protected override void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        boxCollider = GetComponent<BoxCollider2D>();
-
-        isFacingRight = true;
-        CheckDirectionToFace(isFacingRight);
+        base.Awake();
         SetRaysParameters();
     }
 
     protected override void Update()
     {
-        base.Update();
         SetRaysParameters();
 
         CastRay();
         DetectPlayer();
+
+        base.Update();
     }
 
     private void FixedUpdate()

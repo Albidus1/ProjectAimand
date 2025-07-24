@@ -31,6 +31,15 @@ public class EnemyMovementControl : MonoBehaviour
     protected Vector2 m_initializePosition;
 
 
+    protected virtual void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
+
+        isFacingRight = true;
+        CheckDirectionToFace(isFacingRight);
+    }
+
     protected virtual void Update()
     {
         if (target != null)
