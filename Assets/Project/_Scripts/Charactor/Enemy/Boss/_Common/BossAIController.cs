@@ -95,7 +95,7 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
         foreach (BossAbility ab in abilities)
         {
-            if (false == ab.isOnCooldown && false == ab.isAbilityActive && false == ab.isOnCooldown)
+            if (false == ab.isOnCooldown && false == ab.isAbilityActive)
             {
                 StartCoroutine(ab.UseAbility());
 

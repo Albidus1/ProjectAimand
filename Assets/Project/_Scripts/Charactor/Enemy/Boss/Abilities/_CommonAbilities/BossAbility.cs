@@ -37,6 +37,7 @@ public class BossAbility : MonoBehaviour
 
     public GameObject abilityPrefab;
     public float InitailCooldownTime = 5f;
+    public float cooldownTime = 5f;
     public int abilityActCount = 3;
     public bool afterCooldown = false;
 
@@ -74,12 +75,14 @@ public class BossAbility : MonoBehaviour
 
     public virtual void Initialization()
     {
-
+        cooldownTimer = InitailCooldownTime;
+        isOnCooldown = true;
+        isAbilityActive = false;
     }
 
     public virtual void SkillReset()
     {
-        cooldownTimer = InitailCooldownTime;
+        cooldownTimer = cooldownTime;
         isOnCooldown = false;
         isAbilityActive = false;
     }
