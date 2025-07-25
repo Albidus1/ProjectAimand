@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
+    //테스트
     public float maxHP = 100;
     public Slider healthSlider;
 
