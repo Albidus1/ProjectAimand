@@ -62,7 +62,7 @@ public class PlayerRangeAttack : MonoBehaviour
 
     private void InitializeRangeAttackSquareMesh()
     {
-        rangeAttackSquareObject = new GameObject();
+        rangeAttackSquareObject = new GameObject("RangeAttack_SquareMesh");
         rangeAttackSquareObject.transform.parent = this.transform;
         rangeAttackSquareObject.transform.localPosition = Vector3.zero;
         rangeAttackSquareObject.transform.localRotation = Quaternion.identity;

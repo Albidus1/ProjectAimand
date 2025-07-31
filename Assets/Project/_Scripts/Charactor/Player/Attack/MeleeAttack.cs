@@ -35,7 +35,7 @@ public class MeleeAttack : MonoBehaviour
     {
         fovMeshObject = new GameObject("FOV_Mesh");
         fovMeshObject.transform.SetParent(transform);
-        fovMeshObject.transform.localPosition = new Vector3(0, 0, -0.1f);
+        fovMeshObject.transform.localPosition = Vector3.zero;
 
         var mf = fovMeshObject.AddComponent<MeshFilter>();
         var mr = fovMeshObject.AddComponent<MeshRenderer>();
@@ -45,8 +45,9 @@ public class MeleeAttack : MonoBehaviour
         mat.color = new Color(1f, 0f, 0f, 0.3f);
         mr.material = mat;
 
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        mr.sortingOrder = sr != null ? sr.sortingOrder - 1 : -10;
+        // Rendering order 이슈로 주석처리 (+ Player의 Sprite Renderer가 현재 자식에게 있음)
+        //SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        //mr.sortingOrder = sr != null ? sr.sortingOrder - 1 : -10;
 
         playerMovement = GetComponent<PlayerMovement>();
         playerHealth = GetComponentInParent<Health>();
