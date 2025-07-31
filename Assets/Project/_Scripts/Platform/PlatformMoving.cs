@@ -5,56 +5,38 @@ using UnityEngine;
 
 
 
-public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
+public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 {
-    public Rigidbody2D rb { get; private set; }
     public PlayerMovement player { get; private set; }
 
-    // 위치
-    public Vector2 pointA;
-    public Vector2 pointB;
-    public Vector3 next { get; private set; }
-    public Vector3 direction { get; private set; }
-    private Vector3 lastPosition;
+    [Header("플레이어 동기화")]
+    public bool isPlayerSync = false;
 
-    // 이동 속도
-    [Header("딜레이")]
-    public float startDelay;
-    public float inputDelay;
-    [Space(5)]
-
-    [Header("목표 데이터")]
-    public float speedToDestination;
-    public float startWaitTime;
-    [Space(5)]
-
-    [Header("복귀 데이터")]
-    public float speedToHome;
-    public float homeWaitTime;
-    [Space(5)]
+    // 속도
+    [Header("속도")]
+    public float movementSpeed;
 
     [Header("가속")]
     [Tooltip("플레이어가 가속을 받는 최소 속도")]
-    public float speedThreshold;
     public bool isAccelerateAble = false;
+    [MyConditionalHide("isAccelerateAble", true)]
+    public float speedThreshold;
 
-    private float waitTime;
+
     public float jumpTime { get; private set; }
-
-    public bool isMovingStart { get; private set; }
     public bool isMoving { get; private set; }
-    public bool isPaused { get; private set; }
-    public bool isReturning { get; private set; }
+    private float m_waitTimer;
+    private Vector3 m_lastPosition;
 
 
 
     #region SAVELOAD
-    public override string Save()
+    public virtual string Save()
     {
         return JsonUtility.ToJson(this);
     }
 
-    public override void Load(string _json)
+    public virtual void Load(string _json)
     {
         JsonUtility.FromJsonOverwrite(_json, this);
     }
@@ -62,53 +44,29 @@ public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+
     }
     
-    private void Start()
+    protected override void Start()
     {
-        transform.position = pointA;
-        next = pointB;
-        DirectionCalculate();
-
-        lastPosition = transform.position;
+        base.Start();
+        base.canMove = true;
     }
 
-    [HideInInspector] public bool isInitialized = false;
-    public void InitializePoints()
-    {
-        if (false == isInitialized)
-        {
-            pointA = transform.position;
-            pointB = transform.position + Vector3.right * 5f;
-        }
-
-        isInitialized = true;
-    }
-
-    private void Update()
+    protected override void Update()
     {
         #region TIMERS
-        waitTime -= Time.deltaTime;
-
         jumpTime -= Time.deltaTime;
         #endregion
 
         #region HANDLE MOVEMENT
-        if (player != null && base.button == null && base.objectID == "")
+        ExecuteUpdate();
+
+        if (player != null)
         {
-            if (true == CanMove())
-            {
-                waitTime = startDelay;
-
-                isMovingStart = true;
-            }
-
-            CheckAccelerateAble();
-
             if (jumpTime <= 0 && true == isAccelerateAble)
             {
-                player.platformDirection = direction;
+                //player.platformDirection = direction;
             }
             else
             {
@@ -116,107 +74,76 @@ public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
             }
         }
         #endregion
-
-        #region HANDLE PAUSE
-        if (waitTime <= 0)
-        {
-            isPaused = false;
-        }
-        else
-        {
-            isPaused = true;
-        }
-        #endregion
     }
 
     private void FixedUpdate()
     {
-        if (true == isMovingStart)
-        {
-            isMovingStart = false;
-            isMoving = true;
-        }
-
-        if (true == isMoving && false == isPaused)
-        {
-            Move();
-        }
+        
     }
 
-    public override void ObjectActivate(Button _button)
+    private void ExecuteUpdate()
     {
-        base.ObjectActivate(_button);
-
-        if (true == isMoving)
+        if (base.pathElements == null 
+            || base.pathElements.Count < 1
+            || base.m_endReached
+            || false == canMove)
         {
             return;
         }
 
-        isMoving = true;
-        isReturning = false;
-        waitTime = startWaitTime;
-        DirectionCalculate();
-    }
+        if (isPlayerSync && false == PlatformCanMove())
+        {
+            return;
+        }
 
-    public void DirectionCalculate(bool _flag = false)
-    {
-        direction = _flag ? (pointB - pointA).normalized : (next - transform.position).normalized;
+        CheckAccelerateAble();
+        Move();
+
+        m_lastPosition = transform.position;
     }
 
     #region MOVE
     private void Move()
     {
-        float distanceToTarget = (next - transform.position).magnitude;
-        float currentSpeed = (isReturning ? speedToHome : speedToDestination) * Time.deltaTime;
+        m_waitTimer -= Time.deltaTime;
 
-        if (currentSpeed >= distanceToTarget)
+        if (m_waitTimer > 0)
         {
-            transform.position = next;
-            HandleArrival();
-        }
-        else
-        {
-            transform.Translate(direction * currentSpeed, Space.World);
+            return;
         }
 
-        UpdateSpeed();
-    }
+        Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
+        transform.position = Vector3.MoveTowards(transform.position, position, Time.deltaTime * movementSpeed);
 
-    private void HandleArrival()
-    {
-        if (!isReturning)
+        base.m_distanceToNextPoint = (transform.position - position).magnitude;
+        if (base.m_distanceToNextPoint < base.minDistanceToGoal)
         {
-            next = pointA;
-            isReturning = true;
-            waitTime = homeWaitTime;
-        }
-        else
-        {
-            next = pointB;
-            isReturning = false;
-            isMoving = false;
-            waitTime = startWaitTime;
-        }
+            if (base.pathElements.Count > base.currentIndex)
+            {
+                m_waitTimer = base.pathElements[base.currentIndex].delay;
+            }
 
-        DirectionCalculate();
+            base.m_previousPoint = base.m_currentPoint.Current;
+            m_currentPoint.MoveNext();
+        }
     }
 
     private void UpdateSpeed()
     {
-        float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
+/*        float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
         lastPosition = transform.position;
 
         if (speed >= speedThreshold)
         {
             jumpTime = inputDelay;
-        }
+        }*/
     }
     #endregion
 
     #region CHECK METHODES
-    private bool CanMove()
+    private bool PlatformCanMove()
     {
-        return false == isMoving && (0 < player.lastOnGroundTime || player.isWallGrabbing);
+        return player != null && (0 < player.lastOnGroundTime || player.isWallGrabbing);
     }
 
     private void CheckAccelerateAble()
@@ -240,11 +167,6 @@ public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
     #region ON COLLISION
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (base.button != null && base.objectID != "")
-        {
-            return;
-        }
-
         if (collision.gameObject.CompareTag("Player"))
         {
             player = collision.gameObject.GetComponent<PlayerMovement>();
@@ -257,11 +179,6 @@ public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (base.button != null && base.objectID != "")
-        {
-            return;
-        }
-
         if (collision.gameObject.CompareTag("Player") && player != null)
         {
             player.isOnMovingPlatform = false;
@@ -270,22 +187,6 @@ public class PlatformMoving : ButtonObjectActivate, ISaveLoadManagerMethods
 
             player = null;
         }
-    }
-    #endregion
-
-    #region EDITOR METHODS
-    private void OnDrawGizmos()
-    {
-#if UNITY_EDITOR     
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(pointA, 0.5f);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(pointB, 0.5f);
-
-        Gizmos.color = Color.white;
-        Gizmos.DrawLine(pointA, pointB);
-#endif
     }
     #endregion
 }

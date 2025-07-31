@@ -36,7 +36,7 @@ public class MyPath : MonoBehaviour
 
     public Vector3 originalTransformPosition { get; set; }
     public bool originalTransformPositionStatus { get; set; } = false;
-    public bool CanMove { get; set; }
+    public bool canMove { get; set; }
     public bool Initialized { get; set; }
     public int currentIndex { get; private set; }
     public Vector3 currentPoint { get => m_initialPosition + m_currentPoint.Current; }
@@ -62,7 +62,7 @@ public class MyPath : MonoBehaviour
     public virtual void Initialization()
     {
         m_isActive = true;
-        CanMove = false;
+        canMove = false;
         m_endReached = false;
 
         if (referenceMyPath != null && 
@@ -78,7 +78,7 @@ public class MyPath : MonoBehaviour
 
         if (pathElements == null || pathElements.Count < 1)
         {
-            Debug.Log("°æ·Î ¾øÀ½");
+            Debug.Log("ê²½ë¡œ ì—†ìŒ");
             return;
         }
 
@@ -191,7 +191,7 @@ public class MyPath : MonoBehaviour
     {
         if (pathElements == null || pathElements.Count < 1
             || m_endReached
-            || false == CanMove)
+            || false == canMove)
         {
             return;
         }

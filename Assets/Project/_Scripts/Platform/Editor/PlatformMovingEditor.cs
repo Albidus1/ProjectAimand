@@ -1,26 +1,23 @@
-#if UNITY_EDITOR
-using System;
 using UnityEditor;
 using UnityEngine;
 
 
-
-[CustomEditor(typeof(MyPath), true)]
+[CustomEditor(typeof(PlatformMoving), true)]
 [InitializeOnLoad]
-public class MyPathEditor : Editor
+public class PlatformMovingEditor : Editor
 {
-    public MyPath pathTarget
+    public PlatformMoving pathTarget
     {
         get
         {
-            return (MyPath)target;
+            return (PlatformMoving)target;
         }
     }
 
     private void OnSceneGUI()
     {
         Handles.color = Color.green;
-        MyPath t = (target as MyPath);
+        PlatformMoving t = (target as PlatformMoving);
 
         Vector3 snap = new Vector3(0.25f, 0.25f, 0.25f);
 
@@ -50,7 +47,7 @@ public class MyPathEditor : Editor
 
     private Vector3 ApplyAxisLock(Vector3 _oldPoint, Vector3 _newPoint)
     {
-        MyPath t = (target as MyPath);
+        PlatformMoving t = (target as PlatformMoving);
 
         if (t.LockHandlesOnXAxis)
         {
@@ -68,4 +65,3 @@ public class MyPathEditor : Editor
         return _newPoint;
     }
 }
-#endif
