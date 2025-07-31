@@ -34,6 +34,15 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
     [SerializeField] private GameObject dropObjectPrefabs;
 
 
+    private Health m_health;
+
+
+
+    private void Awake()
+    {
+        m_health = GetComponent<Health>();
+    }
+
     public void DropItems(Vector3 _dropPosition)
     {
         int dropCount = GetDropCount(drops);
@@ -101,6 +110,11 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
 
     public void OnEvent(HealthDeathEvent _deathEvent)
     {
+        if (m_health != _deathEvent.affectedHealth)
+        {
+            return;
+        }
+
         DropItems(transform.position);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
 
 
@@ -148,6 +149,10 @@ public class PlayerMovement : MonoBehaviour
         movementState.StateChange(PlayerStates.MovementStates.Idle);
 
         playerState = new PlayerStates();
+
+        //임시
+        CinemachineCamera cam = FindAnyObjectByType<CinemachineCamera>();
+        cam.Target.TrackingTarget = transform;
 
         //groundLayer |= platform;
         //groundLayer |= movingPlatform;
