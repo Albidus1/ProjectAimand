@@ -67,10 +67,9 @@ public class CheckPoint : MonoBehaviour
         m_listeners.Add(_listener);
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-#if UNITY_EDITOR
-
         if (false == LevelManager.HasInstance)
             return;
 
@@ -90,6 +89,6 @@ public class CheckPoint : MonoBehaviour
                     LevelManager.Instance.m_checkPoints[i + 1].transform.position);
             }
         }
-#endif
     }
+#endif
 }
