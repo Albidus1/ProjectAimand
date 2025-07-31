@@ -13,31 +13,32 @@ public class DropProbability
 
 public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
 {
+    [Header("확률")]
     [SerializeField]
-    private List<DropProbability> normalDrops = new List<DropProbability>
+    private List<DropProbability> drops = new List<DropProbability>
     {
         new DropProbability { dropCount = 1, probability = 0.75f },
         new DropProbability { dropCount = 2, probability = 0.25f }
     };
 
-    [SerializeField]
-    private List<DropProbability> eliteDrops = new List<DropProbability>
-    {
-        new DropProbability { dropCount = 1, probability = 0.45f },
-        new DropProbability { dropCount = 2, probability = 0.3f },
-        new DropProbability { dropCount = 3, probability = 0.15f },
-        new DropProbability { dropCount = 4, probability = 0.10f },
-    };
+    //[SerializeField]
+    //private List<DropProbability> eliteDrops = new List<DropProbability>
+    //{
+    //    new DropProbability { dropCount = 1, probability = 0.45f },
+    //    new DropProbability { dropCount = 2, probability = 0.3f },
+    //    new DropProbability { dropCount = 3, probability = 0.15f },
+    //    new DropProbability { dropCount = 4, probability = 0.10f },
+    //};
 
+    [Header ("드롭 아이템")]
     [SerializeField] private GameObject dropObjectPrefabs;
 
 
-    public void DropItems(bool _isElite, Vector3 _dropPosition)
+    public void DropItems(Vector3 _dropPosition)
     {
-        int dropCount = _isElite ? GetDropCount(eliteDrops) : GetDropCount(normalDrops);
+        int dropCount = GetDropCount(drops);
 
-        Debug.Log($"타입 {(_isElite ? "엘리트" : "노말")} + {dropCount}");
-
+        Debug.Log($"{gameObject.name} : 아이템 {dropCount}개 생성");
 
         for (int i = 0; i < dropCount; i++)
         {
@@ -45,10 +46,10 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
     }
 
-    private int GetDropCount(List<DropProbability> dropTable)
+    private int GetDropCount(List<DropProbability> _dropTable)
     {
         float totalProbability = 0f;
-        foreach (var drop in dropTable)
+        foreach (var drop in _dropTable)
         {
             totalProbability += drop.probability;
         }
@@ -56,7 +57,7 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
         float randomPoint = Random.value * totalProbability;
 
         float cumulative = 0f;
-        foreach (var drop in dropTable)
+        foreach (var drop in _dropTable)
         {
             cumulative += drop.probability;
 
@@ -66,7 +67,7 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
             }
         }
 
-        return dropTable[dropTable.Count - 1].dropCount;
+        return _dropTable[^1].dropCount;
     }
 
     private void SpawnItem(Vector3 position)
@@ -100,6 +101,6 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
 
     public void OnEvent(HealthDeathEvent _deathEvent)
     {
-        DropItems(false, transform.position);
+        DropItems(transform.position);
     }
 }
