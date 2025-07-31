@@ -27076,6 +27076,38 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2854407446283290483, guid: 515ce6e836c33ce43a12e089cfab1761, type: 3}
   m_PrefabInstance: {fileID: 1406017033}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1994193422 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1091521504391383391, guid: 3549b303e433f7f4e88f00c5b3444b70, type: 3}
+  m_PrefabInstance: {fileID: 8939411895440907308}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1994193424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1994193422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 654a351946a577f4ba650dc0fa88ccc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalDrops:
+  - dropCount: 1
+    probability: 0.75
+  - dropCount: 2
+    probability: 0.25
+  eliteDrops:
+  - dropCount: 1
+    probability: 0.45
+  - dropCount: 2
+    probability: 0.3
+  - dropCount: 3
+    probability: 0.15
+  - dropCount: 4
+    probability: 0.1
+  dropObjectPrefabs: {fileID: 0}
 --- !u!1 &2000505839
 GameObject:
   m_ObjectHideFlags: 0
@@ -27876,7 +27908,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1091521504391383391, guid: 3549b303e433f7f4e88f00c5b3444b70, type: 3}
+      insertIndex: 7
+      addedObject: {fileID: 1994193424}
   m_SourcePrefab: {fileID: 100100000, guid: 3549b303e433f7f4e88f00c5b3444b70, type: 3}
 --- !u!1001 &8998676271425599048
 PrefabInstance:

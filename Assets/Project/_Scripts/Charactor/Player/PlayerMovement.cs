@@ -177,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (movementState.currentState == PlayerStates.MovementStates.Die)
         {
-            Debug.Log("사망");
+            //Debug.Log("사망");
 
             if (false == ApplyGravityOnDeath)
             {

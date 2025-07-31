@@ -1,11 +1,51 @@
 using System.Collections;
-using System.Linq.Expressions;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class Health : MonoBehaviour
+
+
+public struct HealthChangeEvent
+{
+    static HealthChangeEvent e;
+
+    public Health affectedHealth;
+    public float newHealth;
+
+    public HealthChangeEvent(Health _affectedHealth, float _newHealth)
+    {
+        affectedHealth = _affectedHealth;
+        newHealth = _newHealth;
+    }
+
+    public static void Trigger(Health _affectedHealth, float _newHealth)
+    {
+        e.affectedHealth = _affectedHealth;
+        e.newHealth = _newHealth;
+        EventManager.TriggerEvent(e);
+    }
+}
+
+public struct HealthDeathEvent
+{
+    static HealthDeathEvent e;
+
+    public Health affectedHealth;
+
+    public HealthDeathEvent(Health _affectedHealth)
+    {
+        affectedHealth = _affectedHealth;
+    }
+
+    public static void Trigger(Health _affectedHealth)
+    {
+        e.affectedHealth = _affectedHealth;
+        EventManager.TriggerEvent(e);
+    }
+}
+
+
+public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 {
     //테스트
     public float maxHP = 100;
@@ -71,11 +111,7 @@ public class Health : MonoBehaviour
 
     private void Start()
     {
-        InitializeCurrentHealth();
-    }
-
-    private void OnEnable()
-    {
+        m_collider.enabled = true;
         InitializeCurrentHealth();
     }
 
@@ -92,6 +128,8 @@ public class Health : MonoBehaviour
 
     public void Kill()
     {
+        HealthDeathEvent.Trigger(this);
+
         if (m_playerMovement != null)
         {
             Debug.Log("플레이어 사망");
@@ -108,9 +146,25 @@ public class Health : MonoBehaviour
     {
         m_collider.enabled = false;
 
-        Destroy(this.gameObject);
+        gameObject.SetActive(false);
 
         yield return new WaitForSeconds(3f);
+    }
+
+    protected virtual void OnEnable()
+    {
+        InitializeCurrentHealth();
+        this.EventStartListening<HealthDeathEvent>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<HealthDeathEvent>();
+    }
+
+    public void OnEvent(HealthDeathEvent _deathEvent)
+    {
+        //Kill();
     }
 
 #if UNITY_EDITOR
