@@ -154,10 +154,10 @@ public class PlayerMovement : MonoBehaviour
         CinemachineCamera cam = FindAnyObjectByType<CinemachineCamera>();
         cam.Target.TrackingTarget = transform;
 
-        //groundLayer |= platform;
-        //groundLayer |= movingPlatform;
-        //groundLayer |= onewayPlatform;
-        //groundLayer |= magnetPlatform;
+        groundLayer |= platform;
+        groundLayer |= movingPlatform;
+        groundLayer |= onewayPlatform;
+        groundLayer |= magnetPlatform;
     }
     private void Start()
     {
@@ -326,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region JUMP CHECK
-        if (true == isJumping && rb.linearVelocity.y < 0)
+        if (rb.linearVelocity.y < 0)
         {
             isJumping = false;
             isJumpFalling = true;
@@ -390,6 +390,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (true == isOnJumpPad && lastOnJumpPadTime < 0 && padDirection != Vector2.zero)
         {
+            isJumping = true;
+            isJumpFalling = false;
+
+            Vector2 newRb = new Vector2(rb.linearVelocity.x, 0);
+            rb.linearVelocity = newRb;
+
             if (padDirection == Vector2.up)
             {
                 StartCoroutine(nameof(RefillDash), 1);
@@ -398,6 +404,7 @@ public class PlayerMovement : MonoBehaviour
 
                 rb.linearVelocity = moveInput;
 
+                Mathf.Clamp(data.jumpForce * padForce, 20, 80);
                 Jump(data.jumpForce * padForce);
             }
             else
@@ -411,14 +418,10 @@ public class PlayerMovement : MonoBehaviour
                 rb.linearVelocity = padDirection;
                 WallJump(lastWallJumpDirection);
             }
-        }
 
-        if (lastOnJumpPadTime < 0)
-        {
             isOnJumpPad = false;
             padDirection = Vector2.zero;
         }
-
         #endregion
 
         #region SLIDE CHECK

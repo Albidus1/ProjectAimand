@@ -7,8 +7,6 @@ using UnityEngine;
 
 public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 {
-    public PlayerMovement player { get; private set; }
-
     [Header("플레이어 동기화")]
     public bool isPlayerSync = false;
 
@@ -27,7 +25,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     public bool isMoving { get; private set; }
     private float m_waitTimer;
     private Vector3 m_lastPosition;
-
+    private PlayerMovement m_player;
 
 
     #region SAVELOAD
@@ -62,7 +60,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         #region HANDLE MOVEMENT
         ExecuteUpdate();
 
-        if (player != null)
+        if (m_player != null)
         {
             if (jumpTime <= 0 && true == isAccelerateAble)
             {
@@ -70,7 +68,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
             }
             else
             {
-                player.platformDirection = Vector3.zero;
+                m_player.platformDirection = Vector3.zero;
             }
         }
         #endregion
@@ -143,23 +141,23 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     #region CHECK METHODES
     private bool PlatformCanMove()
     {
-        return player != null && (0 < player.lastOnGroundTime || player.isWallGrabbing);
+        return m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing);
     }
 
     private void CheckAccelerateAble()
     {
-        if (player == null)
+        if (m_player == null)
         {
             return;
         }
 
         if (0 < jumpTime)
         {
-            player.isJumpingOnMovingPlatform = true;
+            m_player.isJumpingOnMovingPlatform = true;
         }
         else
         {
-            player.isJumpingOnMovingPlatform = false;
+            m_player.isJumpingOnMovingPlatform = false;
         }
     }
     #endregion
@@ -169,23 +167,27 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            player = collision.gameObject.GetComponent<PlayerMovement>();
+            if (m_player == null)
+            {
+                m_player = collision.gameObject.GetComponent<PlayerMovement>();
+            }
 
-            player.isOnMovingPlatform = true;
-            player.platformTransform = transform;
-            player.lastPlatformPosition = transform.position;
+            if (PlatformCanMove())
+            {
+                m_player.isOnMovingPlatform = true;
+                m_player.platformTransform = transform;
+                m_player.lastPlatformPosition = transform.position;
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && player != null)
+        if (collision.gameObject.CompareTag("Player") && m_player != null)
         {
-            player.isOnMovingPlatform = false;
-            player.platformTransform = null;
-            player.lastPlatformPosition = Vector3.zero;
-
-            player = null;
+            m_player.isOnMovingPlatform = false;
+            m_player.platformTransform = null;
+            m_player.lastPlatformPosition = Vector3.zero;
         }
     }
     #endregion

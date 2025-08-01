@@ -95,7 +95,7 @@ public class LaserControl : MonoBehaviour
 
         if (hit)
         {
-            Debug.Log("플레이어 감지됨: " + hit.collider.name);
+            //Debug.Log("플레이어 감지됨: " + hit.collider.name);
         }
     }
 
