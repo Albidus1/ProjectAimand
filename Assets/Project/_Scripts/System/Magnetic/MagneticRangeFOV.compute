@@ -1,0 +1,121 @@
+#pragma kernel MagneticFOV
+
+#define MAX_OBSTACLES 200
+#define EPSILON 0.001f
+
+struct RayData
+{
+    float2 direction;
+    float maxDistance;
+    float hitDistance;
+};
+
+struct ObstacleData
+{
+    float2 position;
+    float2 size;
+    int shapeType; // 0: Box, 1: Circle
+};
+
+RWStructuredBuffer<RayData> _RayBuffer;
+StructuredBuffer<ObstacleData> _ObstacleBuffer;
+
+float2 _PlayerPos;
+float _Range;
+int _RayCount;
+int _ObstacleCount;
+
+// 박스와 레이 충돌 검사
+bool RayBoxIntersect(float2 rayOrigin, float2 rayDir, float2 boxCenter, float2 boxSize, out float t)
+{
+    float2 boxMin = boxCenter - boxSize * 0.5f;
+    float2 boxMax = boxCenter + boxSize * 0.5f;
+    
+    float2 invDir = 1.0f / (rayDir + float2(EPSILON, EPSILON));
+    
+    float2 t1 = (boxMin - rayOrigin) * invDir;
+    float2 t2 = (boxMax - rayOrigin) * invDir;
+    
+    float2 tMin = min(t1, t2);
+    float2 tMax = max(t1, t2);
+    
+    float tNear = max(tMin.x, tMin.y);
+    float tFar = min(tMax.x, tMax.y);
+    
+    t = tNear;
+    return tNear <= tFar && tFar >= 0.0f && tNear >= EPSILON;
+}
+
+// 원과 레이 충돌 검사
+bool RayCircleIntersect(float2 rayOrigin, float2 rayDir, float2 circleCenter, float radius, out float t)
+{
+    float2 oc = rayOrigin - circleCenter;
+    
+    float a = dot(rayDir, rayDir);
+    float b = 2.0f * dot(oc, rayDir);
+    float c = dot(oc, oc) - radius * radius;
+    
+    float discriminant = b * b - 4.0f * a * c;
+    
+    if (discriminant < 0.0f)
+    {
+        t = -1.0f;
+        return false;
+    }
+    
+    float sqrtDisc = sqrt(discriminant);
+    float t1 = (-b - sqrtDisc) / (2.0f * a);
+    float t2 = (-b + sqrtDisc) / (2.0f * a);
+    
+    t = (t1 >= EPSILON) ? t1 : t2;
+    return t >= EPSILON;
+}
+
+// 레이캐스팅 - 모든 장애물 (일반 콜라이더 + 타일맵 박스) 통합 처리
+float CastRay(float2 origin, float2 direction, float maxDist)
+{
+    float closestHit = maxDist;
+    
+    // 모든 장애물 체크 (일반 장애물 + 타일맵에서 변환된 박스들)
+    for (int i = 0; i < _ObstacleCount && i < MAX_OBSTACLES; i++)
+    {
+        ObstacleData obstacle = _ObstacleBuffer[i];
+        float t;
+        bool hit = false;
+        
+        if (obstacle.shapeType == 0) // Box
+        {
+            hit = RayBoxIntersect(origin, direction, obstacle.position, obstacle.size, t);
+        }
+        else if (obstacle.shapeType == 1) // Circle
+        {
+            float radius = obstacle.size.x * 0.5f;
+            hit = RayCircleIntersect(origin, direction, obstacle.position, radius, t);
+        }
+        
+        if (hit && t > 0 && t < closestHit)
+        {
+            closestHit = t;
+        }
+    }
+    
+    return closestHit;
+}
+
+[numthreads(64, 1, 1)]
+void MagneticFOV(uint3 id : SV_DispatchThreadID)
+{
+    uint rayIndex = id.x;
+    
+    if (rayIndex >= (uint) _RayCount)
+        return;
+    
+    RayData ray = _RayBuffer[rayIndex];
+    
+    // 레이캐스팅 수행
+    float hitDistance = CastRay(_PlayerPos, ray.direction, ray.maxDistance);
+    
+    // 결과 저장
+    ray.hitDistance = hitDistance;
+    _RayBuffer[rayIndex] = ray;
+}
