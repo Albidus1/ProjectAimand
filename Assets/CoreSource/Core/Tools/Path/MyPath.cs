@@ -19,7 +19,7 @@ public class MyPath : MonoBehaviour
 
 
 
-    [Header("Path")]
+    [Header("경로")]
     public CycleOptions CycleOption = CycleOptions.Single;
     public MovementDirection InitialMovementDirection = MovementDirection.Ascending;
     public List<MyPathMovementElement> pathElements = new List<MyPathMovementElement>();
@@ -28,7 +28,7 @@ public class MyPath : MonoBehaviour
     public float minDistanceToGoal = 0.1f;
     public bool EndReached => m_endReached;
 
-    [Header("Gizmos")]
+    [Header("축 고정")]
     public bool LockHandlesOnXAxis = false;
     public bool LockHandlesOnYAxis = false;
     public bool LockHandlesOnZAxis = true;

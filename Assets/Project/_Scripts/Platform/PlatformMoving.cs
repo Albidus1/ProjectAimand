@@ -4,15 +4,28 @@ using UnityEditor;
 using UnityEngine;
 
 
-
+[SelectionBase]
 public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 {
+    public enum RotateDirection
+    {
+        None,
+        Left,
+        Right
+    }
+
     [Header("플레이어 동기화")]
     public bool isPlayerSync = false;
 
-    // 속도
     [Header("속도")]
     public float movementSpeed;
+
+    [Header("회전")]
+    public bool isRotateAble = false;
+    [MyConditionalHide("isRotateAble", true)]
+    public float rotateSpeed = 0f;
+    [MyConditionalHide("isRotateAble", true)]
+    public RotateDirection rotateDirection = RotateDirection.None;
 
     [Header("가속")]
     [Tooltip("플레이어가 가속을 받는 최소 속도")]
@@ -96,6 +109,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
         CheckAccelerateAble();
         Move();
+        Rotate();
 
         m_lastPosition = transform.position;
     }
@@ -135,6 +149,24 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         {
             jumpTime = inputDelay;
         }*/
+    }
+    #endregion
+
+    #region ROTATE
+    private void Rotate()
+    {
+        if (isRotateAble == false)
+        {
+            return;
+        }
+        if (rotateDirection == RotateDirection.Left)
+        {
+            transform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
+        }
+        else if (rotateDirection == RotateDirection.Right)
+        {
+            transform.Rotate(Vector3.forward, -rotateSpeed * Time.deltaTime);
+        }
     }
     #endregion
 

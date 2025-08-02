@@ -86,7 +86,7 @@ public class LaserControl : MonoBehaviour
 
     private void Update()
     {
-        RotateLaser();
+        //RotateLaser();
         UpdateLaser();
 
 
