@@ -37,7 +37,7 @@ public class PlayerAttackData : ScriptableObject
         };
 
         string json = JsonUtility.ToJson(data, true);
-        string path = Path.Combine(Application.dataPath, "PlayerStateData.json");
+        string path = Path.Combine(Application.dataPath, "PlayerAttackData.json");
         File.WriteAllText(path, json);
     }
     //[ContextMenu("로드")]
