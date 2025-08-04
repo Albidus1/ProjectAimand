@@ -1,20 +1,20 @@
 #pragma kernel MagneticFOV
 
-#define MAX_OBSTACLES 200
+#define MAX_OBSTACLES 500
 #define EPSILON 0.001f
 
 struct RayData
 {
-    float2 direction;
-    float maxDistance;
-    float hitDistance;
+    float2 Direction;
+    float MaxDistance;
+    float HitDistance;
 };
 
 struct ObstacleData
 {
-    float2 position;
-    float2 size;
-    int shapeType; // 0: Box, 1: Circle
+    float2 Position;
+    float2 Size;
+    int ShapeType; // 0: Box, 1: Circle
 };
 
 RWStructuredBuffer<RayData> _RayBuffer;
@@ -31,19 +31,78 @@ bool RayBoxIntersect(float2 rayOrigin, float2 rayDir, float2 boxCenter, float2 b
     float2 boxMin = boxCenter - boxSize * 0.5f;
     float2 boxMax = boxCenter + boxSize * 0.5f;
     
-    float2 invDir = 1.0f / (rayDir + float2(EPSILON, EPSILON));
+    float tMin = 0.0f;
+    float tMax = 1e30f; // 매우 큰 값으로 초기화
     
-    float2 t1 = (boxMin - rayOrigin) * invDir;
-    float2 t2 = (boxMax - rayOrigin) * invDir;
+    // X축 처리
+    if (abs(rayDir.x) < EPSILON)
+    {
+        // 레이가 X축에 평행한 경우
+        if (rayOrigin.x < boxMin.x || rayOrigin.x > boxMax.x)
+        {
+            t = -1.0f;
+            return false;
+        }
+    }
+    else
+    {
+        float invDirX = 1.0f / rayDir.x;
+        float t1 = (boxMin.x - rayOrigin.x) * invDirX;
+        float t2 = (boxMax.x - rayOrigin.x) * invDirX;
+        
+        if (t1 > t2)
+        {
+            float temp = t1;
+            t1 = t2;
+            t2 = temp;
+        }
+        
+        tMin = max(tMin, t1);
+        tMax = min(tMax, t2);
+        
+        if (tMin > tMax)
+        {
+            t = -1.0f;
+            return false;
+        }
+    }
     
-    float2 tMin = min(t1, t2);
-    float2 tMax = max(t1, t2);
+    // Y축 처리
+    if (abs(rayDir.y) < EPSILON)
+    {
+        // 레이가 Y축에 평행한 경우
+        if (rayOrigin.y < boxMin.y || rayOrigin.y > boxMax.y)
+        {
+            t = -1.0f;
+            return false;
+        }
+    }
+    else
+    {
+        float invDirY = 1.0f / rayDir.y;
+        float t1 = (boxMin.y - rayOrigin.y) * invDirY;
+        float t2 = (boxMax.y - rayOrigin.y) * invDirY;
+        
+        if (t1 > t2)
+        {
+            float temp = t1;
+            t1 = t2;
+            t2 = temp;
+        }
+        
+        tMin = max(tMin, t1);
+        tMax = min(tMax, t2);
+        
+        if (tMin > tMax)
+        {
+            t = -1.0f;
+            return false;
+        }
+    }
     
-    float tNear = max(tMin.x, tMin.y);
-    float tFar = min(tMax.x, tMax.y);
-    
-    t = tNear;
-    return tNear <= tFar && tFar >= 0.0f && tNear >= EPSILON;
+    // 가장 가까운 교차점 반환
+    t = (tMin >= EPSILON) ? tMin : tMax;
+    return t >= EPSILON && t < 1e29f;
 }
 
 // 원과 레이 충돌 검사
@@ -83,14 +142,14 @@ float CastRay(float2 origin, float2 direction, float maxDist)
         float t;
         bool hit = false;
         
-        if (obstacle.shapeType == 0) // Box
+        if (obstacle.ShapeType == 0) // Box
         {
-            hit = RayBoxIntersect(origin, direction, obstacle.position, obstacle.size, t);
+            hit = RayBoxIntersect(origin, direction, obstacle.Position, obstacle.Size, t);
         }
-        else if (obstacle.shapeType == 1) // Circle
+        else if (obstacle.ShapeType == 1) // Circle
         {
-            float radius = obstacle.size.x * 0.5f;
-            hit = RayCircleIntersect(origin, direction, obstacle.position, radius, t);
+            float radius = obstacle.Size.x * 0.5f;
+            hit = RayCircleIntersect(origin, direction, obstacle.Position, radius, t);
         }
         
         if (hit && t > 0 && t < closestHit)
@@ -113,9 +172,9 @@ void MagneticFOV(uint3 id : SV_DispatchThreadID)
     RayData ray = _RayBuffer[rayIndex];
     
     // 레이캐스팅 수행
-    float hitDistance = CastRay(_PlayerPos, ray.direction, ray.maxDistance);
+    float hitDistance = CastRay(_PlayerPos, ray.Direction, ray.MaxDistance);
     
     // 결과 저장
-    ray.hitDistance = hitDistance;
+    ray.HitDistance = hitDistance;
     _RayBuffer[rayIndex] = ray;
 }

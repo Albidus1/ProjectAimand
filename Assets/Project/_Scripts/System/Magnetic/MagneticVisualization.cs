@@ -1,38 +1,33 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class MagneticVisualization : MonoBehaviour
 {
+    [HideInInspector] public bool DirToRight = true;
+    private float _dirAngle => DirToRight ? 0f : 180f;
+
     [Header("FOV Settings")]
-    [SerializeField]
-    private FOVType m_fovType = FOVType.Circle; // Start에서 사용되므로 중간에 변경 불가
-    [SerializeField]
-    private float m_range = 8f;
-    [SerializeField]
-    private float m_coneAngle = 90f;
-    [SerializeField]
-    private int m_rayCount = 128;
+    [SerializeField] private FOVType m_fovType = FOVType.Circle; // Start에서 사용되므로 중간에 변경 불가
+    public float Range = 8f;
+    public float ConeAngle = 90f;
+    [SerializeField] private int m_rayCount = 128;
 
     [Header("Visualization")]
-    [SerializeField]
-    private bool m_fovEdgeEnabled = false; // Start에서 사용되므로 중간에 변경해도 적용 안됨
-    [SerializeField]
-    private Material m_fovMainMaterial;
-    [SerializeField]
-    private Material m_fovEdgeMaterial;
+    [SerializeField] private bool m_fovEdgeEnabled = false; // Start에서 사용되므로 중간에 변경해도 적용 안됨
+    [SerializeField] private Material m_fovMainMaterial;
+    [SerializeField] private Material m_fovEdgeMaterial;
     public LayerMask ObstacleLayer = -1;
 
     [Header("Tilemap Support")]
     public Tilemap[] ObstacleTilemaps;
     public float TileSize = 1f;
-    [SerializeField]
-    private float m_tilemapSearchPadding = 2f; // 타일맵 검사시 추가 범위 (m_range + a)
+    [SerializeField] private float m_tilemapSearchPadding = 2f; // 타일맵 검사시 추가 범위 (m_range + a)
 
     // Compute Shader 관련
     [Header("Compute Shader")]
-    [SerializeField]
-    private ComputeShader m_fovComputeShader;
+    [SerializeField] private ComputeShader m_fovComputeShader;
     private ComputeBuffer m_rayBuffer;
     private ComputeBuffer m_obstacleBuffer;
 
@@ -44,57 +39,57 @@ public class MagneticVisualization : MonoBehaviour
     // 성능 최적화를 위한 캐싱
     private List<ObstacleData> m_cachedObstacles = new List<ObstacleData>();
     private Vector3 m_lastPlayerPosition;
-    private const float m_POSITION_THRESHOLD = 0.1f; // 위치 변화 임계값
+    private const float POSITION_THRESHOLD = 0.1f; // 위치 변화 임계값
+    private const int MAX_OBSTACLES = 500;
 
     public enum FOVType { Circle, Cone }
 
     // 데이터 구조체
-    struct RayData
+    private struct RayData
     {
         public Vector2 Direction;
         public float MaxDistance;
         public float HitDistance;
     }
 
-    struct ObstacleData
+    private enum ShapeType
     {
-        public enum ShapeType
-        {
-            Box = 0,
-            Circle = 1,
-            Polygon = 2
-        }
+        Box = 0,
+        Circle = 1,
+        Polygon = 2
+    }
+
+    private struct ObstacleData
+    {
         public Vector2 Position;
         public Vector2 Size;
-        public Vector2[] Vertice;
-        public float[] Indice;
         public ShapeType Type;
     }
 
-    void Start()
+    private void Start()
     {
         InitializeFOV();
         SetupVisualization();
         m_lastPlayerPosition = transform.position;
     }
 
-    void Update()
+    private void Update()
     {
         UpdateFOV();
         UpdateVisualization();
     }
 
-    void InitializeFOV()
+    private void InitializeFOV()
     {
         // 버퍼 생성 (더 많은 장애물을 처리할 수 있도록 확장)
         m_rayBuffer = new ComputeBuffer(m_rayCount, sizeof(float) * 4);
-        m_obstacleBuffer = new ComputeBuffer(200, sizeof(float) * 5); // 타일맵 포함해서 더 많은 장애물 처리
+        m_obstacleBuffer = new ComputeBuffer(MAX_OBSTACLES, sizeof(float) * 5); // 타일맵 포함해서 더 많은 장애물 처리
 
         // 레이 데이터 초기화
         InitializeRays();
     }
 
-    void InitializeRays()
+    private void InitializeRays()
     {
         RayData[] rays = new RayData[m_rayCount];
 
@@ -110,26 +105,23 @@ public class MagneticVisualization : MonoBehaviour
             else
             {
                 // 원뿔형 - 지정된 각도 범위
-                float startAngle = -m_coneAngle * 0.5f;
-                angle = startAngle + (m_coneAngle / (m_rayCount - 1)) * i;
-
-                // 플레이어 방향 추가
-                angle += transform.eulerAngles.z;
+                float startAngle = -ConeAngle * 0.5f + _dirAngle;
+                angle = startAngle + (ConeAngle / (m_rayCount - 1)) * i;
             }
 
             float radians = angle * Mathf.Deg2Rad;
             rays[i] = new RayData
             {
                 Direction = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)),
-                MaxDistance = m_range,
-                HitDistance = m_range
+                MaxDistance = Range,
+                HitDistance = Range
             };
         }
 
         m_rayBuffer.SetData(rays);
     }
 
-    void UpdateFOV()
+    private void UpdateFOV()
     {
         if (m_fovComputeShader == null) return;
 
@@ -151,8 +143,8 @@ public class MagneticVisualization : MonoBehaviour
         // Compute Shader 실행
         int kernel = m_fovComputeShader.FindKernel("MagneticFOV");
 
-        m_fovComputeShader.SetVector("_PlayerPos", transform.position);
-        m_fovComputeShader.SetFloat("_Range", m_range);
+        m_fovComputeShader.SetVector("_PlayerPos", this.transform.position);
+        m_fovComputeShader.SetFloat("_Range", Range);
         m_fovComputeShader.SetInt("_RayCount", m_rayCount);
         m_fovComputeShader.SetInt("_ObstacleCount", m_cachedObstacles.Count);
 
@@ -169,7 +161,7 @@ public class MagneticVisualization : MonoBehaviour
         m_fovComputeShader.Dispatch(kernel, threadGroups, 1, 1);
     }
 
-    void CollectAllObstacles()
+    private void CollectAllObstacles()
     {
         m_cachedObstacles.Clear();
 
@@ -179,12 +171,21 @@ public class MagneticVisualization : MonoBehaviour
         // 2. 타일맵을 Box로 변환해서 수집
         CollectTilemapAsBoxes();
 
-        //Debug.Log($"Total obstacles collected: {cachedObstacles.Count}");
+        // 버퍼 크기보다 많은 장애물이 수집되면 경고
+        if (m_cachedObstacles.Count > MAX_OBSTACLES) // MAX_OBSTACLES와 맞춤
+        {
+            Debug.LogWarning($"Too many obstacles collected: {m_cachedObstacles.Count}. Consider increasing MAX_OBSTACLES or optimizing obstacle collection.");
+            // 거리순으로 정렬해서 가까운 것들만 유지
+            m_cachedObstacles = m_cachedObstacles
+                .OrderBy(obs => Vector2.Distance(transform.position, obs.Position))
+                .Take(MAX_OBSTACLES)
+                .ToList();
+        }
     }
 
-    void CollectRegularObstacles()
+    private void CollectRegularObstacles()
     {
-        Collider2D[] obstacles = Physics2D.OverlapCircleAll(transform.position, m_range * 1.5f, ObstacleLayer);
+        Collider2D[] obstacles = Physics2D.OverlapCircleAll(this.transform.position, Range * 1.5f, ObstacleLayer);
 
         foreach (var obstacle in obstacles)
         {
@@ -195,19 +196,19 @@ public class MagneticVisualization : MonoBehaviour
             {
                 Position = obstacle.transform.position,
                 Size = obstacle.bounds.size,
-                Type = obstacle is BoxCollider2D ? ObstacleData.ShapeType.Box : ObstacleData.ShapeType.Circle
+                Type = obstacle is BoxCollider2D ? ShapeType.Box : ShapeType.Circle
             };
 
             m_cachedObstacles.Add(data);
         }
     }
 
-    void CollectTilemapAsBoxes()
+    private void CollectTilemapAsBoxes()
     {
         if (ObstacleTilemaps == null || ObstacleTilemaps.Length == 0) return;
 
-        Vector3 playerPos = transform.position;
-        float searchRange = m_range + m_tilemapSearchPadding;
+        Vector3 playerPos = this.transform.position;
+        float searchRange = Range + m_tilemapSearchPadding;
 
         foreach (Tilemap tilemap in ObstacleTilemaps)
         {
@@ -239,7 +240,7 @@ public class MagneticVisualization : MonoBehaviour
                             {
                                 Position = tileCenterPos,
                                 Size = new Vector2(TileSize, TileSize),
-                                Type = ObstacleData.ShapeType.Box // Box로 처리
+                                Type = ShapeType.Box // Box로 처리
                             };
 
                             m_cachedObstacles.Add(tileObstacle);
@@ -250,7 +251,7 @@ public class MagneticVisualization : MonoBehaviour
         }
     }
 
-    void SetupVisualization()
+    private void SetupVisualization()
     {
         m_meshFilter = gameObject.AddComponent<MeshFilter>();
         m_meshRenderer = gameObject.AddComponent<MeshRenderer>();
@@ -261,7 +262,7 @@ public class MagneticVisualization : MonoBehaviour
         CreateFOVMesh();
     }
 
-    void CreateFOVMesh()
+    private void CreateFOVMesh()
     {
         m_fovMesh = new Mesh();
 
@@ -281,11 +282,11 @@ public class MagneticVisualization : MonoBehaviour
             }
             else
             {
-                float startAngle = (-m_coneAngle * 0.5f + transform.eulerAngles.z) * Mathf.Deg2Rad;
-                angle = startAngle + (m_coneAngle * Mathf.Deg2Rad / (m_rayCount - 1)) * i;
+                float startAngle = (-ConeAngle * 0.5f + _dirAngle) * Mathf.Deg2Rad;
+                angle = startAngle + (ConeAngle * Mathf.Deg2Rad / (m_rayCount - 1)) * i;
             }
 
-            vertices[i + 1] = new Vector3(Mathf.Cos(angle) * m_range, Mathf.Sin(angle) * m_range, 0);
+            vertices[i + 1] = new Vector3(Mathf.Cos(angle) * Range, Mathf.Sin(angle) * Range, 0);
 
             // UV 좌표 계산: 중심(0.5, 0.5)에서 가장자리(0~1)로
             float uvX = 0.5f + (Mathf.Cos(angle) * 0.5f);
@@ -337,24 +338,28 @@ public class MagneticVisualization : MonoBehaviour
         m_fovMesh.RecalculateBounds();
     }
 
-    // 범위 내 체크 (다른 스크립트에서 사용)
+    /// <summary>
+    /// 범위 내 있는지 확인 (장애물 체크 x)
+    /// </summary>
+    /// <param name="targetPos"></param>
+    /// <returns></returns>
     public bool IsInRange(Vector3 targetPos)
     {
-        Vector2 dirToTarget = (targetPos - transform.position);
+        Vector2 dirToTarget = (targetPos - this.transform.position);
         float distance = dirToTarget.magnitude;
 
-        if (distance > m_range) return false;
+        if (distance > Range) return false;
 
         if (m_fovType == FOVType.Cone)
         {
-            Vector2 forward = new Vector2(Mathf.Cos(transform.eulerAngles.z * Mathf.Deg2Rad),
-                                         Mathf.Sin(transform.eulerAngles.z * Mathf.Deg2Rad));
+            Vector2 forward = new Vector2(Mathf.Cos(_dirAngle * Mathf.Deg2Rad),
+                                         Mathf.Sin(_dirAngle * Mathf.Deg2Rad));
             float angle = Vector2.Angle(forward, dirToTarget.normalized);
-            if (angle > m_coneAngle * 0.5f) return false;
+            if (angle > ConeAngle * 0.5f) return false;
         }
 
         // 캐싱된 장애물로 체크
-        return !IsBlocked(transform.position, targetPos);
+        return !IsBlocked(this.transform.position, targetPos);
     }
 
     // 두 점 사이가 장애물에 막혀있는지 확인
@@ -399,35 +404,49 @@ public class MagneticVisualization : MonoBehaviour
         return tNear <= tFar && tFar >= 0.0f && tNear <= maxDistance;
     }
 
-    // 수동으로 장애물 재수집 (디버깅용)
+    /// <summary>
+    /// 수동으로 장애물 재수집 (디버깅용)
+    /// </summary>
     [ContextMenu("Force Refresh Obstacles")]
     public void ForceRefreshObstacles()
     {
         CollectAllObstacles();
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         m_rayBuffer?.Release();
         m_obstacleBuffer?.Release();
     }
 
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, m_range);
+        Gizmos.DrawWireSphere(this.transform.position, Range);
 
         if (m_fovType == FOVType.Cone)
         {
-            float leftAngle = (transform.eulerAngles.z - m_coneAngle * 0.5f) * Mathf.Deg2Rad;
-            float rightAngle = (transform.eulerAngles.z + m_coneAngle * 0.5f) * Mathf.Deg2Rad;
+            float leftAngle = (_dirAngle - ConeAngle * 0.5f) * Mathf.Deg2Rad;
+            float rightAngle = (_dirAngle + ConeAngle * 0.5f) * Mathf.Deg2Rad;
 
-            Vector3 leftDir = new Vector3(Mathf.Cos(leftAngle), Mathf.Sin(leftAngle), 0) * m_range;
-            Vector3 rightDir = new Vector3(Mathf.Cos(rightAngle), Mathf.Sin(rightAngle), 0) * m_range;
+            Vector3 leftDir = new Vector3(Mathf.Cos(leftAngle), Mathf.Sin(leftAngle), 0) * Range;
+            Vector3 rightDir = new Vector3(Mathf.Cos(rightAngle), Mathf.Sin(rightAngle), 0) * Range;
 
             Gizmos.color = Color.red;
-            Gizmos.DrawRay(transform.position, leftDir);
-            Gizmos.DrawRay(transform.position, rightDir);
+            Gizmos.DrawRay(this.transform.position, leftDir);
+            Gizmos.DrawRay(this.transform.position, rightDir);
+        }
+
+        if (Application.isPlaying && !DirToRight && m_fovType == FOVType.Cone)
+        {
+            Gizmos.color = Color.magenta;
+            // 중간 레이 (가장 왼쪽을 향하는 레이) 강조
+            int middleRay = m_rayCount / 2;
+            float startAngle = -ConeAngle * 0.5f + _dirAngle;
+            float angle = startAngle + (ConeAngle / (m_rayCount - 1)) * middleRay;
+            float radians = angle * Mathf.Deg2Rad;
+            Vector3 dir = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0);
+            Gizmos.DrawRay(transform.position, dir * Range);
         }
 
         // 수집된 장애물들 표시 (디버깅용)
@@ -438,13 +457,13 @@ public class MagneticVisualization : MonoBehaviour
             {
                 switch (obstacle.Type)
                 {
-                    case ObstacleData.ShapeType.Box:
+                    case ShapeType.Box:
                         Gizmos.DrawWireCube(obstacle.Position, obstacle.Size);
                         break;
-                    case ObstacleData.ShapeType.Circle:
+                    case ShapeType.Circle:
                         Gizmos.DrawWireSphere(obstacle.Position, obstacle.Size.x * 0.5f);
                         break;
-                    case ObstacleData.ShapeType.Polygon:
+                    case ShapeType.Polygon:
                         break;
                 }
             }

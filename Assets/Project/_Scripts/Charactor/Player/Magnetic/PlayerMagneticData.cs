@@ -7,6 +7,7 @@ public class PlayerMagneticData : ScriptableObject
     [Header("인력")]
     public float PullAngle = 45f;
     public float PullRange = 20f;
+    public float RiftDistance = 1f;
     public float PullPowerMax = 10f;
     public float PullPowerMin = 1f;
     public float PullPowerMaxRange = 4f;
@@ -22,6 +23,7 @@ public class PlayerMagneticData : ScriptableObject
         {
             PullAngle = PullAngle,
             PullRange = PullRange,
+            RiftDistance = RiftDistance,
             PullPowerMax = PullPowerMax,
             PullPowerMin = PullPowerMin,
             PullPowerMaxRange = PullPowerMaxRange,
@@ -34,7 +36,7 @@ public class PlayerMagneticData : ScriptableObject
         string path = Path.Combine(Application.dataPath, "PlayerMagneticData.json");
         File.WriteAllText(path, json);
     }
-    //[ContextMenu("로드")]
+
     public void OnLoad()
     {
         string path = Path.Combine(Application.persistentDataPath, "PlayerMagneticData.json");
@@ -46,6 +48,7 @@ public class PlayerMagneticData : ScriptableObject
 
             PullAngle = data.PullAngle;
             PullRange = data.PullRange;
+            RiftDistance = data.RiftDistance;
             PullPowerMax = data.PullPowerMax;
             PullPowerMin = data.PullPowerMin;
             PullPowerMaxRange = data.PullPowerMaxRange;
@@ -61,6 +64,7 @@ public class PlayerMagneticData : ScriptableObject
         // 인력
         public float PullAngle;
         public float PullRange;
+        public float RiftDistance;
         public float PullPowerMax;
         public float PullPowerMin;
         public float PullPowerMaxRange;

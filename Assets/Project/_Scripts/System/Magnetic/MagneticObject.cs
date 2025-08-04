@@ -1,16 +1,21 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class MagneticObject : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public enum MagneticFlag
     {
-        
+        NONE = 0,
+        PULL = 1 << 0,
+        PUSH = 1 << 1,
+        HOLD = 1 << 2,
+        ALL = PULL | PUSH | HOLD
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField]
+    public MagneticFlag MagneticType;
+
+    public bool IsPullable => (MagneticType & MagneticFlag.PULL) > 0;
+    public bool IsPushable => (MagneticType & MagneticFlag.PUSH) > 0;
+    public bool IsHoldable => (MagneticType & MagneticFlag.HOLD) > 0;
 }
