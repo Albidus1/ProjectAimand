@@ -151,8 +151,8 @@ public class PlayerMovement : MonoBehaviour
         playerState = new PlayerStates();
 
         //임시
-        CinemachineCamera cam = FindAnyObjectByType<CinemachineCamera>();
-        cam.Target.TrackingTarget = transform;
+        //CinemachineCamera cam = FindAnyObjectByType<CinemachineCamera>();
+        //cam.Target.TrackingTarget = transform;
 
         groundLayer |= platform;
         groundLayer |= movingPlatform;
@@ -168,7 +168,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-
+        movementState.StateChange(PlayerStates.MovementStates.Idle);
+        moveInput = Vector2.zero;
     }
 
     private void Update()
@@ -708,9 +709,17 @@ public class PlayerMovement : MonoBehaviour
     {
         ControllSleep(0.5f);
 
-        CheckDirectionToFace(_facingDirection);
+        int direction = _facingDirection ? 1 : -1;
+
+        Vector3 scale = transform.localScale;
+        scale.x = direction;
+        transform.localScale = scale;
+
+        isFacingRight = _facingDirection;
 
         transform.position = _spawnPoint.position;
+
+        moveInput = Vector2.zero;
     }
     #endregion
 

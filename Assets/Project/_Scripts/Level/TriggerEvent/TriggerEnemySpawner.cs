@@ -55,8 +55,11 @@ public class TriggerEnemySpawner : TriggerEvent
         {
             Vector2 spawnPosition = transform.position + enemy.spawnPosition;
 
+            int index = enemy.enemyIndex;
+            index = Mathf.Clamp(index, 0, enemy.enemyIndex);
+
             Instantiate
-                (enemyPrefabs[enemy.enemyIndex],
+                (enemyPrefabs[index],
                 spawnPosition, 
                 Quaternion.identity);
         }

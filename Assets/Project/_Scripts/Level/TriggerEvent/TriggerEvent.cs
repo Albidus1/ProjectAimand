@@ -15,6 +15,8 @@ public class TriggerEvent : MonoBehaviour
     protected bool m_triggerOnce;
     protected bool m_triggered;
 
+
+
     protected virtual void Awake()
     {
         m_boxCollider2D = GetComponent<BoxCollider2D>();
@@ -45,6 +47,11 @@ public class TriggerEvent : MonoBehaviour
 
         m_triggerOnce = triggerOnce;
         m_triggered = true;
+
+        if (triggerCooldownTime > 0)
+        {
+            Invoke(nameof(ResetTriggerCooldown), triggerCooldownTime);
+        }
     }
 
     public virtual void ResetTrigger()
@@ -52,4 +59,6 @@ public class TriggerEvent : MonoBehaviour
         m_triggered = false;
         m_triggerOnce = false;
     }
+
+    protected virtual void ResetTriggerCooldown() => m_triggered = false;
 }

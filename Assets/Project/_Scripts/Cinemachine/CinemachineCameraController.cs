@@ -38,7 +38,7 @@ public class CinemachineCameraController : MonoBehaviour
 
     public void SetTarget(PlayerMovement _character)
     {
-        Debug.Log("타겟 설정");
+        //Debug.Log("타겟 설정");
         targetPlayer = _character.gameObject;
         playerMovement = _character;
     }
@@ -65,12 +65,12 @@ public class CinemachineCameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        //HandleZoom();
+        HandleZoom();
     }
 
     private void HandleZoom()
     {
-        PerformOrthographicZoom();
+        //PerformOrthographicZoom();
     }
 
     private void PerformOrthographicZoom()

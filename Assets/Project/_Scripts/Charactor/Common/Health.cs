@@ -83,6 +83,8 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
     }
 
+    public EnemyWave enemyWave { get; set; }
+
     private ReSpawner m_respawner;
 
     private float m_HP;
@@ -138,17 +140,19 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
         else if (m_enemyMovement != null)
         {
-            StartCoroutine(OnDeath());
+            if (enemyWave != null)
+            {
+                enemyWave.RegisterEnemyDeath(this.gameObject);
+            }
+
+            OnDeath();
         }       
     }
 
-    private IEnumerator OnDeath()
+    private void OnDeath()
     {
         m_collider.enabled = false;
-
         gameObject.SetActive(false);
-
-        yield return new WaitForSeconds(3f);
     }
 
     protected virtual void OnEnable()

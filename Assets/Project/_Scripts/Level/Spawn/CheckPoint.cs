@@ -54,7 +54,7 @@ public class CheckPoint : MonoBehaviour
 
     public void SpawnPlayer(PlayerMovement _player)
     {
-        _player.RespawnAt(transform, !isFacingRight);
+        _player.RespawnAt(transform, isFacingRight);
 
         foreach(RespawnAble listener in m_listeners)
         {
@@ -70,6 +70,9 @@ public class CheckPoint : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position, new Vector3(1, 1, 0));
+
         if (false == LevelManager.HasInstance)
             return;
 
