@@ -6,7 +6,7 @@ public class DamageOnTouch : MonoBehaviour
     public bool killPlayer = false;
 
     [Header("대상")]
-    //public LayerMask targetLayerMask;
+    public LayerMask targetLayerMask;
     public bool applyDamageOnTriggerEnter = true;
     public bool applyDamageOnTriggerStay = true;
 
@@ -19,6 +19,12 @@ public class DamageOnTouch : MonoBehaviour
     [MyReadOnly]
     public GameObject owner;
 
+
+    public delegate void OnHitDelegate();
+    public OnHitDelegate OnHit;
+    public OnHitDelegate OnHitDamageable;
+    public OnHitDelegate OnHitNonDamageable;
+    public OnHitDelegate OnKill;
 
     private Health m_health;
     private Vector2 m_lastPosition;
@@ -82,24 +88,24 @@ public class DamageOnTouch : MonoBehaviour
         m_lastPosition = transform.position;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         if (false == applyDamageOnTriggerEnter)
         {
             return;
         }
 
-        ApplyDamage(other);
+        ApplyDamage(collider);
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D collider)
     {
         if (false == applyDamageOnTriggerStay)
         {
             return;
         }
 
-        ApplyDamage(other);
+        ApplyDamage(collider);
     }
 
     private void ApplyDamage(Collider2D _col)

@@ -692,7 +692,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator DownJump(Collider2D _col)
     {
         Physics2D.IgnoreCollision(col, _col, true);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
         Physics2D.IgnoreCollision(col, _col, false);
     }
 
@@ -712,7 +712,7 @@ public class PlayerMovement : MonoBehaviour
         int direction = _facingDirection ? 1 : -1;
 
         Vector3 scale = transform.localScale;
-        scale.x = direction;
+        scale.x = direction * scale.x;
         transform.localScale = scale;
 
         isFacingRight = _facingDirection;
@@ -1173,7 +1173,7 @@ public class PlayerMovement : MonoBehaviour
     {
 #if UNITY_EDITOR
         BoxCollider2D col = GetComponent<BoxCollider2D>();
-        Vector2 size = new Vector2 (col.size.x, col.size.y);
+        Vector2 size = new Vector2 (col.size.x * transform.localScale.x, col.size.y * transform.localScale.y);
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position, size);

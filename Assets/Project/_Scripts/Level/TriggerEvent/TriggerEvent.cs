@@ -61,4 +61,18 @@ public class TriggerEvent : MonoBehaviour
     }
 
     protected virtual void ResetTriggerCooldown() => m_triggered = false;
+
+
+#if UNITY_EDITOR
+    protected virtual void OnDrawGizmos()
+    {
+        if (m_boxCollider2D == null)
+        {
+            m_boxCollider2D = GetComponent<BoxCollider2D>();
+        }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(m_boxCollider2D.bounds.center, m_boxCollider2D.bounds.size);
+    }
+#endif
 }

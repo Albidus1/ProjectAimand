@@ -46,6 +46,6 @@ public class RangedAttack : MonoBehaviour
         Vector3 direction = transform.localScale.x > 0 ? Vector3.right : Vector3.left;
 
         // 총알에 방향 지정
-        bullet.GetComponent<Bullet>().SetDirection(direction);
+        //bullet.GetComponent<Bullet>().SetDirection(direction);
     }
 }

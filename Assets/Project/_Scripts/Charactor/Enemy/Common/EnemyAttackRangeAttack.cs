@@ -65,28 +65,28 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
     protected override void Attack()
     {
-        base.m_attackTime = Time.time + base.attackTime;
-        Debug.Log("확인용");
+        //base.m_attackTime = Time.time + base.attackTime;
+        //Debug.Log("확인용");
         
-        if (bullet != null && bulletSpawn != null)
-        {
-            Quaternion angle = Quaternion.Euler(0, 0, bulletAngle);
-            Bullet b = Instantiate(bullet, bulletSpawn.position, angle).GetComponent<Bullet>();
-            b.damage = base.damage;
+        //if (bullet != null && bulletSpawn != null)
+        //{
+        //    Quaternion angle = Quaternion.Euler(0, 0, bulletAngle);
+        //    Bullet b = Instantiate(bullet, bulletSpawn.position, angle).GetComponent<Bullet>();
+        //    b.damage = base.damage;
 
-            Vector3 direction = transform.localScale.x > 0 ? Vector3.right : Vector3.left;
-            Vector3 moveDirection = angle * direction;
-            Vector3 targetPosition = b.transform.position + moveDirection * 50f;
+        //    Vector3 direction = transform.localScale.x > 0 ? Vector3.right : Vector3.left;
+        //    Vector3 moveDirection = angle * direction;
+        //    Vector3 targetPosition = b.transform.position + moveDirection * 50f;
 
-            b.transform.DOMove(targetPosition, bulletDuration)
-                .SetEase(Ease.Linear)
-                .OnComplete(() => {
-                    if (b != null) 
-                    {
-                        Destroy(b.gameObject);
-                    }
-                })
-                .SetLink(b.gameObject);
-        }
+        //    b.transform.DOMove(targetPosition, bulletDuration)
+        //        .SetEase(Ease.Linear)
+        //        .OnComplete(() => {
+        //            if (b != null) 
+        //            {
+        //                Destroy(b.gameObject);
+        //            }
+        //        })
+        //        .SetLink(b.gameObject);
+        //}
     }
 }
