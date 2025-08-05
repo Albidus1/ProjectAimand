@@ -20,7 +20,7 @@ public class PlayerStates
     }
 }
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : CharacterMovement
 {
     public PlayerStates playerState { get; protected set; }
     public MyStateManager<PlayerStates.MovementStates> movementState;

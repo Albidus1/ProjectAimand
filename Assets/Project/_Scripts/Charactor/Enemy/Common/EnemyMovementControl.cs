@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyMovementControl : MonoBehaviour
+public class EnemyMovementControl : CharacterMovement
 {
     [Header("플레이어")]
     public LayerMask playerLayerMask;

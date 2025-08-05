@@ -259,7 +259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7540914752901320263
 Transform:
   m_ObjectHideFlags: 0
@@ -490,8 +490,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   killPlayer: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
+  damage: 10
   damageCausedKnockbackForce: {x: 15, y: 2.5}
   invincibilityDuration: 1
   owner: {fileID: 0}

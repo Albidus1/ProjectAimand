@@ -95,11 +95,24 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
     public UnityEvent<float> OnDamageEvent;
 
-    private void Awake()
-    {
-        m_collider = GetComponent<Collider2D>();
-        m_playerMovement = GetComponent<PlayerMovement>();
 
+
+    private void Start()
+    {
+        Initialization();
+        InitializeCurrentHealth();
+    }
+
+    private void Initialization()
+    {
+        if (m_collider == null)
+        {
+            m_collider = GetComponent<Collider2D>();
+        }
+
+        m_collider.enabled = true;
+
+        m_playerMovement = GetComponent<PlayerMovement>();
         if (m_playerMovement == null)
         {
             m_enemyMovement = GetComponent<EnemyMovement>();
@@ -109,12 +122,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         m_owner = this.gameObject;
 
         m_respawner = FindFirstObjectByType<ReSpawner>();
-    }
-
-    private void Start()
-    {
-        m_collider.enabled = true;
-        InitializeCurrentHealth();
     }
 
     public void InitializeCurrentHealth()
@@ -137,6 +144,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
             Debug.Log("플레이어 사망");
             LevelManager.Instance.PlayerDead(m_playerMovement);
             InitializeCurrentHealth();
+            return;
         }
         else if (m_enemyMovement != null)
         {
@@ -146,17 +154,25 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
             }
 
             OnDeath();
-        }       
+            return;
+        }
+
+        OnDeath();
     }
 
     private void OnDeath()
     {
-        m_collider.enabled = false;
+        if (m_collider != null)
+        {
+            m_collider.enabled = false;
+        }
+
         gameObject.SetActive(false);
     }
 
     protected virtual void OnEnable()
     {
+        Initialization();
         InitializeCurrentHealth();
         this.EventStartListening<HealthDeathEvent>();
     }
@@ -174,7 +190,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        currentHP = m_HP;
+        //currentHP = m_HP;
     }
 #endif
 }

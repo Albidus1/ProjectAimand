@@ -66,12 +66,14 @@ public class Projectile : MyPoolableObject
             yield break; 
         }
 
+        m_damageOnTouch.ClearIgnoreGameObject();
+        m_damageOnTouch.IgnoreGameObject(gameObject);
 
         yield return m_initialInvulnerabilityDurationWFS;
 
         if (damageOwner)
         {
-            
+            m_damageOnTouch.RemoveIgnoringObject(gameObject);
         }
     }
 

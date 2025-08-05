@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageOnTouch : MonoBehaviour
@@ -10,11 +10,17 @@ public class DamageOnTouch : MonoBehaviour
     public bool applyDamageOnTriggerEnter = true;
     public bool applyDamageOnTriggerStay = true;
 
+    [Header("주는 데미지")]
+    public float damage = 10f;
+
+    [Header("받는 데미지")]
+    public float damageTakenEveryTime = 0f;
+    public float damageTakenDamageable = 0f;
+    public float damageTakenNonDamageable = 0f;
+    public float invincibilityDuration = 0.5f;
+
     [Header("넉백")]
     public Vector2 damageCausedKnockbackForce = new Vector2(10, 2);
-
-    [Header("무적 상태")]
-    public float invincibilityDuration = 0.5f;
 
     [MyReadOnly]
     public GameObject owner;
@@ -26,23 +32,35 @@ public class DamageOnTouch : MonoBehaviour
     public OnHitDelegate OnHitNonDamageable;
     public OnHitDelegate OnKill;
 
-    private Health m_health;
     private Vector2 m_lastPosition;
     private Vector2 m_lastDamagePosition;
     private Vector2 m_velocity;
     private Vector2 m_knockbackForce;
     private Vector2 m_damageDirection;
     private float m_startTime;
-    private EnemyMovement m_enemyMovement;
-    private PlayerMovement m_playerMovement;
-    private Collider2D m_playerCollider;
+    private List<GameObject> m_ignoredGameObjects;
+    private Health m_colliderHealth;
+    private Health m_health;
+    private CharacterMovement m_characterMovement;
+    private Collider2D m_collideingCollider;
+    private BoxCollider2D m_boxCollider2D;
+    private CircleCollider2D m_circleCollider2D;
     private bool m_doKnockback;
 
 
     private void Awake()
     {
+        if (m_ignoredGameObjects == null)
+        {
+            m_ignoredGameObjects = new List<GameObject>();
+        }
+
         owner = this.gameObject;
-        m_enemyMovement = GetComponent<EnemyMovement>();
+        m_health = GetComponent<Health>();
+        m_characterMovement = GetComponent<CharacterMovement>();
+
+        m_boxCollider2D = GetComponent<BoxCollider2D>();
+        m_circleCollider2D = GetComponent<CircleCollider2D>();
 
         m_lastPosition = transform.position;
         m_lastDamagePosition = transform.position;
@@ -57,7 +75,30 @@ public class DamageOnTouch : MonoBehaviour
 
     private void OnDisable()
     {
+        ClearIgnoreGameObject();
+    }
 
+    public void IgnoreGameObject(GameObject _newIgnoredGameObject)
+    {
+        if (m_ignoredGameObjects == null)
+        {
+            m_ignoredGameObjects = new List<GameObject>();
+        }
+
+        m_ignoredGameObjects.Add(_newIgnoredGameObject);
+    }
+
+    public void RemoveIgnoringObject(GameObject _ignoredGameObject)
+    {
+        m_ignoredGameObjects.Remove(_ignoredGameObject);
+    }
+
+    public void ClearIgnoreGameObject()
+    {
+        if (m_ignoredGameObjects != null)
+        {
+            m_ignoredGameObjects.Clear();
+        }
     }
 
     private void Update()
@@ -95,7 +136,7 @@ public class DamageOnTouch : MonoBehaviour
             return;
         }
 
-        ApplyDamage(collider);
+        Colliding(collider);
     }
 
     private void OnTriggerStay2D(Collider2D collider)
@@ -105,57 +146,81 @@ public class DamageOnTouch : MonoBehaviour
             return;
         }
 
-        ApplyDamage(collider);
+        Colliding(collider);
     }
 
-    private void ApplyDamage(Collider2D _col)
+    private void Colliding(Collider2D _col)
     {
         if (false == this.isActiveAndEnabled)
         {
             return;
         }
 
-        if (false == _col.CompareTag("Player"))
+        if (m_ignoredGameObjects.Contains(_col.gameObject))
         {
+            //Debug.Log($"[DamageOnTouch] 무시된 오브젝트: {_col.gameObject.name}");
             return;
         }
 
-        if (m_doKnockback)
+        if (false == MyLayers.LayerInLayerMask(_col.gameObject.layer, targetLayerMask))
         {
+            //Debug.Log($"[DamageOnTouch] 타겟 레이어가 아님: {_col.gameObject.name}");
             return;
         }
 
-        if (m_playerMovement == null)
-        {
-            m_playerMovement = _col.GetComponent<PlayerMovement>();
-        }
+        //Debug.Log($"[DamageOnTouch] 충돌: {_col.gameObject.name}");
 
-        m_playerCollider = _col;
+        m_collideingCollider = _col;
+        m_colliderHealth = _col.GetComponent<Health>();
 
-        if (m_health == null)
-        {
-            m_health = _col.GetComponent<Health>();
-        }
+        OnHit?.Invoke();
 
-        // ✅ 무적 상태일 경우 데미지 및 넉백 모두 무시
-        if (m_health != null && m_health.invincible)
+        if (m_colliderHealth != null && m_colliderHealth.enabled)
         {
-            Debug.Log("[DamageOnTouch] 무적 상태로 데미지 무시됨");
-            return;
-        }
-
-        if (false == killPlayer)
-        {
-            m_health.currentHP -= 10;
+            if (m_colliderHealth.currentHP > 0)
+            {
+                OnCollideWithDamageable(m_colliderHealth);
+            }
         }
         else
         {
-            m_health.currentHP -= 99999;
+            OnCollideWithNonDamageable();
         }
-
+        
         ApplyDamageCausedKnockback();
     }
 
+    private void OnCollideWithDamageable(Health _health)
+    {
+        if (_health.invincible)
+        {
+            return;
+        }
+
+        ApplyDamageCausedKnockback();
+
+        OnHitDamageable?.Invoke();
+
+        m_colliderHealth.currentHP -= damage;
+
+        if (m_colliderHealth.currentHP <= 0)
+        {
+            OnKill?.Invoke();
+        }
+
+        SelfDamage(damageTakenEveryTime + damageTakenDamageable);
+    }
+
+    private void OnCollideWithNonDamageable()
+    {
+        OnHitNonDamageable?.Invoke();
+        
+        if (damageTakenEveryTime + damageTakenNonDamageable > 0)
+        {
+            //Debug.Log("[DamageOnTouch] OnCollideWithNonDamageable값: " + (damageTakenEveryTime + damageTakenNonDamageable));
+            SelfDamage(damageTakenEveryTime + damageTakenNonDamageable);
+        }
+    }
 
     private void ApplyDamageCausedKnockback()
     {
@@ -173,13 +238,26 @@ public class DamageOnTouch : MonoBehaviour
             owner = this.gameObject;
         }
 
-        Vector2 relativePosition = m_playerMovement.transform.position - owner.transform.position;
-        m_knockbackForce.x *= Mathf.Sign(relativePosition.x);
-        m_knockbackForce.y = damageCausedKnockbackForce.y;
 
-        m_playerMovement.Knockback(m_knockbackForce);
+        if (m_collideingCollider.TryGetComponent<PlayerMovement>(out var p))
+        {
+            Vector2 relativePosition = p.transform.position - owner.transform.position;
+            m_knockbackForce.x *= Mathf.Sign(relativePosition.x);
+            m_knockbackForce.y = damageCausedKnockbackForce.y;
+            p.Knockback(m_knockbackForce);
+        }
 
         m_startTime = invincibilityDuration;
         m_doKnockback = true;
+    }
+
+    private void SelfDamage(float _damage)
+    {
+        if (m_health != null)
+        {
+            //Debug.Log("[DamageOnTouch] SelfDamage: " + _damage);
+            m_damageDirection = Vector2.up;
+            m_health.currentHP -= _damage;
+        }
     }
 }
