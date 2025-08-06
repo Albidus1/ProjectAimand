@@ -142,9 +142,9 @@ public class PlayerMagneticController : MonoBehaviour
 
     private void HandlePullKeyUp()
     {
+        m_pullMagneticRangeVisualization.gameObject.SetActive(false);
         if (m_pullingObject == null) return;
 
-        m_pullMagneticRangeVisualization.gameObject.SetActive(false);
         ReleaseHoldingObject();
         ReleasePullingObject();
         m_lastPullTime = Time.time;
@@ -162,7 +162,7 @@ public class PlayerMagneticController : MonoBehaviour
 
     private void HandleExistingPullingObject()
     {
-        if (!m_isHoldingPullingObject && ShouldReleasePullingObject())
+        if (ShouldReleasePullingObject())
         {
             ReleasePullingObject();
             m_lastPullTime = Time.time;
@@ -255,8 +255,13 @@ public class PlayerMagneticController : MonoBehaviour
                         {
                             distance = distance2;
                             result = magneticObject;
+                            float riftDist = Mathf.Min(
+                                m_playerMagneticData.RiftDistance, 
+                                Mathf.Max(
+                                    GetMaxRiftPos(magneticObject.transform.position) - 0.1f, // 0.1은 padding 거리
+                                    0f));
                             m_riftPos = magneticObject.transform.position +
-                                Vector3.up * m_playerMagneticData.RiftDistance;
+                                Vector3.up * riftDist;
                         }
                     }
                 }
@@ -264,6 +269,75 @@ public class PlayerMagneticController : MonoBehaviour
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 물체를 들어올렸을때 들어올려질 수 있는 최대 높이 (원뿔형 범위 안)
+    /// </summary>
+    /// <param name="targetPos">원뿔형 안에 들어온 대상의 위치</param>
+    /// <returns></returns>
+    private float GetMaxRiftPos(Vector3 targetPos)
+    {
+        // 플레이어 기준 상대 좌표 계산
+        Vector3 relativePos = targetPos - this.transform.position;
+
+        // 플레이어 방향에 맞춰 좌표계 조정 (오른쪽이면 x 그대로, 왼쪽이면 x 반전)
+        float x = m_playerMovement.isFacingRight ? relativePos.x : -relativePos.x;
+        float y = relativePos.y;
+
+        // 원뿔 설정
+        float coneAngleRad = m_playerMagneticData.PullAngle * 0.5f * Mathf.Deg2Rad;
+        float coneRadius = m_playerMagneticData.PullRange;
+
+        // 원뿔 범위에서 해당 지점의 Y축 높이 계산
+        float coneHeightAtPoint = GetConeHeightAtPoint(coneAngleRad, coneRadius, x, y);
+
+        // 기본 rift 거리와 원뿔 높이 중 작은 값 사용 (안전장치)
+        float baseRiftDist = m_playerMagneticData.RiftDistance;
+
+        // 원뿔 높이의 일정 비율을 사용 (예: 40%)
+        float optimalRiftHeight = Mathf.Min(coneHeightAtPoint * 0.4f, baseRiftDist);
+
+        // 최소값 보장
+        return Mathf.Max(optimalRiftHeight, 0.5f);
+    }
+
+    /// <summary>
+    /// 2D 원뿔형 범위에서 특정 점의 Y축 높이 계산
+    /// </summary>
+    private float GetConeHeightAtPoint(float coneAngleRad, float coneRadius, float x, float y)
+    {
+        // 입력 유효성 검사
+        if (x < 0) return 0f;
+
+        float tanAngle = Mathf.Tan(coneAngleRad);
+
+        // 직선 구간과 원형 구간의 경계점
+        float transitionX = coneRadius / tanAngle;
+
+        if (x <= transitionX)
+        {
+            // 직선 구간: 삼각형 계산
+            return 2f * x * tanAngle;
+        }
+        else
+        {
+            // 원형 구간: 원의 방정식 사용
+            float dx = x - transitionX;
+
+            // x가 원의 범위를 벗어난 경우
+            if (Mathf.Abs(dx) > coneRadius) return 0f;
+
+            // y² = radius² - (x - centerX)²
+            float ySquared = coneRadius * coneRadius - dx * dx;
+
+            if (ySquared < 0f) return 0f;
+
+            float yBound = Mathf.Sqrt(ySquared);
+
+            // 전체 높이: 2 * yBound
+            return 2f * yBound;
+        }
     }
 
     private bool IsInPullRange(MagneticObject target)
@@ -355,6 +429,7 @@ public class PlayerMagneticController : MonoBehaviour
     {
         if (m_pullingObject == null) return;
 
+        Debug.Log("Release object");
         m_pullingObject.GetComponent<Rigidbody2D>().gravityScale = 1f;
         m_pullingObject = null;
     }
