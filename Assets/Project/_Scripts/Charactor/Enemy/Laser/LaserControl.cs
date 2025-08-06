@@ -25,6 +25,10 @@ public class LaserControl : MonoBehaviour
         }
     }
 
+    [Header("레이저 설정")]
+    public float laserThickness = 0.5f;
+    public float laserCooldown = 0f;
+    public float laserDuration = 6f;
 
     [Header("레이 캐스트")]
     public int raycastCount = 1;
@@ -37,7 +41,7 @@ public class LaserControl : MonoBehaviour
     private LineRenderer m_lineRenderer;
     private Vector3 m_direction;
     private Vector3 m_endPoint;
-
+    private float m_laserActiveTimer;
 
     private void Awake()
     {
@@ -57,10 +61,12 @@ public class LaserControl : MonoBehaviour
     {
         //LaserOnoff(false);
         m_lineRenderer.useWorldSpace = true;
+        m_lineRenderer.startWidth = laserThickness; 
 
         FillVFXList();
 
         isFiringLaser = laserOn;
+        Invoke(nameof(LaserReactivate), laserCooldown);
     }
 
     private void FillVFXList()
@@ -86,16 +92,29 @@ public class LaserControl : MonoBehaviour
 
     private void Update()
     {
-        //RotateLaser();
-        UpdateLaser();
-
-
-        float force = (transform.position - m_endPoint).magnitude;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, m_direction, force, LayerManager.playerLayerMask);
-
-        if (hit)
+        if (laserDuration > 0)
         {
-            //Debug.Log("플레이어 감지됨: " + hit.collider.name);
+            m_laserActiveTimer -= Time.deltaTime;
+
+            if (m_laserActiveTimer < 0)
+            {
+                isFiringLaser = false;
+                Invoke(nameof(LaserReactivate), laserCooldown);
+            }
+        }
+
+        if (laserOn)
+        {
+            //RotateLaser();
+            UpdateLaser();
+
+            float force = (transform.position - m_endPoint).magnitude;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, m_direction, force, LayerManager.playerLayerMask);
+
+            if (hit)
+            {
+                //Debug.Log("플레이어 감지됨: " + hit.collider.name);
+            }
         }
     }
 
@@ -145,6 +164,12 @@ public class LaserControl : MonoBehaviour
                 ps.Stop();
             }
         }
+    }
+
+    private void LaserReactivate()
+    {
+        m_laserActiveTimer = laserDuration;
+        isFiringLaser = true;
     }
 
 #if UNITY_EDITOR

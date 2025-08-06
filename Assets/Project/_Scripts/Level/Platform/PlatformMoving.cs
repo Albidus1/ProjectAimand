@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 [SelectionBase]
@@ -34,8 +35,10 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     public float speedThreshold;
 
 
+    public Rigidbody2D rb { get; private set; }
     public float jumpTime { get; private set; }
     public bool isMoving { get; private set; }
+
     private float m_waitTimer;
     private Vector3 m_lastPosition;
     private PlayerMovement m_player;
@@ -62,6 +65,8 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     {
         base.Start();
         base.canMove = true;
+
+        transform.position = base.originalTransformPosition + base.m_currentPoint.Current;
     }
 
     protected override void Update()
@@ -108,8 +113,9 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         }
 
         CheckAccelerateAble();
-        Move();
         Rotate();
+        Move();
+
 
         m_lastPosition = transform.position;
     }
@@ -125,6 +131,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         }
 
         Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
+
         transform.position = Vector3.MoveTowards(transform.position, position, Time.deltaTime * movementSpeed);
 
         base.m_distanceToNextPoint = (transform.position - position).magnitude;
@@ -159,13 +166,16 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         {
             return;
         }
-        if (rotateDirection == RotateDirection.Left)
+
+        Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
+        Vector3 moveDirection = position - transform.position;
+        //float rotationSmoothing = 0.1f;
+
+        if (moveDirection != Vector3.zero)
         {
-            transform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
-        }
-        else if (rotateDirection == RotateDirection.Right)
-        {
-            transform.Rotate(Vector3.forward, -rotateSpeed * Time.deltaTime);
+            float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
         }
     }
     #endregion
