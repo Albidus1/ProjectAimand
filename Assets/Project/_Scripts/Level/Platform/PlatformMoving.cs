@@ -63,10 +63,10 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     
     protected override void Start()
     {
-        base.Start();
+        base.Initialization();
         base.canMove = true;
 
-        transform.position = base.originalTransformPosition + base.m_currentPoint.Current;
+        m_lastPosition = transform.position;
     }
 
     protected override void Update()
