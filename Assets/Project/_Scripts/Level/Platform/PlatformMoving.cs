@@ -94,7 +94,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
     private void FixedUpdate()
     {
-        transform.position = m_lastPosition;
+
     }
 
     private void ExecuteUpdate()
@@ -144,6 +144,8 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
             base.m_previousPoint = base.m_currentPoint.Current;
             m_currentPoint.MoveNext();
+
+            transform.position = position;
         }
     }
 
@@ -169,13 +171,25 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
         Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
         Vector3 moveDirection = position - transform.position;
+        Debug.Log(moveDirection);
         //float rotationSmoothing = 0.1f;
+
+        if (base.CycleOption == CycleOptions.PingPong && base.m_direction < 0)
+        {
+            moveDirection = transform.position - position;
+        }
 
         if (moveDirection != Vector3.zero)
         {
             float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+            Debug.Log(angle);
+
             Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotateSpeed * Time.deltaTime);
         }
     }
     #endregion
