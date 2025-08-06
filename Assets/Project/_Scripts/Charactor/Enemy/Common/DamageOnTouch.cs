@@ -201,7 +201,7 @@ public class DamageOnTouch : MonoBehaviour
 
         OnHitDamageable?.Invoke();
 
-        m_colliderHealth.currentHP -= damage;
+        m_colliderHealth.Damage(damage, invincibilityDuration);
 
         if (m_colliderHealth.currentHP <= 0)
         {
@@ -257,7 +257,7 @@ public class DamageOnTouch : MonoBehaviour
         {
             //Debug.Log("[DamageOnTouch] SelfDamage: " + _damage);
             m_damageDirection = Vector2.up;
-            m_health.currentHP -= _damage;
+            m_health.Damage(_damage, invincibilityDuration);
         }
     }
 }

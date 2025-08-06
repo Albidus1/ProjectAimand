@@ -89,7 +89,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
     private void FixedUpdate()
     {
-        
+        transform.position = m_lastPosition;
     }
 
     private void ExecuteUpdate()

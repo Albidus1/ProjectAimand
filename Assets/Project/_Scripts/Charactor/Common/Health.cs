@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 
 
@@ -52,36 +53,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     public Slider healthSlider;
 
     public bool invincible = false;
-    public float currentHP
-    {
-        get { return m_HP; }
-        set
-        {
-            if (invincible) 
-                return; // ✅ 무적일 땐 체력 변경 안 함
-
-
-            m_HP = Mathf.Clamp(value, 0, maxHP);
-
-            if (healthSlider != null)
-            {
-                healthSlider.maxValue = 1;
-                healthSlider.value = m_HP / maxHP;
-            }
-
-            OnDamageEvent.Invoke(value); // 대미지 이벤트 실행
-
-            if (Application.isPlaying)
-            {
-                Debug.Log($"현재 체력: {m_HP}");
-            }
-
-            if (m_HP <= 0)
-            {
-                Kill();
-            }
-        }
-    }
+    public float currentHP;
 
     public EnemyWave enemyWave { get; set; }
 
@@ -127,11 +99,45 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     public void InitializeCurrentHealth()
     {
         //Debug.Log($"현재 체력: {currentHP}");
-        m_HP = maxHP;
+        currentHP = maxHP;
 
         if(healthSlider != null)
         {
             healthSlider.value = currentHP / maxHP;
+        }
+    }
+
+    public void Damage(float _damage, float _invincibilityDuration)
+    {
+        if (invincible)
+            return; // ✅ 무적일 땐 체력 변경 안 함
+
+
+        _damage = Mathf.Clamp(_damage, 0, maxHP);
+        currentHP -= _damage;
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = 1;
+            healthSlider.value = currentHP / maxHP;
+        }
+
+        OnDamageEvent.Invoke(_damage); // 대미지 이벤트 실행
+
+        if (Application.isPlaying)
+        {
+            Debug.Log($"현재 체력: {currentHP}");
+        }
+
+        if (_invincibilityDuration > 0 && gameObject.activeInHierarchy)
+        {
+            invincible = true;
+            StartCoroutine(DisableInvincible(_invincibilityDuration));
+        }
+
+        if (currentHP <= 0)
+        {
+            Kill();
         }
     }
 
@@ -158,6 +164,12 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
 
         OnDeath();
+    }
+
+    private IEnumerator DisableInvincible(float _delay)
+    {
+        yield return new WaitForSeconds(_delay);
+        invincible = false;
     }
 
     private void OnDeath()

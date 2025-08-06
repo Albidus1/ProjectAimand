@@ -608,6 +608,11 @@ public class PlayerMovement : CharacterMovement
             return;
         }
 
+        if (true == isOnMovingPlatform)
+        {
+            OnMovingPlatform();
+        }
+
         if (false == isDashing)
         {
             if (true == isWallJumping)
@@ -626,11 +631,6 @@ public class PlayerMovement : CharacterMovement
         else if (false == isDashAttacking)
         {
             Run(data.dashEndRunLerp);
-        }
-
-        if (true == isOnMovingPlatform)
-        {
-            OnMovingPlatform();
         }
 
         if (true == isSliding || true == isWallGrabbing)
@@ -781,10 +781,8 @@ public class PlayerMovement : CharacterMovement
         // 움직이는 플렛폼 보정
         if (true == isOnMovingPlatform)
         {
-            Vector3 platform_velocity = (platformTransform.position - lastPlatformPosition) / Time.deltaTime;
-
-            rb.position += (Vector2)(platform_velocity * Time.deltaTime);
-
+            Vector3 deltaPosition = (platformTransform.position - lastPlatformPosition);
+            rb.position += (Vector2)(deltaPosition);
             lastPlatformPosition = platformTransform.position;
         }
     }
