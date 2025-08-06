@@ -14,6 +14,28 @@ public class PlatformMovingEditor : Editor
         }
     }
 
+    public override void OnInspectorGUI()
+    {
+        if (GUILayout.Button("스프라이트 위치 재설정"))
+        {
+            PlatformMoving t = (PlatformMoving)target;
+
+            for (int i = 0; i < t.gameObject.transform.childCount; i++)
+            {
+                Transform transform = t.gameObject.transform.GetChild(i);
+                
+                if (transform != null)
+                {
+                    //Undo.RecordObject(t, "Free Move Handle");
+                    //transform.localPosition = Vector3.zero;
+                    //transform.localPosition = transform.localPosition + t.pathElements[0].pathElementPosition;
+                }
+            }
+        }
+
+        DrawDefaultInspector();
+    }
+
     private void OnSceneGUI()
     {
         Handles.color = Color.green;

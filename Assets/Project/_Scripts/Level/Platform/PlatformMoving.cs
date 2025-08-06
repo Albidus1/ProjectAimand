@@ -67,6 +67,16 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         base.canMove = true;
 
         m_lastPosition = transform.position;
+
+        //for (int i = 0; i < transform.childCount; i++)
+        //{
+        //    Transform t = transform.GetChild(i);
+
+        //    if (t != null)
+        //    {
+        //        t.localPosition = Vector3.zero;
+        //    }
+        //}
     }
 
     protected override void Update()
@@ -171,7 +181,6 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
         Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
         Vector3 moveDirection = position - transform.position;
-        Debug.Log(moveDirection);
         //float rotationSmoothing = 0.1f;
 
         if (base.CycleOption == CycleOptions.PingPong && base.m_direction < 0)
@@ -182,8 +191,6 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         if (moveDirection != Vector3.zero)
         {
             float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-            Debug.Log(angle);
-
             Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
             transform.rotation = Quaternion.Slerp(
