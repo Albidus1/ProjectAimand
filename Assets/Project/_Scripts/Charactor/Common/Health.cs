@@ -94,6 +94,8 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         m_owner = this.gameObject;
 
         m_respawner = FindFirstObjectByType<ReSpawner>();
+
+        invincible = false;
     }
 
     public void InitializeCurrentHealth()
