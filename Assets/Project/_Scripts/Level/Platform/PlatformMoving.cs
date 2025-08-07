@@ -44,8 +44,6 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     private PlayerMovement m_player;
     private bool m_playerSync = false;
 
-
-
     #region SAVELOAD
     public virtual string Save()
     {
@@ -70,16 +68,6 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
 
         m_lastPosition = transform.position;
         m_playerSync = !isPlayerSync;
-
-        //for (int i = 0; i < transform.childCount; i++)
-        //{
-        //    Transform t = transform.GetChild(i);
-
-        //    if (t != null)
-        //    {
-        //        t.localPosition = Vector3.zero;
-        //    }
-        //}
     }
 
     protected override void Update()

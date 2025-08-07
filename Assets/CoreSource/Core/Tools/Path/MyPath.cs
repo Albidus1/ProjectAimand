@@ -49,6 +49,9 @@ public class MyPath : MonoBehaviour
     protected Vector3 m_previousPoint;
     protected float m_distanceToNextPoint;
 
+    public bool m_initialEditorPosition { get; set; }
+
+
 
     protected virtual void Start()
     {

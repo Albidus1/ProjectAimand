@@ -16,21 +16,24 @@ public class PlatformMovingEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("스프라이트 위치 재설정"))
+        Undo.RecordObjects(targets, "Reset Platform Positions");
+
+        if (GUILayout.Button("위치 재설정"))
         {
             PlatformMoving t = (PlatformMoving)target;
 
-            for (int i = 0; i < t.gameObject.transform.childCount; i++)
+            if (t.pathElements[0].pathElementPosition != Vector3.zero)
             {
-                Transform transform = t.gameObject.transform.GetChild(i);
-                
-                if (transform != null)
+                Vector3 pathPosition_0 = t.pathElements[0].pathElementPosition;
+                t.transform.position += pathPosition_0;
+
+                foreach (MyPathMovementElement element in t.pathElements)
                 {
-                    //Undo.RecordObject(t, "Free Move Handle");
-                    //transform.localPosition = Vector3.zero;
-                    //transform.localPosition = transform.localPosition + t.pathElements[0].pathElementPosition;
+                    element.pathElementPosition -= pathPosition_0;
                 }
             }
+
+            EditorUtility.SetDirty(t);
         }
 
         DrawDefaultInspector();
