@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.IntegerTime;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
@@ -15,7 +17,7 @@ public class PlayerMagneticController : MonoBehaviour
     [SerializeField] private KeyCode m_pushKey = KeyCode.D;
     [Space(2)]
     [SerializeField] private float m_pullDelayTime = 1f;
-    [SerializeField] private float m_pushDelayTime = 1f;
+    [SerializeField] private float m_pushDelayTime = 3f;
     [SerializeField] private float m_timeToRiftToPull = 2f;
 
     [Space(5)]
@@ -35,10 +37,11 @@ public class PlayerMagneticController : MonoBehaviour
     private bool m_isHoldingPullingObject;
     private Vector3 m_riftPos;
     private MagneticObject[] m_pushingObjects;
+    private bool m_pulling = false;
     private float m_startPullTime;
-    private float m_lastPullTime;
+    private float m_lastPullTime = float.MinValue;
     private float m_startPushTime;
-    private float m_lastPushTime;
+    private float m_lastPushTime = float.MinValue;
 
     // 장애물 레이어 마스크 (*어디까지가 장애물 레이어인지 명확히할 필요 있음)
     private LayerMask _obstacleMask =>
@@ -47,6 +50,7 @@ public class PlayerMagneticController : MonoBehaviour
         1 << LayerMask.NameToLayer("Platform_OneWay");
     private LayerMask _magneticMask => ~_obstacleMask &
         (~LayerMask.NameToLayer("Player")); // 기타 레이어 추가 제외 (플레이어)
+    private LayerMask _targetMask => _magneticMask | LayerMask.NameToLayer("Enemy"); // 적 레이어 추가
 
     public bool IsPulling => m_pullingObject != null || m_isHoldingPullingObject;
     public bool IsPushing => false;
@@ -59,6 +63,7 @@ public class PlayerMagneticController : MonoBehaviour
     void Update()
     {
         PullControlUpdate();
+        PushControlUpdate();
     }
 
     private void FixedUpdate()
@@ -116,6 +121,7 @@ public class PlayerMagneticController : MonoBehaviour
 
     private void HandlePullKeyDown()
     {
+        m_pulling = true;
         if (!CanStartPull()) return;
 
         UpdatePullVisualization();
@@ -131,8 +137,17 @@ public class PlayerMagneticController : MonoBehaviour
 
         if (m_pullingObject != null)
         {
-            HandleExistingPullingObject();
-            HandleHoldingObject();
+            if (m_pulling)
+            {
+                HandleExistingPullingObject();
+                HandleHoldingObject();
+            }
+            else
+            {
+                ReleaseHoldingObject();
+                ReleasePullingObject();
+                m_lastPullTime = Time.time;
+            }
         }
         else
         {
@@ -148,11 +163,14 @@ public class PlayerMagneticController : MonoBehaviour
         ReleaseHoldingObject();
         ReleasePullingObject();
         m_lastPullTime = Time.time;
+
+        m_pulling = false;
     }
 
     private bool CanStartPull()
     {
-        return Time.time - m_lastPullTime >= m_pullDelayTime;
+        // 마지막 인력으로 부터 딜레이 + 인력 작용중일 때
+        return Time.time - m_lastPullTime >= m_pullDelayTime && m_pulling;
     }
 
     private bool IsPullVisualizationActive()
@@ -182,7 +200,7 @@ public class PlayerMagneticController : MonoBehaviour
 
     private bool ShouldReleasePullingObject()
     {
-        return !m_isHoldingPullingObject && !IsInPullRange(m_pullingObject);
+        return !m_isHoldingPullingObject && !IsInPullRange(m_pullingObject.transform.position);
     }
 
     private void TryFindNewTarget()
@@ -340,12 +358,12 @@ public class PlayerMagneticController : MonoBehaviour
         }
     }
 
-    private bool IsInPullRange(MagneticObject target)
+    private bool IsInPullRange(Vector3 pos)
     {
         Vector3 playerDirection = m_playerMovement.isFacingRight ? Vector3.right : -Vector3.right;
         float dotAbs = Mathf.Cos(m_playerMagneticData.PullAngle * 0.5f * Mathf.Deg2Rad);
 
-        Vector2 vec2Object = target.transform.position - this.transform.position;
+        Vector2 vec2Object = pos - this.transform.position;
         Vector2 dir2Object = vec2Object.normalized;
         float distance = vec2Object.magnitude;
         float dotResult = Vector2.Dot(playerDirection, dir2Object);
@@ -425,12 +443,12 @@ public class PlayerMagneticController : MonoBehaviour
         rb.AddForce(force, ForceMode2D.Force);
     }
 
-    private void ReleasePullingObject()
+    private void ReleasePullingObject(bool restoreGravity = true)
     {
         if (m_pullingObject == null) return;
 
-        Debug.Log("Release object");
-        m_pullingObject.GetComponent<Rigidbody2D>().gravityScale = 1f;
+        if (restoreGravity)
+            m_pullingObject.GetComponent<Rigidbody2D>().gravityScale = 1f;
         m_pullingObject = null;
     }
 
@@ -500,6 +518,235 @@ public class PlayerMagneticController : MonoBehaviour
         }
 
         rb.AddForce(force, ForceMode2D.Force);
+    }
+    #endregion
+
+    #region PUSH_CONTROL
+    private void PushControlUpdate()
+    {
+        if (Input.GetKeyDown(m_pushKey))
+        {
+            HandlePushKeyDown();
+        }
+        else if (Input.GetKey(m_pushKey))
+        {
+            HandlePushKeyHold();
+        }
+        else if (Input.GetKeyUp(m_pushKey))
+        {
+            HandlePushKeyUp();
+        }
+    }
+
+    private void HandlePushKeyDown()
+    {
+        if (!CanPush()) return;
+
+        // 인력이 작용중일때
+        if (m_pulling && m_pullingObject != null)
+        {
+            PushPullingMagnetic();
+        }
+        // 인력이 작용중이지 않을때
+        else
+        {
+            PushMagnetics();
+        }
+
+        AnimatePushing();
+        m_lastPushTime = Time.time;
+    }
+
+    private void HandlePushKeyHold()
+    {
+
+    }
+
+    private void HandlePushKeyUp()
+    {
+
+    }
+
+    private bool CanPush()
+    {
+        return Time.time - m_lastPushTime >= m_pushDelayTime;
+    }
+    #endregion
+
+    #region PUSH
+    private void PushMagnetics()
+    {
+        Collider2D[] magneticObjects = Physics2D.OverlapCircleAll(
+            this.transform.position, m_playerMagneticData.PushRange, _magneticMask);
+
+        foreach(Collider2D coll in magneticObjects)
+        {
+            MagneticObject magneticObject;
+            if (coll.TryGetComponent<MagneticObject>(out magneticObject))
+            {
+                Vector3 forceDir = magneticObject.transform.position - this.transform.position;
+                float dist = forceDir.magnitude;
+                forceDir.Normalize();
+
+                // 장애물에 가로막혀 있으면 패스
+                if (!IsBlockByObstacleToPoint(this.transform.position, forceDir, dist))
+                {
+                    Vector3 force = forceDir * m_playerMagneticData.PushPower;
+
+                    Rigidbody2D rb = magneticObject.GetComponent<Rigidbody2D>();
+                    // 물체들의 속도 제거 후 척력 작용
+                    rb.linearVelocity = Vector3.zero;
+                    rb.AddForce(force);
+                }
+            }
+        }
+
+        if (m_pulling)
+        {
+            // 인력 관련 비활성화
+            ReleaseHoldingObject();
+            ReleasePullingObject();
+            m_lastPullTime = Time.time;
+            m_pulling = false;
+            m_pullMagneticRangeVisualization.gameObject.SetActive(false);
+        }
+    }
+
+    private void PushPullingMagnetic()
+    {
+        Vector3 vec2PullObj = m_pullingObject.transform.position - this.transform.position;
+        float dist = vec2PullObj.magnitude;
+
+        // 척력 범위 안에 들어오지 않을 시
+        if (dist > m_playerMagneticData.PushRange)
+        {
+            // 인력 작용중인 물체의 속도 제거
+            Rigidbody2D rb = m_pullingObject.GetComponent<Rigidbody2D>();
+            rb.linearVelocity = Vector3.zero;
+
+            // 인력이 작용중이던 오브젝트를 놓고 인력 관련 비활성화
+            ReleasePullingObject();
+            m_pullMagneticRangeVisualization.gameObject.SetActive(false);
+            m_pulling = false;
+        }
+        // 척력 범위 안에 들어올 시
+        else
+        {
+            MagneticTarget[] targets = GetTargetsInPullingRange();
+            // 인력 범위 안에 타겟이 있을 시
+            if (targets.Length > 0)
+            {
+                // 가장 가까운 타겟
+                MagneticTarget target = GetNearestTarget(targets);
+                
+                Vector3 forceDir = target.transform.position - m_pullingObject.transform.position;
+                forceDir.Normalize();
+
+                Vector3 force = forceDir * m_playerMagneticData.PushPower;
+                Rigidbody2D rb = m_pullingObject.GetComponent<Rigidbody2D>();
+                rb.linearVelocity = Vector3.zero; // 움직이던 힘 제거
+                rb.AddForce(force, ForceMode2D.Force); // 타겟에게 발사
+                m_pullingObject.FireMagneticObject();
+
+                // 인력 관련 비활성화
+                ReleaseHoldingObject();
+                ReleasePullingObject(false);
+                m_lastPullTime = Time.time;
+                m_pulling = false;
+                m_pullMagneticRangeVisualization.gameObject.SetActive(false);
+            }
+            else
+            {
+                Vector3 force = (m_playerMovement.isFacingRight ? Vector3.right : Vector3.left)
+                    * m_playerMagneticData.PushPower;
+                Rigidbody2D rb = m_pullingObject.GetComponent<Rigidbody2D>();
+                rb.linearVelocity = Vector3.zero; // 움직이던 힘 제거
+                rb.AddForce(force, ForceMode2D.Force); // 발사
+
+                // 인력 관련 비활성화
+                ReleaseHoldingObject();
+                ReleasePullingObject();
+                m_lastPullTime = Time.time;
+                m_pulling = false;
+                m_pullMagneticRangeVisualization.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private MagneticTarget[] GetTargetsInPullingRange()
+    {
+        Collider2D[] inCircle = Physics2D.OverlapCircleAll(
+            this.transform.position, m_playerMagneticData.PullRange, _targetMask);
+        List<MagneticTarget> targets = new List<MagneticTarget>();
+        for (int i = 0; i< inCircle.Length; i++)
+        {
+            // 인력 범위 안에 있는지 체크
+            if (IsInPullRange(inCircle[i].transform.position))
+            {
+                // 타겟인지 체크
+                MagneticTarget target;
+                if (inCircle[i].TryGetComponent<MagneticTarget>(out target))
+                {
+                    targets.Add(target);
+                }
+            }
+        }
+        return targets.ToArray();
+    }
+
+    private MagneticTarget GetNearestTarget(MagneticTarget[] targets)
+    {
+        if (targets.Length == 0) return null;
+
+        MagneticTarget result = targets[0];
+        float nearestDist = (targets[0].transform.position - this.transform.position).sqrMagnitude;
+        for (int i = 1; i < targets.Length; ++i)
+        {
+            float sqrDist = (targets[i].transform.position - this.transform.position).sqrMagnitude;
+            if (sqrDist < nearestDist)
+            {
+                result = targets[i];
+                nearestDist = sqrDist;
+            }
+        }
+        return result;
+    }
+
+    private Coroutine m_pushAnimationCoroutine;
+
+    private void AnimatePushing(bool force = true)
+    {
+        if (m_pushAnimationCoroutine != null)
+        {
+            if (force)
+                StopCoroutine(m_pushAnimationCoroutine);
+            else
+                return;
+        }
+        m_pushAnimationCoroutine = StartCoroutine(PushingAnimation());
+    }
+
+    private IEnumerator PushingAnimation()
+    {
+        m_pushMagneticRangeVisualization.gameObject.SetActive(true);
+        const float animateTime = 0.2f;
+        float time = 0f;
+
+        while (true)
+        {
+            if (time < animateTime)
+            {
+                float visualScale = (Mathf.PingPong(time, animateTime * 0.5f) / (animateTime * 0.5f)) * 0.04f + 1f;
+                m_pushMagneticRangeVisualization.transform.localScale = visualScale * Vector3.one;
+                yield return null;
+            }
+            else
+                break;
+            time += Time.deltaTime;
+        }
+        m_pushMagneticRangeVisualization.transform.localScale = Vector3.one;
+        m_pushMagneticRangeVisualization.gameObject.SetActive(false);
+        m_pushAnimationCoroutine = null;
     }
     #endregion
 

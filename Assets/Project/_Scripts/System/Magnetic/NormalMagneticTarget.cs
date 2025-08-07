@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NormalMagneticTarget : MonoBehaviour, IMagneticTarget
+public class NormalMagneticTarget : MagneticTarget
 {
     
 }
