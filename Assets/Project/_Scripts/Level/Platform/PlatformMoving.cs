@@ -42,6 +42,8 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     private float m_waitTimer;
     private Vector3 m_lastPosition;
     private PlayerMovement m_player;
+    private bool m_playerSync = false;
+
 
 
     #region SAVELOAD
@@ -67,6 +69,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         base.canMove = true;
 
         m_lastPosition = transform.position;
+        m_playerSync = !isPlayerSync;
 
         //for (int i = 0; i < transform.childCount; i++)
         //{
@@ -117,15 +120,12 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
             return;
         }
 
-        if (isPlayerSync && false == PlatformCanMove())
+        if (PlatformCanMove())
         {
-            return;
+            CheckAccelerateAble();
+            Rotate();
+            Move();
         }
-
-        CheckAccelerateAble();
-        Rotate();
-        Move();
-
 
         m_lastPosition = transform.position;
     }
@@ -204,7 +204,17 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     #region CHECK METHODES
     private bool PlatformCanMove()
     {
-        return m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing);
+        if (m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
+        {
+            return true;
+        }
+
+        if (m_playerSync)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void CheckAccelerateAble()
@@ -235,12 +245,10 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
                 m_player = collision.gameObject.GetComponent<PlayerMovement>();
             }
 
-            if (PlatformCanMove())
-            {
-                m_player.isOnMovingPlatform = true;
-                m_player.platformTransform = transform;
-                m_player.lastPlatformPosition = transform.position;
-            }
+            m_playerSync = true;
+            m_player.isOnMovingPlatform = true;
+            m_player.platformTransform = transform;
+            m_player.lastPlatformPosition = transform.position;
         }
     }
 
@@ -251,6 +259,8 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
             m_player.isOnMovingPlatform = false;
             m_player.platformTransform = null;
             m_player.lastPlatformPosition = Vector3.zero;
+
+            m_player = null;
         }
     }
     #endregion

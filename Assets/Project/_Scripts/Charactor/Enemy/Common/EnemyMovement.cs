@@ -212,7 +212,8 @@ public class EnemyMovement : EnemyMovementControl
     {
         float speed = target != null ? base.chaseSpeed : normalSpeed;
 
-        Vector2 newPosition = _direction.normalized * speed * Time.deltaTime;
+        Vector2 newPosition = new Vector2(_direction.normalized.x * speed, _direction.normalized.y);
+        newPosition *= Time.deltaTime;
 
         transform.Translate(newPosition, Space.Self);
     }

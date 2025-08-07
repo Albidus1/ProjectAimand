@@ -259,7 +259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7540914752901320263
 Transform:
   m_ObjectHideFlags: 0
@@ -421,6 +421,7 @@ MonoBehaviour:
   maxHP: 10
   healthSlider: {fileID: 0}
   invincible: 0
+  currentHP: 0
   OnDamageEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -496,8 +497,11 @@ MonoBehaviour:
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
   damage: 10
-  damageCausedKnockbackForce: {x: 15, y: 2.5}
+  damageTakenEveryTime: 0
+  damageTakenDamageable: 0
+  damageTakenNonDamageable: 0
   invincibilityDuration: 1
+  damageCausedKnockbackForce: {x: 15, y: 2.5}
   owner: {fileID: 0}
 --- !u!1 &3014689264227526960
 GameObject:

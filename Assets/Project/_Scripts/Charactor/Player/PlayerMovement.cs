@@ -778,13 +778,9 @@ public class PlayerMovement : CharacterMovement
 
     private void OnMovingPlatform()
     {
-        // 움직이는 플렛폼 보정
-        if (true == isOnMovingPlatform)
-        {
-            Vector3 deltaPosition = (platformTransform.position - lastPlatformPosition);
-            rb.position += (Vector2)(deltaPosition);
-            lastPlatformPosition = platformTransform.position;
-        }
+        Vector3 deltaPosition = (platformTransform.position - lastPlatformPosition);
+        rb.position += (Vector2)(deltaPosition);
+        lastPlatformPosition = platformTransform.position;
     }
 
     private void Turn()
