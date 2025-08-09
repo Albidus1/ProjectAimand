@@ -13,7 +13,7 @@ public class EnemyMovementControl : CharacterMovement
     public float chaseWaitTime;
 
 
-    public bool isFacingRight { get; protected set; }
+    public bool isFacingRight { get; set; }
     public bool isFalling { get; protected set; }
     public bool isAttacking { get; protected set; }
     public bool isAttackingPlayer { get; set; }
@@ -27,6 +27,7 @@ public class EnemyMovementControl : CharacterMovement
     public GameObject target { get; protected set; }
     public Rigidbody2D rb { get; protected set; }
     public BoxCollider2D boxCollider { get; protected set; }
+    public EnemyPatternController patternController { get; protected set; }
 
     protected int facingDirection = 1;
     protected Vector2 m_initializePosition;
@@ -36,6 +37,7 @@ public class EnemyMovementControl : CharacterMovement
     {
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        patternController = GetComponent<EnemyPatternController>();
 
         isFacingRight = true;
         CheckDirectionToFace(isFacingRight);

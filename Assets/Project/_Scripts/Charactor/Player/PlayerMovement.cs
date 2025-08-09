@@ -709,10 +709,8 @@ public class PlayerMovement : CharacterMovement
     {
         ControllSleep(0.5f);
 
-        int direction = _facingDirection ? 1 : -1;
-
         Vector3 scale = transform.localScale;
-        scale.x = direction * scale.x;
+        scale.x = _facingDirection ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
         transform.localScale = scale;
 
         isFacingRight = _facingDirection;

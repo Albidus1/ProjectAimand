@@ -134,7 +134,7 @@ public class MeleeAttack : MonoBehaviour
                 {
                     Debug.DrawLine(transform.position, hit.transform.position, Color.blue, 0.5f);
                     Health enemyHealth = hit.GetComponent<Health>();
-                    if (enemyHealth != null) enemyHealth.currentHP -= damage;
+                    if (enemyHealth != null) enemyHealth.Damage(damage, 0.1f);
                 }
                 else
                 {
@@ -169,7 +169,7 @@ public class MeleeAttack : MonoBehaviour
                     Health enemyHealth = hit.GetComponent<Health>();
                     if (enemyHealth != null)
                     {
-                        enemyHealth.currentHP -= damage;
+                        enemyHealth.Damage(damage, 0.1f);
                         Debug.DrawLine(origin, hit.transform.position, Color.red, 0.5f);
                         Debug.Log("위쪽 적에게 공격 성공!");
                     }
@@ -212,7 +212,7 @@ public class MeleeAttack : MonoBehaviour
                 Health enemyHealth = other.GetComponent<Health>();
                 if (enemyHealth != null)
                     {
-                        enemyHealth.currentHP -= downwardAttackDamage; // 몬스터는 데미지 받음
+                    enemyHealth.Damage(downwardAttackDamage, 0.1f); ; // 몬스터는 데미지 받음
 
                         // 하강 공격시 무적 상태 {invincibleDurationAfterHit}초 후 풀리게
                         if (downwardAttacking) {

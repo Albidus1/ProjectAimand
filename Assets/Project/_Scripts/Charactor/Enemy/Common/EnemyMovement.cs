@@ -47,6 +47,14 @@ public class EnemyMovement : EnemyMovementControl
 
     protected override void Update()
     {
+        if (base.patternController != null && base.patternController.patternCooldownTimer > 0)
+        {
+            Run(Vector2.zero);
+            return;
+        }
+
+        facingDirection = isFacingRight ? 1 : -1;
+
         SetRaysParameters();
 
         CastRay();
@@ -61,7 +69,6 @@ public class EnemyMovement : EnemyMovementControl
 
         if (isAttackingPlayer)
         {
-            Run(Vector2.zero);
             return;
         }
 
@@ -163,7 +170,7 @@ public class EnemyMovement : EnemyMovementControl
 
             position.y = boundsTopLeftCorner.y - (raysDistance * i);
 
-            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, 0.2f, groundLayer | LayerMask.GetMask("Enemy"), Color.blue, true);
+            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, 0.2f, LayerManager.obstacleLayerMask, Color.blue, true);
             if (hitWall)
             {
                 hitObject = true;
