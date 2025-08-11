@@ -66,28 +66,36 @@ public abstract class EnemyPatternBase : IEnemyPattern
         enemyTransform.transform.Translate(direction * _moveSpeed * Time.deltaTime);
     }
 
-    protected bool IsTargetInRange(float _maxRange, float _minRange = 0f)
+    protected bool InTarget(EnemyPattern _pattern, LayerMask _mask)
+    {
+        if (_pattern.useColliderBounds)
+        {
+            return IsTargetInRange(m_collider.bounds.size, _mask);
+        }
+
+        return _pattern.rangeType switch
+        {
+            EnemyPattern.RangeType.Circle   => IsTargetInRange(_pattern.attackRange, _mask),
+            EnemyPattern.RangeType.Box      => IsTargetInRange(_pattern.areaEffectSize, _mask),
+            _ => false,
+        };
+    }
+
+    protected bool IsTargetInRange(float _range, LayerMask _mask)
     {
         RaycastHit2D hit = MyDebug.CircleCast(
             enemyTransform.position,
-            _maxRange,
+            _range,
             Vector2.zero,
             0f,
-            LayerManager.playerLayerMask,
+            _mask,
             Color.red,
             true);
 
-        if (hit.collider != null)
-        {
-            target = hit.transform;
-        }
-
-        float distance = Vector2.Distance(enemyTransform.position, target.position);
-
-        return distance <= _maxRange && distance >= _minRange;
+        return hit.collider != null;
     }
 
-    protected bool IsTargetInRange(Vector2 _size)
+    protected bool IsTargetInRange(Vector2 _size, LayerMask _mask)
     {
         RaycastHit2D hit = MyDebug.BoxCast(
             enemyTransform.position,
@@ -95,14 +103,14 @@ public abstract class EnemyPatternBase : IEnemyPattern
             0f,
             Vector2.zero,
             0f,
-            LayerManager.playerLayerMask,
+            _mask,
             Color.red,
             true);
 
         return hit.collider != null;
     }
 
-    protected bool IsTargetInRange(EnemyPattern _pattern)
+    protected bool IsTargetInRange(EnemyPattern _pattern, LayerMask _mask)
     {
         Vector2 newPosition =  new Vector2
             (enemyTransform.position.x + _pattern.areaEffectOffset.x * enemyTransform.localScale.x, 
@@ -114,7 +122,7 @@ public abstract class EnemyPatternBase : IEnemyPattern
             0f,
             Vector2.zero,
             0f,
-            LayerManager.playerLayerMask,
+            _mask,
             Color.red,
             true);
 

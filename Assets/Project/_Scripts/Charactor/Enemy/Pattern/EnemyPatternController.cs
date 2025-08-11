@@ -1,6 +1,9 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+
+
+
 
 public class EnemyPatternController : MonoBehaviour
 {
@@ -17,13 +20,16 @@ public class EnemyPatternController : MonoBehaviour
     public float patternExecutionTimer;
 
     public bool isPatternActive { get; private set; }
-    protected Dictionary<PatternType, EnemyPattern> m_patternDictionary;
+    protected Dictionary<string, EnemyPattern> m_patternDictionary = new Dictionary<string, EnemyPattern>();
     protected EnemyPattern m_currentPattern;
     protected int m_currentPatternIndex = 0;
     protected IEnemyPattern m_currentPatternInstance;
     protected Animator m_animator;
     protected EnemyMovement m_enemyMovement;
-    
+    protected PatternCooldownTracker m_patternCooldownTracker = new PatternCooldownTracker();
+
+    protected float m_globalTime = 0.5f;
+    protected float m_globalCooldownTimer = 0f;
 
 
     private void Awake()
@@ -34,12 +40,14 @@ public class EnemyPatternController : MonoBehaviour
 
     private void Start()
     {
-        m_patternDictionary = new Dictionary<PatternType, EnemyPattern>();
+        m_patternDictionary = new Dictionary<string, EnemyPattern>();
+        m_patternCooldownTracker = new PatternCooldownTracker();
         foreach (var pattern in availablePatterns)
         {
-            if (false == m_patternDictionary.ContainsKey(pattern.patternType))
+            if (false == m_patternDictionary.ContainsKey(pattern.patternID))
             {
-                m_patternDictionary.Add(pattern.patternType, pattern);
+                m_patternDictionary.Add(pattern.patternID, pattern);
+                m_patternCooldownTracker.InitializeCooldowns(pattern);
             }
         }
 
@@ -50,7 +58,7 @@ public class EnemyPatternController : MonoBehaviour
     {
         UpdatePatternTimers();
 
-        if (false == isPatternActive && patternCooldownTimer <= 0f)
+        if (IsAnyPatternReady())
         {
             m_enemyMovement.enabled = true;
 
@@ -61,7 +69,8 @@ public class EnemyPatternController : MonoBehaviour
         {
             ExecutePattern();
 
-            if (m_currentPatternInstance != null && m_currentPatternInstance.isFinished())
+            if (m_currentPatternInstance != null && 
+                (m_currentPatternInstance.isFinished() || patternExecutionTimer <= 0))
             {
                 EndPatternExecution();
             }
@@ -73,22 +82,49 @@ public class EnemyPatternController : MonoBehaviour
     {
         patternCooldownTimer = 0f;
         patternExecutionTimer = 0f;
+        m_globalCooldownTimer = 0f;
         isPatternActive = false;
     }
 
     private void UpdatePatternTimers()
     {
-        if (patternCooldownTimer > 0f)
+        m_patternCooldownTracker.UpdateCooldowns(Time.deltaTime);
+
+        if (false == isPatternActive && m_globalCooldownTimer > 0)
         {
-            patternCooldownTimer -= Time.deltaTime;
+            m_globalCooldownTimer -= Time.deltaTime;
         }
 
-        if (isPatternActive)
+        if (patternExecutionTimer > 0)
         {
             patternExecutionTimer -= Time.deltaTime;
         }
     }
     #endregion
+
+    private bool IsAnyPatternReady()
+    {
+        if (m_globalCooldownTimer > 0)
+        {
+            return false;
+        }
+
+        if (isPatternActive)
+        {
+            return false;
+        }
+
+        foreach (var pattern in availablePatterns)
+        {
+            if (m_patternCooldownTracker.IsCooldownReady(pattern.patternID))
+            {
+                Debug.Log($"패턴 {pattern.patternID} 준비 완료");
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private void SelectNextPattern()
     {
@@ -104,7 +140,7 @@ public class EnemyPatternController : MonoBehaviour
         foreach (var pattern in patternsToCheck)
         {
             bool distanceCondition = distanceToTarget >= pattern.minTriggerDistance && distanceToTarget <= pattern.maxTriggerDistance;
-            bool cooldownCondition = patternCooldownTimer <= 0f;
+            bool cooldownCondition = m_patternCooldownTracker.IsCooldownReady(pattern.patternID);
 
             if (distanceCondition && cooldownCondition)
             {
@@ -140,7 +176,10 @@ public class EnemyPatternController : MonoBehaviour
             patternExecutionTimer = m_currentPattern.executionTime;
             currentPatternID = m_currentPattern.patternID;
 
-            Debug.Log($"패턴 실행 시간: {patternExecutionTimer}");
+            //Debug.Log($"패턴 실행 시간: {patternExecutionTimer}");
+
+            m_patternCooldownTracker.StartCooldown(m_currentPattern.patternID, m_currentPattern.cooldown);
+            m_globalCooldownTimer = m_globalTime;
 
             m_currentPatternInstance.Execute();
 
@@ -190,6 +229,23 @@ public class EnemyPatternController : MonoBehaviour
 
             Gizmos.color = Color.white;
             Gizmos.DrawLine(transform.position, target.position);
+        }
+
+
+        Vector3 position = transform.position + (Vector3.up * 3.5f + Vector3.right * 3f);
+
+        foreach (var pattern in availablePatterns)
+        {
+            float remaining = m_patternCooldownTracker.GetRemainingCooldown(pattern.patternID);
+            string status = remaining > 0 ? $"{remaining:F1}s" : "READY";
+
+            UnityEditor.Handles.Label(
+                position,
+                $"{pattern.patternID}: {status}",
+                new GUIStyle { normal = new GUIStyleState { textColor = new Color(1, 0, 0, 0.7f) } }
+            );
+
+            position += Vector3.down * 0.8f;
         }
     }
 #endif

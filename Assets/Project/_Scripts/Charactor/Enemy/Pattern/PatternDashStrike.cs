@@ -47,19 +47,19 @@ public class PatternDashStrike : EnemyPatternBase
             0f,
             Vector2.zero,
             0f,
-            LayerManager.obstacleLayerMask,
+            LayerManager.playerLayerMask | LayerManager.obstacleLayerMask,
             Color.red,
             true
         );
 
-        if (hit.collider != null || Vector2.Distance(dashEndPosition, enemyTransform.position) < 1f)
+        if (hit.collider != null || Vector2.Distance(dashEndPosition, enemyTransform.position) < 0.1f)
         {
-            if (base.m_targetHealth == null && base.IsTargetInRange(base.m_collider.bounds.size))
+            if (base.m_targetHealth == null)
             {
                 base.m_targetHealth = base.target.GetComponent<Health>();
             }
 
-            if (base.m_targetHealth != null)
+            if (base.m_targetHealth != null && InTarget(patternData, LayerManager.playerLayerMask))
             {
                 base.m_targetHealth.Damage(patternData.damage, patternData.invincibilityDuration);
             }
@@ -70,7 +70,7 @@ public class PatternDashStrike : EnemyPatternBase
 
     public override bool isFinished()
     {
-        return m_hasAttacked || base.controller.patternExecutionTimer <= 0;
+        return m_hasAttacked || Vector2.Distance(dashEndPosition, enemyTransform.position) < 0.1f;
     }
 
     private void SetRaysParameters()

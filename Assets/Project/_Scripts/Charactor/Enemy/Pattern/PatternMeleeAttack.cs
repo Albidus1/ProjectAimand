@@ -15,7 +15,7 @@ public class PatternMeleeAttack : EnemyPatternBase
     {
         MoveTowards(base.target.position, patternData.moveSpeed);
 
-        if (false == m_hasAttacked && base.IsTargetInRange(base.patternData))
+        if (false == m_hasAttacked && base.IsTargetInRange(base.patternData, LayerManager.playerLayerMask))
         {
             if (base.m_targetHealth == null)
             {
@@ -33,6 +33,6 @@ public class PatternMeleeAttack : EnemyPatternBase
 
     public override bool isFinished()
     {
-        return m_hasAttacked || base.controller.patternExecutionTimer <= 0;
+        return m_hasAttacked;
     }
 }
