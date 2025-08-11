@@ -4,13 +4,12 @@ using UnityEngine.EventSystems;
 public class EnemyMovement : EnemyMovementControl
 {
     [Header("레이캐스트")]
-    public Transform checkHoles;
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
     public Vector3 colliderCenterPosition => boxCollider.bounds.center;
 
     [Header("레이어")]
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private LayerMask obstacleLayer;
+    [SerializeField] private LayerMask groundLayer = LayerManager.platformsLayerMask;
+    [SerializeField] private LayerMask obstacleLayer = LayerManager.obstacleLayerMask;
     
 
     private bool hitObject;
@@ -47,12 +46,6 @@ public class EnemyMovement : EnemyMovementControl
 
     protected override void Update()
     {
-        if (base.patternController != null && base.patternController.patternCooldownTimer > 0)
-        {
-            Run(Vector2.zero);
-            return;
-        }
-
         facingDirection = isFacingRight ? 1 : -1;
 
         SetRaysParameters();
@@ -148,7 +141,13 @@ public class EnemyMovement : EnemyMovementControl
 
         if (rb.linearVelocity.y == 0)
         {
-            RaycastHit2D hitHole = MyDebug.Raycast(checkHoles.position, transform.up, 0.5f, groundLayer, Color.blue, true);
+            Vector2 position = facingDirection > 0 ?
+                new Vector2(boundsCenter.x + (boundsWidth * 0.51f), boundsCenter.y) :
+                new Vector2(boundsCenter.x - (boundsWidth * 0.51f), boundsCenter.y);
+
+            position.y = boundsCenter.y - boundsHeight * 0.51f;
+
+            RaycastHit2D hitHole = MyDebug.Raycast(position, -transform.up, 0.2f, groundLayer, Color.cyan, true);
 
             if (false == hitHole)
             {
@@ -165,8 +164,8 @@ public class EnemyMovement : EnemyMovementControl
         for (int i = 0; i < raysCount; i++)
         {
             Vector2 position = facingDirection > 0 ?
-                new Vector2((boundsCenter.x + boundsWidth * 0.51f), boundsCenter.y) :
-                new Vector2((boundsCenter.x - boundsWidth * 0.51f), boundsCenter.y);
+                new Vector2(boundsCenter.x + (boundsWidth * 0.51f), boundsCenter.y) :
+                new Vector2(boundsCenter.x - (boundsWidth * 0.51f), boundsCenter.y);
 
             position.y = boundsTopLeftCorner.y - (raysDistance * i);
 

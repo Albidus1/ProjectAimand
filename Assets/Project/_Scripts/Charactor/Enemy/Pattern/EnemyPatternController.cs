@@ -4,8 +4,10 @@ using UnityEngine;
 public class EnemyPatternController : MonoBehaviour
 {
     public List<EnemyPattern> availablePatterns = new List<EnemyPattern>();
-    public Transform target;
+    public bool isSequentialPattern = true;
 
+    [MyReadOnly]
+    public Transform target;
     [MyReadOnly]
     public string currentPatternID;
     [MyReadOnly]
@@ -16,13 +18,17 @@ public class EnemyPatternController : MonoBehaviour
     public bool isPatternActive { get; private set; }
     protected Dictionary<PatternType, EnemyPattern> m_patternDictionary;
     protected EnemyPattern m_currentPattern;
+    protected int m_currentPatternIndex = 0;
     protected IEnemyPattern m_currentPatternInstance;
     protected Animator m_animator;
+    protected EnemyMovement m_enemyMovement;
+    
 
 
     private void Awake()
     {
         m_animator = GetComponent<Animator>();
+        m_enemyMovement = GetComponent<EnemyMovement>();
     }
 
     private void Start()
@@ -45,15 +51,7 @@ public class EnemyPatternController : MonoBehaviour
 
         if (false == isPatternActive && patternCooldownTimer <= 0f)
         {
-            if (target == null)
-            {
-                target = GameObject.FindGameObjectWithTag("Player").transform;
-            }
-
-            int direction = (int)Mathf.Sign(target.position.x - transform.position.x);
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * direction;
-            transform.localScale = scale;
+            m_enemyMovement.enabled = true;
 
             SelectNextPattern();
         }
@@ -93,6 +91,11 @@ public class EnemyPatternController : MonoBehaviour
 
     private void SelectNextPattern()
     {
+        if (target == null)
+        {
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+
         List<EnemyPattern> patternsToCheck = new List<EnemyPattern>(availablePatterns);
         List<EnemyPattern> candidatePatterns = new List<EnemyPattern>();
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
@@ -112,8 +115,8 @@ public class EnemyPatternController : MonoBehaviour
         {
             candidatePatterns.Sort((a, b) => b.priority.CompareTo(a.priority));
 
-            int selectedIndex = Mathf.Min(3, candidatePatterns.Count);
-            m_currentPattern = candidatePatterns[Random.Range(0, selectedIndex)];
+            m_currentPatternIndex = Mathf.Min(3, candidatePatterns.Count);
+            m_currentPattern = candidatePatterns[Random.Range(0, m_currentPatternIndex)];
 
             Debug.Log($"선택된 패턴: {m_currentPattern.patternID}");
 
@@ -123,6 +126,10 @@ public class EnemyPatternController : MonoBehaviour
 
     private void StartPatternExecution()
     {
+        m_enemyMovement.enabled = false;
+        int direction = (int)Mathf.Sign(target.position.x - transform.position.x);
+        m_enemyMovement.CheckDirectionToFace(direction > 0);
+
         m_currentPatternInstance = PatternFactory.CreatePattern(m_currentPattern.patternType, m_currentPattern);
 
         if (m_currentPatternInstance != null)

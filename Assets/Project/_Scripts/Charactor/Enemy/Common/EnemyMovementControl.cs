@@ -47,7 +47,9 @@ public class EnemyMovementControl : CharacterMovement
     {
         if (target != null)
         {
-            CheckDirectionToFace(target.transform.position.x > transform.position.x);
+            int direction = (int)Mathf.Sign(target.transform.position.x - transform.position.x);
+
+            CheckDirectionToFace(direction > 0);
         }
         else
         {
@@ -56,7 +58,7 @@ public class EnemyMovementControl : CharacterMovement
     }
 
 
-    protected virtual void CheckDirectionToFace(bool _isMovingRight)
+    public virtual void CheckDirectionToFace(bool _isMovingRight)
     {
         if (_isMovingRight != isFacingRight)
         {
