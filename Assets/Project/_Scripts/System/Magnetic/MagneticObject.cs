@@ -38,7 +38,7 @@ public class MagneticObject : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         if (m_isFired)
         {

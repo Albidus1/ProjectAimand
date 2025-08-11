@@ -683,11 +683,15 @@ public class PlayerMagneticController : MonoBehaviour
             // 인력 범위 안에 있는지 체크
             if (IsInPullRange(inCircle[i].transform.position))
             {
-                // 타겟인지 체크
-                MagneticTarget target;
-                if (inCircle[i].TryGetComponent<MagneticTarget>(out target))
+                // 잡고 있는 오브젝트는 제외
+                if (inCircle[i].gameObject != m_pullingObject.gameObject)
                 {
-                    targets.Add(target);
+                    // 타겟인지 체크
+                    MagneticTarget target;
+                    if (inCircle[i].TryGetComponent<MagneticTarget>(out target))
+                    {
+                        targets.Add(target);
+                    }
                 }
             }
         }
