@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 public class EnemyMovement : EnemyMovementControl
 {
     [Header("레이캐스트")]
+    public int raysCount = 5;
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
     public Vector3 colliderCenterPosition => boxCollider.bounds.center;
 
@@ -159,7 +160,6 @@ public class EnemyMovement : EnemyMovementControl
         Vector2 dir = Vector2.zero;
         dir.x = facingDirection;
 
-        int raysCount = 5;
         float raysDistance = boundsHeight / raysCount;
         for (int i = 0; i < raysCount; i++)
         {

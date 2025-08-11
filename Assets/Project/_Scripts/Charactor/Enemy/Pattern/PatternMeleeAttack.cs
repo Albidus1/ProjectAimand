@@ -15,7 +15,7 @@ public class PatternMeleeAttack : EnemyPatternBase
     {
         MoveTowards(base.target.position, patternData.moveSpeed);
 
-        if (false == m_hasAttacked && base.IsTargetInRange(base.m_collider.bounds.size))
+        if (false == m_hasAttacked && base.IsTargetInRange(base.patternData))
         {
             if (base.m_targetHealth == null)
             {

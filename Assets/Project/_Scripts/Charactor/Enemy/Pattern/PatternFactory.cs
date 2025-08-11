@@ -7,7 +7,7 @@ public static class PatternFactory
     {
         { PatternType.MeleeAttack, typeof(PatternMeleeAttack) },
         { PatternType.Dash, typeof(PatternDashStrike) },
-
+        // 패턴 추가
     };
 
     public static IEnemyPattern CreatePattern(PatternType _type, EnemyPattern _data)

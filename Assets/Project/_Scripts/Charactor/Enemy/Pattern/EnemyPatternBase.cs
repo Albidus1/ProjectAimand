@@ -87,14 +87,33 @@ public abstract class EnemyPatternBase : IEnemyPattern
         return distance <= _maxRange && distance >= _minRange;
     }
 
-    protected bool IsTargetInRange(Vector2 _size, float _distance = 0f)
+    protected bool IsTargetInRange(Vector2 _size)
     {
-        RaycastHit2D hit = MyDebug.BoxCast( 
+        RaycastHit2D hit = MyDebug.BoxCast(
             enemyTransform.position,
             _size,
             0f,
             Vector2.zero,
-            _distance,
+            0f,
+            LayerManager.playerLayerMask,
+            Color.red,
+            true);
+
+        return hit.collider != null;
+    }
+
+    protected bool IsTargetInRange(EnemyPattern _pattern)
+    {
+        Vector2 newPosition =  new Vector2
+            (enemyTransform.position.x + _pattern.areaEffectOffset.x * enemyTransform.localScale.x, 
+             enemyTransform.position.y + _pattern.areaEffectOffset.y);
+
+        RaycastHit2D hit = MyDebug.BoxCast(
+            newPosition,
+            _pattern.areaEffectSize,
+            0f,
+            Vector2.zero,
+            0f,
             LayerManager.playerLayerMask,
             Color.red,
             true);

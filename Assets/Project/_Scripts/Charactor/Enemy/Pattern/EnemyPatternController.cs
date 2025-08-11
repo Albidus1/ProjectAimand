@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyPatternController : MonoBehaviour
@@ -102,7 +103,7 @@ public class EnemyPatternController : MonoBehaviour
 
         foreach (var pattern in patternsToCheck)
         {
-            bool distanceCondition = distanceToTarget >= pattern.minTriiggerDistance && distanceToTarget <= pattern.maxTriggerDistance;
+            bool distanceCondition = distanceToTarget >= pattern.minTriggerDistance && distanceToTarget <= pattern.maxTriggerDistance;
             bool cooldownCondition = patternCooldownTimer <= 0f;
 
             if (distanceCondition && cooldownCondition)
@@ -145,7 +146,7 @@ public class EnemyPatternController : MonoBehaviour
 
             if (false == string.IsNullOrEmpty(m_currentPattern.animationTrigger))
             {
-                Debug.Log("애니메이션 트리거 설정: " + m_currentPattern.animationTrigger);
+                //Debug.Log("애니메이션 트리거 설정: " + m_currentPattern.animationTrigger);
                 m_animator.SetBool(m_currentPattern.animationTrigger, true);
             }
         }
@@ -177,4 +178,19 @@ public class EnemyPatternController : MonoBehaviour
         m_currentPatternInstance = null;
         currentPatternID = "None";
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (m_currentPattern != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, m_currentPattern.maxTriggerDistance);
+            Gizmos.DrawWireSphere(transform.position, m_currentPattern.minTriggerDistance);
+
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(transform.position, target.position);
+        }
+    }
+#endif
 }
