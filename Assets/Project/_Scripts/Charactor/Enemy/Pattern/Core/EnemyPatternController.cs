@@ -7,9 +7,6 @@ using UnityEngine.UIElements;
 
 public class EnemyPatternController : MonoBehaviour
 {
-    public List<EnemyPattern> availablePatterns = new List<EnemyPattern>();
-    public bool isSequentialPattern = true;
-
     [MyReadOnly]
     public Transform target;
     [MyReadOnly]
@@ -18,6 +15,11 @@ public class EnemyPatternController : MonoBehaviour
     public float patternCooldownTimer;
     [MyReadOnly]
     public float patternExecutionTimer;
+
+    [Header("패턴 설정")]
+    public List<EnemyPattern> availablePatterns = new List<EnemyPattern>();
+    public bool isSequentialPattern = true;
+
 
     public bool isPatternActive { get; private set; }
     protected Dictionary<string, EnemyPattern> m_patternDictionary = new Dictionary<string, EnemyPattern>();
@@ -236,6 +238,11 @@ public class EnemyPatternController : MonoBehaviour
 
         foreach (var pattern in availablePatterns)
         {
+            if (pattern == null || pattern.patternID == null)
+            {
+                continue;
+            }
+
             float remaining = m_patternCooldownTracker.GetRemainingCooldown(pattern.patternID);
             string status = remaining > 0 ? $"{remaining:F1}s" : "READY";
 

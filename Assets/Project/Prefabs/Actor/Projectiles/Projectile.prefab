@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1884523354181877507}
   - component: {fileID: 3745951078055666085}
   - component: {fileID: 4530381173069749590}
+  - component: {fileID: -6022236703307972518}
   m_Layer: 0
   m_Name: Projectile
   m_TagString: Untagged
@@ -98,7 +99,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8047954322326610999}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -113,9 +114,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!58 &3745951078055666085
 CircleCollider2D:
@@ -165,10 +166,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b120b8467647b84497ae4bb5b96fa58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleLayerMask:
+  ExecuteOnEnable:
+    m_PersistentCalls:
+      m_Calls: []
+  ExecuteOnDisable:
+    m_PersistentCalls:
+      m_Calls: []
+  lifeTime: 3
+  faceDirection: 1
+  faceMovementDirection: 1
+  moveSpeed: 200
+  direction: {x: -1, y: 0, z: 0}
+  flipValue: {x: -1, y: 1, z: 1}
+  isFacingRight: 1
+  directionCanBeChangedBySpawner: 1
+  initialInvulerablilityDuration: 0
+  damageOwner: 0
+  spawnSecurtyCheck: 0
+  spawnSecurityCheckLayerMask:
     serializedVersion: 2
-    m_Bits: 3456
-  speed: 10
+    m_Bits: 0
+--- !u!114 &-6022236703307972518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8047954322326610999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killPlayer: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 2496
+  applyDamageOnTriggerEnter: 1
+  applyDamageOnTriggerStay: 1
   damage: 10
-  isPlayerBullet: 0
-  maxLifeTime: 5
+  damageTakenEveryTime: 10
+  damageTakenDamageable: 5
+  damageTakenNonDamageable: 10
+  invincibilityDuration: 0.5
+  damageCausedKnockbackForce: {x: 10, y: 2}
+  owner: {fileID: 0}

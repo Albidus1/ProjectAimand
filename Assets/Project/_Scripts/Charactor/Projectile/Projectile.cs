@@ -8,7 +8,7 @@ public class Projectile : MyPoolableObject
     public bool faceDirection = true;
     public bool faceMovementDirection = true;
     public float moveSpeed = 200f;
-    public Vector3 direction = Vector3.left;
+    public Vector3 direction = Vector3.up;
     public Vector3 flipValue = new Vector3(-1, 1, 1);
     public bool isFacingRight = true;
     public bool directionCanBeChangedBySpawner = true;
@@ -41,7 +41,7 @@ public class Projectile : MyPoolableObject
 
 
 
-    private void Awake()
+    protected virtual void Awake()
     {
         m_facingRight = isFacingRight;
         m_initialSpeed = moveSpeed;
@@ -59,7 +59,7 @@ public class Projectile : MyPoolableObject
         m_initialLocalScale = transform.localScale;
     }
 
-    private IEnumerator InitialInvulnerability()
+    protected virtual IEnumerator InitialInvulnerability()
     {
         if (m_damageOnTouch == null)
         {
@@ -77,7 +77,7 @@ public class Projectile : MyPoolableObject
         }
     }
 
-    private void Initialization()
+    protected virtual void Initialization()
     {
         moveSpeed = m_initialSpeed;
         isFacingRight = m_facingRight;
@@ -92,7 +92,7 @@ public class Projectile : MyPoolableObject
         CheckForCollider();
     }
 
-    private void CheckForCollider()
+    protected virtual void CheckForCollider()
     {
         if (false == spawnSecurtyCheck)
         {
@@ -111,19 +111,19 @@ public class Projectile : MyPoolableObject
         }
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         Movement();
         HandleFaceMovement();
     }
 
-    private void Movement()
+    protected virtual void Movement()
     {
         m_movement = direction * (moveSpeed * 0.1f) * Time.deltaTime;
         transform.Translate(m_movement, Space.World);
     }
 
-    private void HandleFaceMovement()
+    protected virtual void HandleFaceMovement()
     {
         if (false == faceMovementDirection)
         {
@@ -132,7 +132,7 @@ public class Projectile : MyPoolableObject
 
         if (m_movement != Vector3.zero)
         {
-            float angle = Mathf.Atan2(m_movement.y, m_movement.x) * Mathf.Rad2Deg;
+            /*float angle = Mathf.Atan2(m_movement.y, m_movement.x) * Mathf.Rad2Deg;
 
             if (m_movement.x < 0)
             {
@@ -141,11 +141,13 @@ public class Projectile : MyPoolableObject
             else
             {
                 transform.right = m_movement.normalized;
-            }
+            }*/
+
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, m_movement);
         }
     }
 
-    public void SetDirection(Vector3 _newDirection, Quaternion _newRotation, bool _spawnerIsFacingRight = true)
+    public virtual void SetDirection(Vector3 _newDirection, Quaternion _newRotation, bool _spawnerIsFacingRight = true)
     {
         if (directionCanBeChangedBySpawner)
         {
@@ -161,7 +163,7 @@ public class Projectile : MyPoolableObject
         }
     }
 
-    private void Flip()
+    protected virtual void Flip()
     {
         if (m_spriteRenderer != null)
         {
@@ -173,13 +175,12 @@ public class Projectile : MyPoolableObject
         }
     }
 
-    public void SetOwner(GameObject _newOwner)
+    public virtual void SetOwner(GameObject _newOwner)
     {
         m_owner = _newOwner;
         
-        DamageOnTouch damageOnTouch = gameObject.GetComponent<DamageOnTouch>();
-
-        if (damageOnTouch != null)
+        
+        if (TryGetComponent<DamageOnTouch>(out var damageOnTouch))
         {
             damageOnTouch.owner = _newOwner;
 

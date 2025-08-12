@@ -5,8 +5,10 @@ public static class PatternFactory
 {
     private static readonly Dictionary<PatternType, System.Type> m_patternType = new Dictionary<PatternType, System.Type>
     {
-        { PatternType.MeleeAttack, typeof(PatternMeleeAttack) },
-        { PatternType.Dash, typeof(PatternDashStrike) },
+        { PatternType.MeleeAttack,  typeof(PatternMeleeAttack) },
+        { PatternType.Dash,         typeof(PatternDashStrike) },
+        { PatternType.RangedAttack, typeof(PatternRangedAttack) },
+
         // 패턴 추가
     };
 

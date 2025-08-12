@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 
 
+// 나중에 Health 대체
 public class Health2 : MonoBehaviour, IEventListener<HealthDeathEvent>
 {
     [Header("상태")]

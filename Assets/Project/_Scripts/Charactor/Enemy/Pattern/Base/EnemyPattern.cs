@@ -6,7 +6,7 @@ public enum PatternType
 {
     Patrol,
     MeleeAttack,
-    RangeAttack,
+    RangedAttack,
     Dash,
     AreaEffect,
 }
@@ -45,15 +45,19 @@ public class EnemyPattern : ScriptableObject
     public float invincibilityDuration = 0.5f;
 
     [Header("범위")]
+    public float attackRange = 1.5f;
     public bool useColliderBounds = false;
     [MyConditionalHide("useColliderBounds", true, true)]
     public RangeType rangeType = RangeType.Circle;
     [MyConditionalHide("useColliderBounds", true, true)]
-    public float attackRange = 1.5f;
-    [MyConditionalHide("useColliderBounds", true, true)]
     public Vector2 areaEffectSize;
     [MyConditionalHide("useColliderBounds", true, true)]
     public Vector2 areaEffectOffset = Vector2.zero;
+
+    [Header("풀링")]
+    public Vector2 spawnFaceDirection = Vector2.up;
+    public int projectilePerShot = 3;
+    public float attackInterval = 0.5f;
 
     [Header("애니메이션")]
     public string animationTrigger;
