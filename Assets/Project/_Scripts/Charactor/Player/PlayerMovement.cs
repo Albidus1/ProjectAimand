@@ -168,6 +168,9 @@ public class PlayerMovement : CharacterMovement
 
     private void OnEnable()
     {
+        var cam = FindFirstObjectByType<CinemachineCamera>();
+        cam.Target.TrackingTarget = transform;
+
         movementState.StateChange(PlayerStates.MovementStates.Idle);
         moveInput = Vector2.zero;
     }

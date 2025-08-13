@@ -63,7 +63,7 @@ public class Projectile : MyPoolableObject
     {
         if (m_damageOnTouch == null)
         {
-            yield break; 
+            yield break;
         }
 
         m_damageOnTouch.ClearIgnoreGameObject();
@@ -132,16 +132,16 @@ public class Projectile : MyPoolableObject
 
         if (m_movement != Vector3.zero)
         {
-            /*float angle = Mathf.Atan2(m_movement.y, m_movement.x) * Mathf.Rad2Deg;
+            //float angle = Mathf.Atan2(m_movement.y, m_movement.x) * Mathf.Rad2Deg;
 
-            if (m_movement.x < 0)
-            {
-                transform.right = -m_movement.normalized;
-            }
-            else
-            {
-                transform.right = m_movement.normalized;
-            }*/
+            //if (m_movement.x < 0)
+            //{
+            //    transform.right = -m_movement.normalized;
+            //}
+            //else
+            //{
+            //    transform.right = m_movement.normalized;
+            //}
 
             transform.rotation = Quaternion.LookRotation(Vector3.forward, m_movement);
         }
@@ -178,8 +178,8 @@ public class Projectile : MyPoolableObject
     public virtual void SetOwner(GameObject _newOwner)
     {
         m_owner = _newOwner;
-        
-        
+
+
         if (TryGetComponent<DamageOnTouch>(out var damageOnTouch))
         {
             damageOnTouch.owner = _newOwner;
@@ -203,76 +203,17 @@ public class Projectile : MyPoolableObject
 
         if (m_damageOnTouch != null)
         {
-            
+
         }
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
-        
+
         if (m_damageOnTouch != null)
         {
 
         }
     }
-
-
-
-    /*    public LayerMask obstacleLayerMask;
-
-   public float speed = 10f; // 총알 이동 속도
-   public float damage = 10;
-
-   public bool isPlayerBullet = false;
-
-   public float maxLifeTime = 5f; // 총알 자동 삭제 시간
-
-   private Vector3 moveDirection; // 이동 방향
-
-   public void SetDirection(Vector3 dir)
-   {
-       moveDirection = dir.normalized;
-       transform.right = moveDirection; // Sprite가 바라보는 방향도 조정
-       Debug.Log("[Bullet] SetDirection: " + moveDirection);
-   }
-
-   //private void Start()
-   //{
-   //    Destroy(gameObject, maxLifeTime); // 최대 생존 시간 초과 시 제거
-   //}
-
-   //private void Update()
-   //{
-   //    transform.position += moveDirection * speed * Time.deltaTime;
-
-   //    // 화면 밖이면 제거
-   //    Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
-   //    if (viewPos.x < 0 || viewPos.x > 1 || viewPos.y < 0 || viewPos.y > 1)
-   //    {
-   //        Destroy(gameObject);
-   //    }
-   //}
-
-   private void OnTriggerEnter2D(Collider2D collision)
-   {
-       string tag = isPlayerBullet ? "Enemy" : "Player";
-
-       if (collision.CompareTag(tag))
-       {
-           Health enemy = collision.GetComponent<Health>();
-           if (enemy != null)
-           {
-               enemy.currentHP -= damage;
-           }
-
-           gameObject.SetActive(false);
-           return;
-       }
-
-       if (MyLayers.LayerInLayerMask(collision.gameObject.layer, obstacleLayerMask))
-       {
-           gameObject.SetActive(false);
-       }
-   }*/
 }

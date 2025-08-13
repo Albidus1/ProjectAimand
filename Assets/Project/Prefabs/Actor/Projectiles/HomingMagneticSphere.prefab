@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3285035290910903125}
   - component: {fileID: 8673912585461625038}
   - component: {fileID: 6802261837908411104}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: HomingMagneticSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7686503566496924937}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: ae4be35ed49f8854db16d644c1a61440, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 023c8aa1d57369d44876d265aa257fdb, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -65,6 +65,9 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 0.92490363, y: 1, z: 0, w: 0}
         m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 0, y: 1, z: 0.8525121, w: 0}
+        m_Name: FlashColor
         m_Overridden: 1
     m_Uint:
       m_Array: []
@@ -180,7 +183,7 @@ MonoBehaviour:
   ExecuteOnDisable:
     m_PersistentCalls:
       m_Calls: []
-  lifeTime: 20
+  lifeTime: 10
   faceDirection: 1
   faceMovementDirection: 1
   moveSpeed: 50
@@ -234,8 +237,10 @@ MonoBehaviour:
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  detectionRadius: 1
-  trackingTime: 3
+  detectionRadius: 30
+  trackingStartTime: 0
+  trackingTime: 20
+  lockedLocation: 0
 --- !u!73398921 &6802261837908411104
 VFXRenderer:
   serializedVersion: 1

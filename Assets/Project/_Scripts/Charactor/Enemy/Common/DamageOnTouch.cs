@@ -255,7 +255,7 @@ public class DamageOnTouch : MonoBehaviour
     {
         if (m_health != null)
         {
-            //Debug.Log("[DamageOnTouch] SelfDamage: " + _damage);
+            //Debug.Log("[DamageOnTouch] 자해 데미지: " + _damage);
             m_damageDirection = Vector2.up;
             m_health.Damage(_damage, invincibilityDuration);
         }

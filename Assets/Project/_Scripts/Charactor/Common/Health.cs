@@ -53,13 +53,14 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     public Slider healthSlider;
 
     public bool invincible = false;
+
+    [MyReadOnly]
     public float currentHP;
 
     public EnemyWave enemyWave { get; set; }
 
     private ReSpawner m_respawner;
 
-    private float m_HP;
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
     private EnemyMovementControl m_enemyMovement;

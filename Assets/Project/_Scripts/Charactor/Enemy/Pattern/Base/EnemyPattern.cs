@@ -55,6 +55,7 @@ public class EnemyPattern : ScriptableObject
     public Vector2 areaEffectOffset = Vector2.zero;
 
     [Header("풀링")]
+    public string poolName;
     public Vector2 spawnFaceDirection = Vector2.up;
     public int projectilePerShot = 3;
     public float attackInterval = 0.5f;
