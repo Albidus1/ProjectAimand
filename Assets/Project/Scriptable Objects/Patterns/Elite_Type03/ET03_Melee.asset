@@ -10,23 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39bc54d563b4da04f8593b61bb23fe44, type: 3}
-  m_Name: Melee
+  m_Name: ET03_Melee
   m_EditorClassIdentifier: 
-  patternID: E01_Skill3
+  patternID: ET03_Skill1
   patternType: 1
-  priority: 3
+  priority: 1
   minTriggerDistance: 0
-  maxTriggerDistance: 10
-  preparationTime: 0.5
-  cooldown: 1
-  executionTime: 1
-  moveSpeed: 0
-  rotationSpeed: 0
+  maxTriggerDistance: 5
+  preparationTime: 1
+  cooldown: 3
+  executionTime: 2
+  moveSpeed: 3
+  rotationSpeed: 5
   damage: 10
   invincibilityDuration: 0.5
+  attackRange: 1.5
   useColliderBounds: 0
-  rangeType: 1
-  attackRange: 10
-  areaEffectSize: {x: 3, y: 5}
-  areaEffectOffset: {x: 5, y: 0}
-  animationTrigger: Melee
+  rangeType: 0
+  areaEffectSize: {x: 0, y: 0}
+  areaEffectOffset: {x: 0, y: 0}
+  poolName: 
+  spawnFaceDirection: {x: 0, y: 1}
+  projectilePerShot: 3
+  attackInterval: 0.5
+  animationTrigger: 

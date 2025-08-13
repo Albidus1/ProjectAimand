@@ -9,6 +9,7 @@ public enum PatternType
     RangedAttack,
     Dash,
     AreaEffect,
+    UnitDead
 }
 
 [CreateAssetMenu(fileName = "적 패턴", menuName = "AI/EnemyPattern")]

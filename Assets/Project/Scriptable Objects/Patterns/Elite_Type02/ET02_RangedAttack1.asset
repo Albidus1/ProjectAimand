@@ -10,23 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39bc54d563b4da04f8593b61bb23fe44, type: 3}
-  m_Name: Stamp
+  m_Name: ET02_RangedAttack1
   m_EditorClassIdentifier: 
-  patternID: E01_Skill2
-  patternType: 1
-  priority: 2
+  patternID: E02_Skill1
+  patternType: 2
+  priority: 1
   minTriggerDistance: 0
-  maxTriggerDistance: 10
-  preparationTime: 0.5
-  cooldown: 5
-  executionTime: 1
+  maxTriggerDistance: 30
+  preparationTime: 1
+  cooldown: 10
+  executionTime: 3.5
   moveSpeed: 0
   rotationSpeed: 0
   damage: 10
   invincibilityDuration: 0.5
-  useColliderBounds: 0
-  rangeType: 1
-  attackRange: 10
-  areaEffectSize: {x: 7, y: 3}
-  areaEffectOffset: {x: 0, y: -3.5}
-  animationTrigger: Stamp
+  attackRange: 35
+  useColliderBounds: 1
+  rangeType: 0
+  areaEffectSize: {x: 0, y: 0}
+  areaEffectOffset: {x: 0, y: 0}
+  poolName: ProjectileSpawner_01
+  spawnFaceDirection: {x: 0, y: 1}
+  projectilePerShot: 1
+  attackInterval: 1
+  animationTrigger: 
