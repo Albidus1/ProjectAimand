@@ -13,9 +13,15 @@ public class PatternMeleeAttack : EnemyPatternBase
 
     public override void Update()
     {
+        base.Update();
+        if (false == isPatternReady)
+        {
+            return;
+        }
+
         MoveTowards(base.target.position, patternData.moveSpeed);
 
-        if (false == m_hasAttacked && base.IsTargetInRange(base.patternData, LayerManager.playerLayerMask))
+        if (false == m_hasAttacked && base.InTarget(base.patternData, LayerManager.playerLayerMask))
         {
             if (base.m_targetHealth == null)
             {

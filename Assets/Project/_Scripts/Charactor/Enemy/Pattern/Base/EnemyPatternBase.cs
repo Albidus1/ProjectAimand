@@ -50,7 +50,7 @@ public abstract class EnemyPatternBase : IEnemyPattern
 
         if (preparationTimer <= 0f && false == isPatternReady)
         {
-            Debug.Log("준비됨");
+            //Debug.Log("준비됨");
             isPatternReady = true;
         }
     }

@@ -51,6 +51,12 @@ public class PatternRangedAttack : EnemyPatternBase
 
     public override void Update()
     {
+        base.Update();
+        if (false == isPatternReady)
+        {
+            return;
+        }
+
         float desiredDistace = patternData.attackRange * 0.8f;
         Vector2 retreatDirection = (enemyTransform.position - target.position).normalized;
         Vector2 desiredPosition = (Vector2)target.position + retreatDirection * desiredDistace;
