@@ -41,7 +41,7 @@ public class MySimpleObjectPooler : MyObjectPooler
 
     protected override string DetermineObjectPoolName()
     {
-        string poolName = "[SimpleObjectPooler] " + gameObjectToPool.name;
+        string poolName = $"[{gameObjectToPool.name}_SimpleObjectPooler]";
 
         return poolName;
     }

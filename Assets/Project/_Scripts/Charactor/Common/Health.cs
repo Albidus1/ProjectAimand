@@ -157,10 +157,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
         else if (m_enemyMovement != null)
         {
-            if (enemyWave != null)
-            {
-                enemyWave.RegisterEnemyDeath(this.gameObject);
-            }
+            WaveManager.Instance.RegisterEnemyDeath(this.gameObject);
 
             OnDeath();
             return;

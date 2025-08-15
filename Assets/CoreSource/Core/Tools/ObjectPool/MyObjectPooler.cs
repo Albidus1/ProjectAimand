@@ -132,7 +132,7 @@ public abstract class MyObjectPooler : MonoBehaviour
 
     protected virtual string DetermineObjectPoolName()
     {
-        string poolName = "[ObjectPooler] " + this.name;
+        string poolName = $"[{this.name}_ObjectPooler]";
 
         return poolName;
     }

@@ -5,14 +5,17 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    public Collider2D roomCollider { get { return m_roomCollider; } }
+    public Collider2D roomCollider => m_roomCollider;
+    public bool isEntered { get; private set; } = false;
 
     [Header("카메라")]
     public CinemachineCamera virtualCamera;
     public Collider2D confiner;
     public CinemachineConfiner2D cinemachineCameraConfiner;
-
     public CinemachineCameraController controller;
+
+    [Header("웨이브")]
+    public EnemyWave enemyWave;
 
     private BoxCollider2D m_roomCollider;
     private Camera m_mainCamera;
@@ -32,6 +35,8 @@ public class Room : MonoBehaviour
         }
 
         controller = GetComponentInChildren<CinemachineCameraController>();
+
+        enemyWave = GetComponentInChildren<EnemyWave>();
     }
 
     private IEnumerator ResizeConfiner()
@@ -70,6 +75,7 @@ public class Room : MonoBehaviour
         if (virtualCamera != null)
         {
             virtualCamera.enabled = true;
+            isEntered = true;
         }
     }
 
@@ -78,6 +84,7 @@ public class Room : MonoBehaviour
         if (virtualCamera != null)
         {
             virtualCamera.enabled = false;
+            isEntered = false;
         }
     }
 
@@ -89,6 +96,11 @@ public class Room : MonoBehaviour
 
             controller.SetTarget(LevelManager.Instance.player);
             controller.StartFollowing();
+
+            if (enemyWave != null && false == enemyWave.isWaveActive)
+            {
+                enemyWave.StartNextWave();
+            }
         }
     }
 

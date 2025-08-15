@@ -9,6 +9,7 @@ public class EnemyAttack : MonoBehaviour
 
     [Header("공격 설정")]
     public float damage = 10f;
+    public float invulnerabilityTime = 0.5f;
 
     [Header("범위")]
     public float activityRange = 13f;
@@ -30,6 +31,8 @@ public class EnemyAttack : MonoBehaviour
     protected float m_selfDestructTimer = 0.1f;
 
     protected bool isAttacking = false;
+    protected bool isAttackEnabled = true;
+
 
     protected virtual void Awake()
     {
@@ -50,13 +53,24 @@ public class EnemyAttack : MonoBehaviour
             //enemyMovement.chaseRangePosition = chaseRangeCenter.position;
             //enemyMovement.attackRangePosition = attackRangeCenter.position;
         }
+
+        isAttackEnabled = true;
+        isAttacking = false;
+        m_attackTime = 0f;
+        doSelfDestruct = false;
+        m_selfDestructTimer = 0f;
     }
 
     protected virtual void Update()
     {
+        if (false == isAttackEnabled)
+        {
+            return;
+        }
+
         if (SelfDestruct())
         {
-            enabled = false;
+            isAttackEnabled = false;
             return;
         }
 
@@ -90,7 +104,7 @@ public class EnemyAttack : MonoBehaviour
 
             if (health != null)
             {
-                health.currentHP -= selfDestructDamage;
+                health.Damage(damage, invulnerabilityTime);
                 Debug.Log($"{obj.name}에게 {selfDestructDamage}의 피해");
             }
         }
@@ -185,7 +199,7 @@ public class EnemyAttack : MonoBehaviour
             {
                 if (hit.TryGetComponent<Health>(out var playerHealth))
                 {
-                    playerHealth.currentHP -= damage;
+                    playerHealth.Damage(damage, invulnerabilityTime);
                     Debug.Log($"{hit.name}에게 {damage}의 피해");
                 }
             }
@@ -195,6 +209,11 @@ public class EnemyAttack : MonoBehaviour
 
         isAttacking = false;
         enemyMovement.isAttackingPlayer = false;
+    }
+
+    private void OnEnable()
+    {
+        Initialization();
     }
 
     private void OnValidate()

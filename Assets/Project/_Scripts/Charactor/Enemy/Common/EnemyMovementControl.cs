@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class EnemyMovementControl : CharacterMovement
 {
@@ -39,8 +40,17 @@ public class EnemyMovementControl : CharacterMovement
         boxCollider = GetComponent<BoxCollider2D>();
         patternController = GetComponent<EnemyPatternController>();
 
+        Initiailization();
+    }
+
+    protected virtual void Initiailization()
+    {
         isFacingRight = true;
         CheckDirectionToFace(isFacingRight);
+
+        isAttackingPlayer = false;
+        isFalling = false;
+        isStunned = false;
     }
 
     protected virtual void Update()
@@ -75,5 +85,10 @@ public class EnemyMovementControl : CharacterMovement
 
         isFacingRight = !isFacingRight;
         facingDirection = -facingDirection;
+    }
+
+    protected virtual void OnEnable()
+    {
+        Initiailization();
     }
 }
