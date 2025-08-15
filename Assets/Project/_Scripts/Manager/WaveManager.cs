@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,7 +19,7 @@ public class WaveManager : MySingleton<WaveManager>
     public UnityEvent<int> OnWaveCompleted;
 
     private List<GameObject> m_enemies = new List<GameObject>();
-    private int m_currentWave = -1;
+    //private int m_currentWave = -1;
     private int m_enemiesRemaining;
 
 

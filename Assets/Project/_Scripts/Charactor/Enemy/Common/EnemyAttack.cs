@@ -104,7 +104,7 @@ public class EnemyAttack : MonoBehaviour
 
             if (health != null)
             {
-                health.Damage(damage, invulnerabilityTime);
+                health.Damage(selfDestructDamage, invulnerabilityTime);
                 Debug.Log($"{obj.name}에게 {selfDestructDamage}의 피해");
             }
         }

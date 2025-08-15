@@ -24,7 +24,7 @@ public class Wave
 
 public class EnemyWave : MonoBehaviour
 {
-    public Wave[] waves;
+    public List<Wave> waves;
 
     public bool isWaveActive { get; private set; } = false;
 
@@ -52,7 +52,7 @@ public class EnemyWave : MonoBehaviour
 
         m_currentWave++;
 
-        if (m_currentWave >= waves.Length)
+        if (m_currentWave >= waves.Count)
         {
             AllWaveCompleted();
             return;
@@ -65,12 +65,6 @@ public class EnemyWave : MonoBehaviour
     {
         isWaveActive = true;
         m_enemiesSpawned = 0;
-
-        for (int i = 0; i < _wave.enemyInfo.Count; i++)
-        {
-            _wave.enemyInfo[i].spawnPosition = GetSpawnPosition();
-            m_enemiesSpawned++;
-        }
 
         WaveManager.Instance.GetWavePool(_wave.enemyInfo);
 
