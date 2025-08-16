@@ -15,7 +15,8 @@ public class EnemySpawnInfo
 [System.Serializable]
 public class Wave
 {
-    public string WaveID;
+    public WaveEventStartTypes waveEventType;
+    public ObjectTriggerTypes waveEventTriggerType;
     public List<EnemySpawnInfo> enemyInfo;
     public float spawnInterval;
     public float timeForNextWave;
@@ -24,72 +25,19 @@ public class Wave
 
 public class EnemyWave : MonoBehaviour
 {
+    public string waveID = "defaultWave";
     public List<Wave> waves;
 
-    public bool isWaveActive { get; private set; } = false;
-
-    private int m_currentWave = -1;
-    private int m_enemiesSpawned;
+    public bool isWaveCompleted = false;
 
 
-
-    private void Awake()
+    public void StartWave()
     {
-
+        WaveManager.Instance.SetWave(this);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        //StartNextWave();
-    }
-
-    public void StartNextWave()
-    {
-        if (isWaveActive)
-        {
-            return;
-        }
-
-        m_currentWave++;
-
-        if (m_currentWave >= waves.Count)
-        {
-            AllWaveCompleted();
-            return;
-        }
-
-        StartCoroutine(SpawnWave(waves[m_currentWave]));
-    }
-
-    private IEnumerator SpawnWave(Wave _wave)
-    {
-        isWaveActive = true;
-        m_enemiesSpawned = 0;
-
-        WaveManager.Instance.GetWavePool(_wave.enemyInfo);
-
-        yield return new WaitForSeconds(_wave.spawnInterval);
-
-        Debug.Log($"적 {m_enemiesSpawned}마리 생성");
-
-        yield return new WaitUntil(() => WaveManager.Instance.enemiesRemaining <= 0);
-
-        yield return new WaitForSeconds(_wave.timeForNextWave);
-
-        isWaveActive = false;
-
-        StartNextWave();
-    }
-
-    private Vector3 GetSpawnPosition()
-    {
-        float x = Random.Range(-10f, 10f);
-
-        return new Vector3(transform.position.x + x, transform.position.y, 0);
-    }
-
-    private void AllWaveCompleted()
-    {
-        Debug.Log("웨이브 클리어");
+        isWaveCompleted = false;
     }
 }

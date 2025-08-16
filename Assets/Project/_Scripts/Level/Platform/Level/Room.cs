@@ -97,9 +97,9 @@ public class Room : MonoBehaviour
             controller.SetTarget(LevelManager.Instance.player);
             controller.StartFollowing();
 
-            if (enemyWave != null && false == enemyWave.isWaveActive)
+            if (enemyWave != null && false == WaveManager.Instance.isWaveActive)
             {
-                enemyWave.StartNextWave();
+                enemyWave.StartWave();
             }
         }
     }
