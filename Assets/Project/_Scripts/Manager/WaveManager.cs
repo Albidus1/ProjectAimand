@@ -26,7 +26,7 @@ public class WaveManager : MySingleton<WaveManager>
     public bool isWaveActive { get; private set; } = false;
     private List<Wave> m_waves = new List<Wave>();
     private List<GameObject> m_enemies = new List<GameObject>();
-    private int m_currentWave = -1;
+    private int m_currentWaveIndex = -1;
     private int m_enemiesRemaining;
 
 
@@ -90,9 +90,9 @@ public class WaveManager : MySingleton<WaveManager>
 
     private void StartWave()
     {
-        m_currentWave++;
+        m_currentWaveIndex++;
 
-        if (m_currentWave >= m_waves.Count)
+        if (m_currentWaveIndex >= m_waves.Count)
         {
             Debug.Log("모든 웨이브 완료");
 
@@ -108,15 +108,12 @@ public class WaveManager : MySingleton<WaveManager>
             currentWave.isWaveCompleted = true;
             currentWave = null;
             currentWaveID = string.Empty;
-
             isWaveActive = false;
-
-
 
             return;
         }
 
-        StartCoroutine(SpawnWave(m_waves[m_currentWave]));
+        StartCoroutine(SpawnWave(m_waves[m_currentWaveIndex]));
     }
 
     private IEnumerator SpawnWave(Wave _wave)
@@ -131,7 +128,7 @@ public class WaveManager : MySingleton<WaveManager>
         {
             Debug.Log($"시작 이벤트: {currentWaveID}");
             WaveEvent.TriggerEvent(currentWave, _wave.waveEventTriggerType, currentWaveID);
-            OnWaveStart?.Invoke(m_currentWave);
+            OnWaveStart?.Invoke(m_currentWaveIndex);
         }
 
         Debug.Log($"적 {m_enemiesRemaining}마리 생성");
@@ -157,6 +154,6 @@ public class WaveManager : MySingleton<WaveManager>
     private void ResetWaveIndex()
     {
         m_enemiesRemaining = 0;
-        m_currentWave = -1;
+        m_currentWaveIndex = -1;
     }
 }

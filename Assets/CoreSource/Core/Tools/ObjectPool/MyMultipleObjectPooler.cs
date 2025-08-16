@@ -121,7 +121,7 @@ public class MyMultipleObjectPooler : MyObjectPooler
         GameObject newGameObject = Instantiate(_object);
         _object.SetActive(initialStatus);
 
-        SceneManager.MoveGameObjectToScene(_object, gameObject.scene);
+        SceneManager.MoveGameObjectToScene(newGameObject, this.gameObject.scene);
 
         if (base.nestWaitingPool)
         {
