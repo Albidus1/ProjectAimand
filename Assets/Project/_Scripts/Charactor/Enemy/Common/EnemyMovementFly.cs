@@ -48,10 +48,14 @@ public class EnemyMovementFly : EnemyMovementControl
         {
             target = player.gameObject;
             m_chaseWaitTime = Time.time + chaseWaitTime;
+
+            base.animator.SetBool("isChasing", true);
         }
         else
         {
             target = null;
+
+            base.animator.SetBool("isChasing", false);
         }
 
         CalculateDirection();
@@ -107,8 +111,12 @@ public class EnemyMovementFly : EnemyMovementControl
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(m_initializePosition, activityRange);
+        if (Application.isPlaying)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(m_initializePosition, activityRange);
+        }
+
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectRange);
         Gizmos.color = Color.red;

@@ -29,6 +29,7 @@ public class EnemyMovementControl : CharacterMovement
     public Rigidbody2D rb { get; protected set; }
     public BoxCollider2D boxCollider { get; protected set; }
     public EnemyPatternController patternController { get; protected set; }
+    public Animator animator { get; protected set; }
 
     protected int facingDirection = 1;
     protected Vector2 m_initializePosition;
@@ -39,6 +40,7 @@ public class EnemyMovementControl : CharacterMovement
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         patternController = GetComponent<EnemyPatternController>();
+        animator = GetComponent<Animator>();
 
         Initiailization();
     }
