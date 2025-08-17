@@ -92,15 +92,18 @@ public class ConeOfVision2D : MonoBehaviour
         visionMesh = new Mesh();
         direction = Vector3.right;
 
-        if (true == shouldDrawMesh)
-        {
-            visionMeshFilter.mesh = visionMesh;
-        }
+        visionMeshFilter = transform.GetComponentInChildren<MeshFilter>();
+        visionMeshFilter.mesh = visionMesh;
+    }
+
+    protected virtual void OnEnable()
+    {
+
     }
 
     protected virtual void LateUpdate()
     {
-        if ((Time.time - lastScanTime > scanFrequencyInSeconds) && true == shouldScanForTargets)
+        if ((Time.time - lastScanTime > scanFrequencyInSeconds) && shouldScanForTargets)
         {
             ScanForTargets();
         }
@@ -144,6 +147,15 @@ public class ConeOfVision2D : MonoBehaviour
     {
         if (false == shouldDrawMesh)
         {
+            if (viewPoints.Count > 0)
+            {
+                viewPoints.Clear();
+            }
+            if (visionMesh != null)
+            {
+                visionMesh.Clear();
+            }
+
             return;
         }
 

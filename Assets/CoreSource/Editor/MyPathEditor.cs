@@ -1,73 +1,71 @@
+#if UNITY_EDITOR
+using System;
 using UnityEditor;
 using UnityEngine;
 
 
 
-[CustomEditor(typeof(PlatformMoving), true)]
+[CustomEditor(typeof(MyPath), true)]
 [InitializeOnLoad]
 public class MyPathEditor : Editor
 {
-    static MyPathEditor()
+    public MyPath pathTarget
     {
-        EditorApplication.hierarchyChanged += OnHierarchyChanged;
-    }
-
-    private static void OnHierarchyChanged()
-    {
-        PlatformMoving[] platforms = FindObjectsByType<PlatformMoving>(FindObjectsSortMode.None);
-
-        foreach (var platform in platforms)
+        get
         {
-            if (false == platform.isInitialized)
-            {
-                platform.InitializePoints();
-                EditorUtility.SetDirty(platform);
-            }
+            return (MyPath)target;
         }
     }
 
     private void OnSceneGUI()
     {
         Handles.color = Color.green;
-        PlatformMoving platform = (PlatformMoving)target;
-   
-        Vector3 gridOffset = new Vector3(1, 1, 0);
+        MyPath t = (target as MyPath);
 
-        // pointA의 위치 변경 가능
-        EditorGUI.BeginChangeCheck();
-        Vector3 new_pointA_position = Handles.FreeMoveHandle(
-            platform.pointA,
-            1f,
-            gridOffset,
-            Handles.CircleHandleCap);
+        Vector3 snap = new Vector3(0.25f, 0.25f, 0.25f);
 
-
-        bool isshift = Input.GetKey(KeyCode.LeftShift);
-
-        if (EditorGUI.EndChangeCheck())
+        for (int i = 0; i < t.pathElements.Count; i++)
         {
-            Undo.RecordObject(platform, "Move Point A");
-            platform.transform.position = new_pointA_position;
-            platform.pointA = new_pointA_position;
-            platform.DirectionCalculate(true);
-            EditorUtility.SetDirty(platform);
-        }
+            EditorGUI.BeginChangeCheck();
 
-        
-        // pointB의 위치 변경 가능
-        EditorGUI.BeginChangeCheck();
-        Vector3 new_pointB_position = Handles.FreeMoveHandle(
-            platform.pointB,
-            1f,
-            gridOffset,
-            Handles.CircleHandleCap);
+            Vector3 oldPoint = t.originalTransformPosition + t.pathElements[i].pathElementPosition;
+            GUIStyle style = new GUIStyle();
 
-        if (EditorGUI.EndChangeCheck())
-        {
-            Undo.RecordObject(platform, "Move Point B");
-            platform.pointB = new_pointB_position;
-            platform.DirectionCalculate(true);
-            EditorUtility.SetDirty(platform);
+            style.normal.textColor = Color.yellow;
+            Handles.Label(
+                t.originalTransformPosition +
+                t.pathElements[i].pathElementPosition +
+                (Vector3.down * 0.4f) + (Vector3.right * 0.4f), "" + i, style);
+
+            Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, 0.5f, snap, Handles.CircleHandleCap);
+            newPoint = ApplyAxisLock(oldPoint, newPoint);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(t, "Free Move Handle");
+                t.pathElements[i].pathElementPosition = newPoint - t.originalTransformPosition;
+            }
         }
     }
+
+    private Vector3 ApplyAxisLock(Vector3 _oldPoint, Vector3 _newPoint)
+    {
+        MyPath t = (target as MyPath);
+
+        if (t.LockHandlesOnXAxis)
+        {
+            _newPoint.x = _oldPoint.x;
+        }
+        if (t.LockHandlesOnYAxis)
+        {
+            _newPoint.y = _oldPoint.y;
+        }
+        if (t.LockHandlesOnZAxis)
+        {
+            _newPoint.z = _oldPoint.z;
+        }
+
+        return _newPoint;
+    }
 }
+#endif

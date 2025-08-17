@@ -1,5 +1,6 @@
+using System;
 using System.Collections;
-using System.ComponentModel;
+using Unity.Cinemachine;
 using UnityEngine;
 
 
@@ -15,11 +16,12 @@ public class PlayerStates
         Falling, 
         Sliding, 
         Grabbing, 
-        Dashing 
+        Dashing,
+        Attacking,
     }
 }
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : CharacterMovement
 {
     public PlayerStates playerState { get; protected set; }
     public MyStateManager<PlayerStates.MovementStates> movementState;
@@ -27,6 +29,9 @@ public class PlayerMovement : MonoBehaviour
     public PlayerData data;
 
     public Rigidbody2D rb { get; private set; }
+    public Collider2D col { get; private set; }
+
+    public Animator animator;
 
     [Header("움직임 제어")]
     public bool CanWallJumping = true;
@@ -34,12 +39,14 @@ public class PlayerMovement : MonoBehaviour
     public bool CanWallGrabbing = true;
     public bool CanDasing = true;
 
+    public bool isAttacking { get; set; }
     public bool isFacingRight { get; private set; }
     public bool isJumping { get; private set; }
     public bool isWallJumping { get; private set; }
     public bool isSliding { get; private set; }
     public bool isWallGrabbing { get; private set; }
     public bool isDashing { get; private set; }
+    public bool checkOneWayPlatformBelow { get; private set; }
     public bool doKnockback { get; private set; }
     public bool isControlSleep { get; private set; }
     public bool ApplyGravityOnDeath;
@@ -67,6 +74,8 @@ public class PlayerMovement : MonoBehaviour
     // 점프
     private bool isJumpCut;
     private bool isJumpFalling;
+    private float m_jumpDisableGroundCheckTime = 0.1f;
+    private float m_jumpEndIgnoreGroundUntil = -1f;
 
     // 벽 점프
     private float wallJumpStartTime;
@@ -123,7 +132,10 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask platform;
     public LayerMask movingPlatform;
     public LayerMask onewayPlatform;
+    public LayerMask magnetPlatform;
+
     [SerializeField] private LayerMask groundLayer;
+    [MyReadOnly] public LayerMask m_currentPlatform;
 
     [Header("이벤트")]
     public bool SendStateChangeEvents = true;
@@ -131,21 +143,38 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<BoxCollider2D>();
+
+        animator = GetComponent<Animator>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
 
         playerState = new PlayerStates();
 
-        //groundLayer |= platform;
-        //groundLayer |= movingPlatform;
-        //groundLayer |= onewayPlatform;
+        //임시
+        //CinemachineCamera cam = FindAnyObjectByType<CinemachineCamera>();
+        //cam.Target.TrackingTarget = transform;
+
+        groundLayer |= platform;
+        groundLayer |= movingPlatform;
+        groundLayer |= onewayPlatform;
+        groundLayer |= magnetPlatform;
     }
     private void Start()
     {
         SetGravityScale(data.gravityScale);
 
         isFacingRight = true;   
+    }
+
+    private void OnEnable()
+    {
+        var cam = FindFirstObjectByType<CinemachineCamera>();
+        cam.Target.TrackingTarget = transform;
+
+        movementState.StateChange(PlayerStates.MovementStates.Idle);
+        moveInput = Vector2.zero;
     }
 
     private void Update()
@@ -159,16 +188,23 @@ public class PlayerMovement : MonoBehaviour
 
         if (movementState.currentState == PlayerStates.MovementStates.Die)
         {
-            Debug.Log("사망");
+            //Debug.Log("사망");
 
             if (false == ApplyGravityOnDeath)
             {
                 SetGravityScale(0);
                 rb.linearVelocity = Vector2.zero;
             }
+            else
+            {
+                SetGravityScale(data.gravityScale * data.fastFallGravityMult);
+
+                rb.linearVelocity =
+                    new Vector2(0, Mathf.Max(rb.linearVelocity.y, -data.maxFastFallSpeed));
+            }
 
             return;
-        }
+        }    
 
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
@@ -197,10 +233,6 @@ public class PlayerMovement : MonoBehaviour
                 CheckDirectionToFace(moveInput.x > 0);
 
                 currentDirection = (moveInput.x > 0) ? 1 : -1;
-            }
-            else if (moveInput.x == 0)
-            {
-                movementState.StateChange(PlayerStates.MovementStates.Idle);
             }
 
             if (true == isWallGrabbing && false == isLookingOther)
@@ -241,6 +273,11 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                checkOneWayPlatformBelow = true;
+            }
+
             if (Input.GetKey(KeyCode.C))
             {
                 OnGrabInput();
@@ -249,18 +286,29 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region COLLISION CHECKS
-        if (false == isJumping && false == isDashing)
+        if (false == isDashing)
         {
-            if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
+            if (Time.time > m_jumpEndIgnoreGroundUntil &&
+                Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
             {
                 lastOnGroundTime = data.coyoteTime;
                 lastOnGrabTime = data.grabStamina;
                 dashesLeft = data.dashAmount;
+
+                if (checkOneWayPlatformBelow)
+                {
+                    Collider2D oneway = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, onewayPlatform);
+
+                    if (oneway != null)
+                    {
+                        StartCoroutine(DownJump(oneway));
+                    }
+                }
             }
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
-                false == isWallJumping)
+                false == isJumping && false == isWallJumping)
             {
                 //Debug.Log("오른쪽 벽 확인");
                 lastOnWallRightTime = data.coyoteTime;
@@ -268,7 +316,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
                 || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
-                false == isWallJumping)
+                false == isJumping && false == isWallJumping)
             {
                 //Debug.Log("왼쪽 벽 확인");
                 lastOnWallLeftTime = data.coyoteTime;
@@ -277,15 +325,16 @@ public class PlayerMovement : MonoBehaviour
             lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);
         }
 
+        checkOneWayPlatformBelow = false;
+
         EdgeDetection();
 
         #endregion
 
         #region JUMP CHECK
-        if (true == isJumping && rb.linearVelocity.y < 0)
+        if (rb.linearVelocity.y < 0)
         {
             isJumping = false;
-
             isJumpFalling = true;
         }
 
@@ -298,13 +347,19 @@ public class PlayerMovement : MonoBehaviour
         if (lastOnGroundTime > 0 && false == isJumping && false == isWallJumping)
         {
             isJumpCut = false;
-
             isJumpFalling = false;
         }
         
         if (false == isOnMovingPlatform)
         {
             isJumpingOnMovingPlatform = false;
+        }
+
+        if (lastOnGroundTime > 0 &&
+            (true == isJumping || true == isJumpFalling))
+        {
+            isJumping = false;
+            isJumpFalling = false;
         }
 
         if (false == isDashing)
@@ -320,10 +375,12 @@ public class PlayerMovement : MonoBehaviour
 
                 if (true == isJumpingOnMovingPlatform)
                 {
+                    //Debug.Log("이동 플랫폼에서 점프");
                     Jump(data.jumpForce, platformDirection);
                 }
                 else
                 {
+                    //Debug.Log("일반 점프");
                     Jump(data.jumpForce);
                 }               
             }
@@ -339,6 +396,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (true == isOnJumpPad && lastOnJumpPadTime < 0 && padDirection != Vector2.zero)
         {
+            isJumping = true;
+            isJumpFalling = false;
+
+            Vector2 newRb = new Vector2(rb.linearVelocity.x, 0);
+            rb.linearVelocity = newRb;
+
             if (padDirection == Vector2.up)
             {
                 StartCoroutine(nameof(RefillDash), 1);
@@ -347,6 +410,7 @@ public class PlayerMovement : MonoBehaviour
 
                 rb.linearVelocity = moveInput;
 
+                Mathf.Clamp(data.jumpForce * padForce, 20, 80);
                 Jump(data.jumpForce * padForce);
             }
             else
@@ -360,14 +424,10 @@ public class PlayerMovement : MonoBehaviour
                 rb.linearVelocity = padDirection;
                 WallJump(lastWallJumpDirection);
             }
-        }
 
-        if (lastOnJumpPadTime < 0)
-        {
             isOnJumpPad = false;
             padDirection = Vector2.zero;
         }
-
         #endregion
 
         #region SLIDE CHECK
@@ -509,6 +569,46 @@ public class PlayerMovement : MonoBehaviour
             SetGravityScale(0);
         }
         #endregion
+
+        #region STATE CHANGE
+        animator.SetBool("isAttacking", false);
+        animator.SetBool("isDashing", false);
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isJumping", false);
+        animator.SetBool("isFalling", false);
+
+        if (isDashing)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Dashing);
+            animator.SetBool("isDashing", true);
+        }
+        else if (isAttacking)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Attacking);
+            animator.SetTrigger("isAttacking");
+
+            isAttacking = false;
+        }
+        else if (isJumping)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Jumping);
+            animator.SetBool("isJumping", true);
+        }
+        else if (isJumpFalling)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Falling);
+            animator.SetBool("isFalling", true);
+        }
+        else if (moveInput.x != 0 && lastOnGroundTime > 0)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Running);
+            animator.SetBool("isRunning", true);
+        }
+        else
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+        #endregion
     }
 
     private void FixedUpdate()
@@ -516,6 +616,11 @@ public class PlayerMovement : MonoBehaviour
         if (movementState.currentState == PlayerStates.MovementStates.Die)
         {
             return;
+        }
+
+        if (true == isOnMovingPlatform)
+        {
+            OnMovingPlatform();
         }
 
         if (false == isDashing)
@@ -538,11 +643,6 @@ public class PlayerMovement : MonoBehaviour
             Run(data.dashEndRunLerp);
         }
 
-        if (true == isOnMovingPlatform)
-        {
-            OnMovingPlatform();
-        }
-
         if (true == isSliding || true == isWallGrabbing)
         {
             Slide();
@@ -557,7 +657,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnJumpUpInput()
     {
-        if (true == CanJumpCut() || true == CanWallJumpCut())
+        if ((CanJumpCut() || CanWallJumpCut()))
         {
             isJumpCut = true;
         }
@@ -599,6 +699,13 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(nameof(PerformControllSleep), _duration);
     }
 
+    private IEnumerator DownJump(Collider2D _col)
+    {
+        Physics2D.IgnoreCollision(col, _col, true);
+        yield return new WaitForSeconds(0.25f);
+        Physics2D.IgnoreCollision(col, _col, false);
+    }
+
     private IEnumerator PerformControllSleep(float _duration)
     {
         isControlSleep = true;
@@ -612,17 +719,21 @@ public class PlayerMovement : MonoBehaviour
     {
         ControllSleep(0.5f);
 
-        CheckDirectionToFace(_facingDirection);
+        Vector3 scale = transform.localScale;
+        scale.x = _facingDirection ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+        transform.localScale = scale;
+
+        isFacingRight = _facingDirection;
 
         transform.position = _spawnPoint.position;
+
+        moveInput = Vector2.zero;
     }
     #endregion
 
     #region RUN METHODS
     private void Run(float _lerpAmount)
     {
-        movementState.StateChange(PlayerStates.MovementStates.Running);
-
         // 이동하고자 하는 방향과 원하는 속도 계산
         float targetSpeed = moveInput.x * data.runMaxSpeed;
 
@@ -675,15 +786,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnMovingPlatform()
     {
-        // 움직이는 플렛폼 보정
-        if (true == isOnMovingPlatform)
-        {
-            Vector3 platform_velocity = (platformTransform.position - lastPlatformPosition) / Time.deltaTime;
-
-            rb.position += (Vector2)(platform_velocity * Time.deltaTime);
-
-            lastPlatformPosition = platformTransform.position;
-        }
+        Vector3 deltaPosition = (platformTransform.position - lastPlatformPosition);
+        rb.position += (Vector2)(deltaPosition);
+        lastPlatformPosition = platformTransform.position;
     }
 
     private void Turn()
@@ -699,8 +804,6 @@ public class PlayerMovement : MonoBehaviour
     #region JUMP METHODS
     public void Jump(float _force, Vector2 _dir = default)
     {
-        //Debug.Log("점프");
-      
         lastPressedJumpTime = 0;
         lastOnGroundTime = 0;
 
@@ -708,6 +811,8 @@ public class PlayerMovement : MonoBehaviour
         isWallJumping = false;
         isJumpCut = false;
         isJumpFalling = false;
+
+        m_jumpEndIgnoreGroundUntil = Time.time + m_jumpDisableGroundCheckTime;
 
         if (rb.linearVelocity.y < 0)
         {
@@ -1070,7 +1175,7 @@ public class PlayerMovement : MonoBehaviour
     {
 #if UNITY_EDITOR
         BoxCollider2D col = GetComponent<BoxCollider2D>();
-        Vector2 size = new Vector2 (col.size.x, col.size.y * 1.2f);
+        Vector2 size = new Vector2 (col.size.x * transform.localScale.x, col.size.y * transform.localScale.y);
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position, size);

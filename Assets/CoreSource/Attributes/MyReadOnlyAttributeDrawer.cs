@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -5,17 +6,18 @@ using UnityEditor;
 [CustomPropertyDrawer(typeof(MyReadOnlyAttribute))]
 public class MyReadOnlyAttributeDrawer : PropertyDrawer
 {
-#if UNITY_EDITOR
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+
+    public override void OnGUI(Rect _position, SerializedProperty _property, GUIContent _label)
     {
         GUI.enabled = false;
-        EditorGUI.PropertyField(position, property, label, true);
+        EditorGUI.PropertyField(_position, _property, _label, true);
         GUI.enabled = true;
     }
-#endif
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+
+    public override float GetPropertyHeight(SerializedProperty _property, GUIContent _label)
     {
-        return EditorGUI.GetPropertyHeight(property, label, true);
+        return EditorGUI.GetPropertyHeight(_property, _label);
     }
 }
+#endif

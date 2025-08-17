@@ -4,28 +4,28 @@ using UnityEngine;
 
 public class MySingleton<T> : MonoBehaviour where T : Component
 {
-    protected static T instance;
-    public static bool HasInstance => instance != null;
-    public static T TryGetInstance() => HasInstance ? instance : null;
-    public static T Current => instance;
+    protected static T m_instance;
+    public static bool HasInstance => m_instance != null;
+    public static T TryGetInstance() => HasInstance ? m_instance : null;
+    public static T Current => m_instance;
 
     public static T Instance
     {
         get
         {
-            if (instance == null)
+            if (m_instance == null)
             {
-                instance = FindFirstObjectByType<T>();
+                m_instance = FindFirstObjectByType<T>();
 
-                if (instance == null)
+                if (m_instance == null)
                 {
                     GameObject obj = new GameObject();
                     obj.name = typeof(T).Name + "_AutoCreated";
-                    instance = obj.AddComponent<T>();
+                    m_instance = obj.AddComponent<T>();
                 }
             }
 
-            return instance;
+            return m_instance;
         }
     }
 
@@ -41,6 +41,6 @@ public class MySingleton<T> : MonoBehaviour where T : Component
             return;
         }
 
-        instance = this as T;
+        m_instance = this as T;
     }
 }

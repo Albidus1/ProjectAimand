@@ -19,7 +19,7 @@ public class ObjectGuidRegistry : MySingleton<ObjectGuidRegistry>
 
     protected override void Awake()
     {
-        instance = this;
+        m_instance = this;
 
         InitializeDictionary();
     }
