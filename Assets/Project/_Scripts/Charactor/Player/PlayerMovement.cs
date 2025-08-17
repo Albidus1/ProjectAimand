@@ -16,7 +16,8 @@ public class PlayerStates
         Falling, 
         Sliding, 
         Grabbing, 
-        Dashing 
+        Dashing,
+        Attacking,
     }
 }
 
@@ -38,6 +39,7 @@ public class PlayerMovement : CharacterMovement
     public bool CanWallGrabbing = true;
     public bool CanDasing = true;
 
+    public bool isAttacking { get; set; }
     public bool isFacingRight { get; private set; }
     public bool isJumping { get; private set; }
     public bool isWallJumping { get; private set; }
@@ -569,37 +571,42 @@ public class PlayerMovement : CharacterMovement
         #endregion
 
         #region STATE CHANGE
+        animator.SetBool("isAttacking", false);
+        animator.SetBool("isDashing", false);
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isJumping", false);
+        animator.SetBool("isFalling", false);
+
         if (isDashing)
         {
             movementState.StateChange(PlayerStates.MovementStates.Dashing);
+            animator.SetBool("isDashing", true);
+        }
+        else if (isAttacking)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Attacking);
+            animator.SetTrigger("isAttacking");
+
+            isAttacking = false;
         }
         else if (isJumping)
         {
             movementState.StateChange(PlayerStates.MovementStates.Jumping);
-            animator.SetBool("isRunning", false);
             animator.SetBool("isJumping", true);
-            animator.SetBool("isFalling", false);
         }
         else if (isJumpFalling)
         {
             movementState.StateChange(PlayerStates.MovementStates.Falling);
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isJumping", false);
             animator.SetBool("isFalling", true);
         }
         else if (moveInput.x != 0 && lastOnGroundTime > 0)
-        {       
+        {
             movementState.StateChange(PlayerStates.MovementStates.Running);
             animator.SetBool("isRunning", true);
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isFalling", false);
         }
         else
         {
             movementState.StateChange(PlayerStates.MovementStates.Idle);
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isFalling", false);
         }
         #endregion
     }

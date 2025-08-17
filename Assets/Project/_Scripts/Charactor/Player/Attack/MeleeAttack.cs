@@ -85,6 +85,8 @@ public class MeleeAttack : MonoBehaviour
                 DetectAndDamageEnemies();
                 Debug.Log("지상 근거리 공격 완료");
                 lastAttackTime = Time.time;
+
+                playerMovement.isAttacking = true;
             }
         }
         else if (Input.GetKeyUp(KeyCode.A))
