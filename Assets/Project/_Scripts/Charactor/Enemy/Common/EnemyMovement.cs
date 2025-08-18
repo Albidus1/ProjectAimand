@@ -3,6 +3,9 @@ using UnityEngine.EventSystems;
 
 public class EnemyMovement : EnemyMovementControl
 {
+    [Header("공격 콜라이더")]
+    public Collider2D attackCollider2D;
+
     [Header("레이캐스트")]
     public int raysCount = 5;
     public Vector3 colliderSize => Vector3.Scale(transform.localScale, boxCollider.size);
@@ -38,65 +41,10 @@ public class EnemyMovement : EnemyMovementControl
 
 
 
-
     protected override void Awake()
     {
         base.Awake();
         SetRaysParameters();
-    }
-
-    protected override void Update()
-    {
-        facingDirection = isFacingRight ? 1 : -1;
-
-        SetRaysParameters();
-
-        CastRay();
-        DetectPlayer();
-
-        base.Update();
-    }
-
-    private void FixedUpdate()
-    {
-        Vector2 direction;
-
-        if (isAttackingPlayer)
-        {
-            return;
-        }
-
-        if (isChasingPlayer)
-        {
-            if (hitObject)
-            {
-                Run(Vector2.zero);
-            }
-            else
-            {
-                if (Mathf.Abs(playerPosition.x - transform.position.x) > 0.1f)
-                {
-                    direction = playerPosition.x > transform.position.x ? Vector2.right : Vector2.left;
-                    CheckDirectionToFace(playerPosition.x > transform.position.x);
-
-                    Run(direction);
-                }
-                else
-                {
-                    Run(Vector2.zero);
-                }
-            }
-        }
-        else
-        {
-            direction = Vector2.right * facingDirection;
-            Run(direction);
-        }
-
-        if (hitObject && false == isChasingPlayer)
-        {
-            Turn();
-        }
     }
 
     #region INITIALIZATION
@@ -134,6 +82,71 @@ public class EnemyMovement : EnemyMovementControl
         boundsHeight = Vector2.Distance(boundsTopLeftCorner, boundsBottomLeftCorner);
     }
     #endregion
+
+    protected override void Update()
+    {
+        facingDirection = isFacingRight ? 1 : -1;
+
+        SetRaysParameters();
+
+        CastRay();
+        DetectPlayer();
+
+        base.Update();
+    }
+
+    private void FixedUpdate()
+    {
+        Vector2 direction = Vector2.zero;
+
+        if (isAttackingPlayer)
+        {
+            base.animator.SetBool("isMoving", false);
+            return;
+        }
+
+
+        if (isChasingPlayer)
+        {
+            if (hitObject)
+            {
+                Run(Vector2.zero);
+            }
+            else
+            {
+                if (Mathf.Abs(playerPosition.x - transform.position.x) > 0.1f)
+                {
+                    direction = playerPosition.x > transform.position.x ? Vector2.right : Vector2.left;
+                    CheckDirectionToFace(playerPosition.x > transform.position.x);
+
+                    Run(direction);
+                }
+                else
+                {
+                    Run(Vector2.zero);
+                }
+            }
+        }
+        else
+        {
+            direction = Vector2.right * facingDirection;
+            Run(direction);
+        }
+
+        if (hitObject && false == isChasingPlayer)
+        {
+            Turn();
+        }
+
+        if (direction.x != 0f)
+        {
+            base.animator.SetBool("isMoving", true);
+        }
+        else
+        {
+            base.animator.SetBool("isMoving", false);
+        }
+    }
 
     #region RAYCAST METHODS
     private void CastRay()
