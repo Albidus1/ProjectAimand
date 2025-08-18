@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 451685115886082158}
   - component: {fileID: -6022236703307972518}
   - component: {fileID: 3469313808442089242}
+  - component: {fileID: 4911472233546512474}
   m_Layer: 17
   m_Name: TrackingProjectile
   m_TagString: Untagged
@@ -259,5 +260,21 @@ MonoBehaviour:
     m_Bits: 64
   detectionRadius: 30
   trackingStartTime: 1
-  trackingTime: 3
+  trackingTime: 10
   lockedLocation: 1
+--- !u!114 &4911472233546512474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8047954322326610999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 654a351946a577f4ba650dc0fa88ccc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drops:
+  - dropCount: 1
+    probability: 1
+  dropObjectPrefabs: {fileID: 3395019882416988558, guid: e5fba07c6409fae4bb1d295a431d8dbf, type: 3}
