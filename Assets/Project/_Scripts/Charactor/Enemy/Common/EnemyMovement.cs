@@ -164,11 +164,12 @@ public class EnemyMovement : EnemyMovementControl
 
             position.y = boundsCenter.y - boundsHeight * 0.51f;
 
-            RaycastHit2D hitHole = MyDebug.Raycast(position, -transform.up, 0.2f, groundLayer, Color.cyan, true);
+            RaycastHit2D hitHole = MyDebug.Raycast(position, -transform.up, 0.3f, groundLayer, Color.cyan, true);
 
             if (false == hitHole)
             {
                 hitObject = true;
+                return;
             }
         }
 
@@ -185,11 +186,11 @@ public class EnemyMovement : EnemyMovementControl
 
             position.y = boundsTopLeftCorner.y - (raysDistance * i);
 
-            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, 0.2f, LayerManager.obstacleLayerMask, Color.blue, true);
+            RaycastHit2D hitWall = MyDebug.Raycast(position, dir, 0.2f, obstacleLayer, Color.blue, true);
             if (hitWall)
             {
                 hitObject = true;
-                break;
+                return;
             }
         }
     }
