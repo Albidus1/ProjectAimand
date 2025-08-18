@@ -4,45 +4,76 @@ using UnityEngine;
 
 public class EnemyAttackRangeAttack : EnemyAttack
 {
+    [MyReadOnly]
+    public GameObject target;
+
     [Header("원거리 공격")]
+    public MySimpleObjectPooler objectPooler;
     public GameObject rangedWeapon;
-    public GameObject bullet;
     public Transform bulletSpawn;
     public float bulletDuration;
 
 
     private float bulletAngle;
+    private Vector2 m_direction;
+    private LineRenderer m_lineRenderer;
+
 
 
     protected override void Awake()
     {
+        objectPooler = GetComponent<MySimpleObjectPooler>();
+        m_lineRenderer = GetComponentInChildren<LineRenderer>();
+
         base.Awake();
+    }
+
+    protected void Start()
+    {
+        m_lineRenderer.startColor = Color.red;
+        m_lineRenderer.endColor = Color.white;
+        m_lineRenderer.startWidth = 0.05f;
     }
 
     protected override void Update()
     {
+        target = base.enemyMovement.target;
+
+        if (target == null)
+        {
+            m_lineRenderer.enabled = false;
+        }
+        else
+        {
+            m_lineRenderer.enabled = true;
+        }
+
         UpdateRangedWeapon();
 
         if (m_attackTime < Time.time && enemyMovement.isAttacking)
         {
             Attack();
         }
+
+        if (target != null && m_lineRenderer != null)
+        {
+            m_lineRenderer.SetPosition(0, bulletSpawn.transform.position);
+            m_lineRenderer.SetPosition(1, target.transform.position);
+        }
     }
 
     private void UpdateRangedWeapon()
     {
-        var target = base.enemyMovement.target;
-        if (base.enemyMovement.target != null)
+        if (target != null)
         {
-            Vector2 direction = rangedWeapon.transform.position - target.transform.position;
-            bulletAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            m_direction = target.transform.position - rangedWeapon.transform.position;
+            bulletAngle = Mathf.Atan2(m_direction.y, m_direction.x) * Mathf.Rad2Deg;
 
-            if (transform.localScale.x > 0)
+            if (transform.localScale.x < 0f)
             {
                 bulletAngle += 180f;
             }
 
-            bulletAngle = Mathf.Clamp(bulletAngle, -89, 89);
             Quaternion targetRotation = Quaternion.Euler(0, 0, bulletAngle);
 
             rangedWeapon.transform.rotation = Quaternion.Lerp(
@@ -65,28 +96,24 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
     protected override void Attack()
     {
-        //base.m_attackTime = Time.time + base.attackTime;
-        //Debug.Log("확인용");
-        
-        //if (bullet != null && bulletSpawn != null)
-        //{
-        //    Quaternion angle = Quaternion.Euler(0, 0, bulletAngle);
-        //    Bullet b = Instantiate(bullet, bulletSpawn.position, angle).GetComponent<Bullet>();
-        //    b.damage = base.damage;
+        base.m_attackTime = Time.time + base.attackTime;
+        GameObject nextGameObject = objectPooler.GetPooledGameObject();
 
-        //    Vector3 direction = transform.localScale.x > 0 ? Vector3.right : Vector3.left;
-        //    Vector3 moveDirection = angle * direction;
-        //    Vector3 targetPosition = b.transform.position + moveDirection * 50f;
+        if (nextGameObject == null)
+        {
+            return;
+        }
+        if (nextGameObject.GetComponent<MyPoolableObject>() == null)
+        {
+            throw new Exception(gameObject.name + "PoolalbeObject 없음");
+        }
 
-        //    b.transform.DOMove(targetPosition, bulletDuration)
-        //        .SetEase(Ease.Linear)
-        //        .OnComplete(() => {
-        //            if (b != null) 
-        //            {
-        //                Destroy(b.gameObject);
-        //            }
-        //        })
-        //        .SetLink(b.gameObject);
-        //}
+        nextGameObject.transform.position = bulletSpawn.transform.position;
+
+        nextGameObject.SetActive(true);
+
+        Projectile projectile = nextGameObject.GetComponent<Projectile>();
+
+        projectile.SetDirection(m_direction.normalized, transform.rotation);
     }
 }

@@ -138,13 +138,16 @@ public class EnemyMovement : EnemyMovementControl
             Turn();
         }
 
-        if (direction.x != 0f)
+        if (base.animator != null)
         {
-            base.animator.SetBool("isMoving", true);
-        }
-        else
-        {
-            base.animator.SetBool("isMoving", false);
+            if (direction.x != 0f)
+            {
+                base.animator.SetBool("isMoving", true);
+            }
+            else
+            {
+                base.animator.SetBool("isMoving", false);
+            }
         }
     }
 

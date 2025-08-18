@@ -252,7 +252,6 @@ GameObject:
   - component: {fileID: 8013071309041211681}
   - component: {fileID: 3237034493235011368}
   - component: {fileID: 6350219536034993841}
-  - component: {fileID: 2680745598285855930}
   m_Layer: 25
   m_Name: MonsterType02
   m_TagString: Enemy
@@ -477,35 +476,10 @@ MonoBehaviour:
   selfDestructDamage: 0
   selfDestructEffect: {fileID: 0}
   attackTime: 3
+  objectPooler: {fileID: 0}
   rangedWeapon: {fileID: 4855352038542218039}
-  bullet: {fileID: 8047954322326610999, guid: 8fea0695c920a2248a6d52fb36de876f, type: 3}
   bulletSpawn: {fileID: 3183064285652931202}
   bulletDuration: 2
---- !u!114 &2680745598285855930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1091521504391383391}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  killPlayer: 0
-  targetLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  applyDamageOnTriggerEnter: 1
-  applyDamageOnTriggerStay: 1
-  damage: 10
-  damageTakenEveryTime: 0
-  damageTakenDamageable: 0
-  damageTakenNonDamageable: 0
-  invincibilityDuration: 1
-  damageCausedKnockbackForce: {x: 15, y: 2.5}
-  owner: {fileID: 0}
 --- !u!1 &3014689264227526960
 GameObject:
   m_ObjectHideFlags: 0
