@@ -11,6 +11,7 @@ public enum MainEventTypes
     LevelEnd,
     Pause,
     UnPause,
+    TogglePause,
     PlayerDeath,
     PlayerRespawn,
 }
@@ -36,11 +37,13 @@ public struct MainEvent
     }
 }
 
-public class GameManager : MySingleton<GameManager>,
+public class GameManager : MyPersistentSingleton<GameManager>,
     IEventListener<GameEvent>,
     IEventListener<MainEvent>
 {
     public bool paused { get; set; }
+
+    protected bool m_pauseMenuOpen = false;
 
 
 
@@ -49,31 +52,57 @@ public class GameManager : MySingleton<GameManager>,
         base.Awake();
     }
 
+    public void Reset()
+    {
+        paused = false;
+    }
+    
+
     public virtual void Pause()
     {
-        if (Time.timeScale > 0)
+        Debug.Log("퍼즈");
+
+        Instance.paused = true;
+
+        if (GUIManager.HasInstance)
         {
-            Instance.paused = true;
+            GUIManager.Instance.SetPause(true);
+            m_pauseMenuOpen = true;
         }
     }
 
     public virtual void UnPause()
     {
-        throw new NotImplementedException();
+        Debug.Log("퍼즈 해제");
+
+        Instance.paused = false;
+
+        if (GUIManager.HasInstance)
+        {
+            GUIManager.Instance.SetPause(false);
+            m_pauseMenuOpen = false;
+        }
     }
 
     public virtual void OnEvent(GameEvent _gameEvent)
     {
-        //switch (_gameEvent.eventName)
-        //{
-
-        //}
+        
     }
 
     public virtual void OnEvent(MainEvent _mainEvent)
     {
         switch (_mainEvent.eventType)
         {
+            case MainEventTypes.TogglePause:
+                if (paused)
+                { 
+                    UnPause();
+                }
+                else
+                {
+                    Pause();
+                }
+                break;
             case MainEventTypes.Pause:
                 Pause();
                 break;

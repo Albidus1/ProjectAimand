@@ -2,11 +2,10 @@ using UnityEngine;
 
 
 
-public class MySingleton<T> : MonoBehaviour where T : Component
+public class MyPersistentSingleton<T> : MonoBehaviour where T : Component 
 {
     public static bool HasInstance => m_instance != null;
-    public static T TryGetInstance() => HasInstance ? m_instance : null;
-    public static T Current => m_instance;
+    public static T current => m_instance;
     public static T Instance
     {
         get
@@ -14,11 +13,10 @@ public class MySingleton<T> : MonoBehaviour where T : Component
             if (m_instance == null)
             {
                 m_instance = FindFirstObjectByType<T>();
-
                 if (m_instance == null)
                 {
-                    GameObject obj = new GameObject(typeof(T).Name + "_AutoCreated");
-                    m_instance = obj.AddComponent<T>();
+                    GameObject singletonObject = new GameObject(typeof(T).Name + "_AutoCreated");
+                    m_instance = singletonObject.AddComponent<T>();
                 }
             }
 
@@ -28,6 +26,8 @@ public class MySingleton<T> : MonoBehaviour where T : Component
 
 
     protected static T m_instance;
+    protected bool m_enabled;
+
 
 
 
@@ -43,6 +43,17 @@ public class MySingleton<T> : MonoBehaviour where T : Component
             return;
         }
 
-        m_instance = this as T;
+        transform.SetParent(null);
+
+        if (m_instance == null)
+        {
+            m_instance = this as T;
+            DontDestroyOnLoad(transform.gameObject);
+            m_enabled = true;
+        }
+        else if (this != m_instance)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

@@ -284,4 +284,24 @@ public class LevelManager : MySingleton<LevelManager>
     {
         SceneManager.LoadScene(_destinationScene);
     }
+
+    public void RestartScene()
+    {
+        if (SceneManager.GetActiveScene().isLoaded)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+
+    public void QuitGame()
+    {
+        if (Application.isEditor)
+        {
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+        else
+        {
+            Application.Quit();
+        }
+    }
 }

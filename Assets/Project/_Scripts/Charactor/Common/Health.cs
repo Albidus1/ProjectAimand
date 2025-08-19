@@ -96,7 +96,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
         m_respawner = FindFirstObjectByType<ReSpawner>();
 
-        invincible = false;
+        UpdateHealthBar();
     }
 
     public void InitializeCurrentHealth()
@@ -104,10 +104,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         //Debug.Log($"현재 체력: {currentHP}");
         currentHP = maxHP;
 
-        if(healthSlider != null)
-        {
-            healthSlider.value = currentHP / maxHP;
-        }
+        UpdateHealthBar();
     }
 
     public void Damage(float _damage, float _invincibilityDuration)
@@ -138,6 +135,8 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
             StartCoroutine(DisableInvincible(_invincibilityDuration));
         }
 
+        UpdateHealthBar();
+
         if (currentHP <= 0)
         {
             Kill();
@@ -164,6 +163,18 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
 
         OnDeath();
+    }
+
+    public void UpdateHealthBar()
+    {
+        if (m_playerMovement != null)
+        {
+            if (GUIManager.HasInstance)
+            {
+                Debug.Log($"플레이어 체력 업데이트: {currentHP}");
+                GUIManager.Instance.UpdateHealthBar(currentHP, 0f, maxHP);
+            }
+        }
     }
 
     private IEnumerator DisableInvincible(float _delay)
