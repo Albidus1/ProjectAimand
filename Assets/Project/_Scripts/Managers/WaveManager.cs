@@ -42,6 +42,11 @@ public class WaveManager : MySingleton<WaveManager>
     {
         for (int i = 0; i < _list.Count; i++)
         {
+            if (_list[i].enemyPrefab == null)
+            {
+                return;
+            }
+
             GameObject nextGameObject = pool.GetPooledGameObjectOfName(_list[i].enemyPrefab.name);
 
             if (nextGameObject == null)

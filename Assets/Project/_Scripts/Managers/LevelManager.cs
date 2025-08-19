@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro.Examples;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 
@@ -272,5 +273,15 @@ public class LevelManager : MySingleton<LevelManager>
             player.movementState.StateChange(PlayerStates.MovementStates.Idle);
             currentCheckPoint.SpawnPlayer(player);
         }
+    }
+
+    public void GoToLevel(string _levelName)
+    { 
+        LoadScene(_levelName);
+    }
+
+    private void LoadScene(string _destinationScene)
+    {
+        SceneManager.LoadScene(_destinationScene);
     }
 }
