@@ -23,7 +23,7 @@ public class GUIManager : MySingleton<GUIManager>
 
     private void Start()
     {
-        
+
     }
 
     public void SetHUDActive(bool _flag)

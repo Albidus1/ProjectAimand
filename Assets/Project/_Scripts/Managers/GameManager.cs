@@ -52,6 +52,11 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         base.Awake();
     }
 
+    private void Start()
+    {
+
+    }
+
     public void Reset()
     {
         paused = false;
