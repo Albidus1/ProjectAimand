@@ -54,7 +54,7 @@ public class TrackingTarget : MonoBehaviour
             FindTarget();
         }
 
-        if (m_targetPointArrival)
+        if (m_targetPointArrival || m_trackingTimer < 0f)
         {
             m_trackingEndTimer -= Time.deltaTime;
 

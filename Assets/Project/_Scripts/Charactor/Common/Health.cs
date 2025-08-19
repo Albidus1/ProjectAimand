@@ -179,7 +179,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
             m_collider.enabled = false;
         }
 
-        gameObject.SetActive(false);
+        this.gameObject.SetActive(false);
     }
 
     protected virtual void OnEnable()
