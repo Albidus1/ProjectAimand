@@ -12,13 +12,14 @@ GameObject:
   - component: {fileID: 7783200064955396391}
   - component: {fileID: 7951071639411800689}
   - component: {fileID: 9043169401967911849}
-  - component: {fileID: 6228532196314843269}
+  - component: {fileID: 2172976932009145636}
+  - component: {fileID: -7862254237149356159}
   m_Layer: 0
   m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5047674845288558347
 Transform:
@@ -142,13 +143,13 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 2
---- !u!114 &6228532196314843269
+--- !u!114 &2172976932009145636
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -169,3 +170,28 @@ MonoBehaviour:
   lifeTime: 0
   explosionRadius: 2
   animationCompleted: 0
+--- !u!114 &-7862254237149356159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3395019882416988558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killPlayer: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 33554496
+  applyDamageOnTriggerEnter: 1
+  applyDamageOnTriggerStay: 1
+  damage: 10
+  damageTakenEveryTime: 0
+  damageTakenDamageable: 0
+  damageTakenNonDamageable: 0
+  invincibilityDuration: 0.5
+  damageCausedKnockbackForce: {x: 10, y: 2}
+  owner: {fileID: 0}

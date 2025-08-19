@@ -26,18 +26,18 @@ public class Projectile : MyPoolableObject
     public DamageOnTouch targerDamageOnTouch { get; }
 
 
-    private GameObject m_owner;
-    private Vector3 m_movement;
-    private float m_initialSpeed;
-    private SpriteRenderer m_spriteRenderer;
-    private DamageOnTouch m_damageOnTouch;
-    private WaitForSeconds m_initialInvulnerabilityDurationWFS;
+    protected GameObject m_owner;
+    protected Vector3 m_movement;
+    protected float m_initialSpeed;
+    protected SpriteRenderer m_spriteRenderer;
+    protected DamageOnTouch m_damageOnTouch;
+    protected WaitForSeconds m_initialInvulnerabilityDurationWFS;
 
-    private BoxCollider2D m_boxCollider2D;
-    private bool m_facingRight;
-    private bool m_initialFlipX;
-    private Vector3 m_initialLocalScale;
-    private RaycastHit2D m_hit2D;
+    protected BoxCollider2D m_boxCollider2D;
+    protected bool m_facingRight;
+    protected bool m_initialFlipX;
+    protected Vector3 m_initialLocalScale;
+    protected RaycastHit2D m_hit2D;
 
 
 
