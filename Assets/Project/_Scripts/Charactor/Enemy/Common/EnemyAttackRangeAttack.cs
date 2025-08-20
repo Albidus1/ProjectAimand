@@ -96,6 +96,11 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
     protected override void Attack()
     {
+        if (target == null)
+        {
+            return;
+        }
+
         base.m_attackTime = Time.time + base.attackTime;
         GameObject nextGameObject = objectPooler.GetPooledGameObject();
 

@@ -96,6 +96,8 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
         m_respawner = FindFirstObjectByType<ReSpawner>();
 
+        invincible = false;
+
         UpdateHealthBar();
     }
 
