@@ -871,8 +871,6 @@ Transform:
   - {fileID: 1247899897}
   - {fileID: 242851224}
   - {fileID: 1866454209}
-  - {fileID: 1594435988}
-  - {fileID: 1590933835}
   - {fileID: 244844010}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3385,7 +3383,7 @@ Transform:
   m_Children:
   - {fileID: 783986736}
   - {fileID: 1436209843}
-  m_Father: {fileID: 699425865}
+  m_Father: {fileID: 1866454209}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!66 &1590933836
 CompositeCollider2D:
@@ -3535,7 +3533,7 @@ Transform:
   - {fileID: 940635896}
   - {fileID: 1423293649}
   - {fileID: 2001606514}
-  m_Father: {fileID: 699425865}
+  m_Father: {fileID: 1866454209}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1684899738
 GameObject:
@@ -3907,7 +3905,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1590933835}
+  - {fileID: 1594435988}
   m_Father: {fileID: 699425865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1866454210
@@ -3924,7 +3924,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   randomAbilityUsage: 0
   abilities:
+  - {fileID: 1828034443}
+  - {fileID: 2078619050}
+  - {fileID: 940635897}
   - {fileID: 1423293650}
+  - {fileID: 2001606515}
   phaseThresholds:
   - 0.75
   - 0.5
