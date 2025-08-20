@@ -131,7 +131,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
         if (_invincibilityDuration > 0 && gameObject.activeInHierarchy)
         {
-            invincible = true;
+            invincible = false;
             StartCoroutine(DisableInvincible(_invincibilityDuration));
         }
 
