@@ -15,7 +15,7 @@ MonoBehaviour:
   patternID: E01_Skill1
   patternType: 3
   priority: 1
-  minTriggerDistance: 11
+  minTriggerDistance: 0
   maxTriggerDistance: 20
   preparationTime: 0.5
   cooldown: 6
@@ -24,9 +24,14 @@ MonoBehaviour:
   rotationSpeed: 0
   damage: 10
   invincibilityDuration: 0.5
-  useColliderBounds: 1
-  rangeType: 0
   attackRange: 15
-  areaEffectSize: {x: 0, y: 0}
+  useColliderBounds: 0
+  rangeType: 1
+  areaEffectSize: {x: 1, y: 0.9}
   areaEffectOffset: {x: 0, y: 0}
-  animationTrigger: Dash
+  poolName: 
+  spawnFaceDirection: {x: 0, y: 1}
+  projectilePerShot: 3
+  attackInterval: 0.5
+  animationTrigger: 
+  animationBool: Dash

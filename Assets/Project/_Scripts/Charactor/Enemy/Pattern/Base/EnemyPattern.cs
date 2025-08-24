@@ -63,5 +63,6 @@ public class EnemyPattern : ScriptableObject
 
     [Header("애니메이션")]
     public string animationTrigger;
+    public string animationBool;
 
 }

@@ -7,6 +7,8 @@ public class EnemyMovementControl : CharacterMovement
     public LayerMask playerLayerMask;
 
     [Header("속도")]
+    public float minSpeed;
+    public float maxSpeed;
     public float normalSpeed;
     public float chaseSpeed;
 
@@ -31,7 +33,7 @@ public class EnemyMovementControl : CharacterMovement
     public EnemyPatternController patternController { get; protected set; }
     public Animator animator { get; protected set; }
 
-    protected int facingDirection = 1;
+    public int facingDirection = 1;
     protected Vector2 m_initializePosition;
 
 
@@ -41,7 +43,10 @@ public class EnemyMovementControl : CharacterMovement
         boxCollider = GetComponent<BoxCollider2D>();
         patternController = GetComponent<EnemyPatternController>();
         animator = GetComponent<Animator>();
+    }
 
+    protected virtual void Start()
+    {
         Initiailization();
     }
 
@@ -53,10 +58,14 @@ public class EnemyMovementControl : CharacterMovement
         isAttackingPlayer = false;
         isFalling = false;
         isStunned = false;
+
+        normalSpeed = Random.Range(minSpeed, maxSpeed);
     }
 
     protected virtual void Update()
     {
+        facingDirection = isFacingRight ? 1 : -1;
+
         if (target != null)
         {
             int direction = (int)Mathf.Sign(target.transform.position.x - transform.position.x);
@@ -69,6 +78,15 @@ public class EnemyMovementControl : CharacterMovement
         }
     }
 
+    public virtual void DirectionToFace(bool _direction)
+    {
+        isFacingRight = _direction;
+        facingDirection = isFacingRight ? 1 : -1;
+
+        Vector3 scale = transform.localScale;
+        scale.x = isFacingRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+        transform.localScale = scale;
+    }
 
     public virtual void CheckDirectionToFace(bool _isMovingRight)
     {
@@ -86,7 +104,7 @@ public class EnemyMovementControl : CharacterMovement
         transform.localScale = scale;
 
         isFacingRight = !isFacingRight;
-        facingDirection = -facingDirection;
+        facingDirection = isFacingRight ? 1 : -1;
     }
 
     protected virtual void OnEnable()

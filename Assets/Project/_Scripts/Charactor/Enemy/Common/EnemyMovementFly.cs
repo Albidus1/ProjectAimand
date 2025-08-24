@@ -14,7 +14,7 @@ public class EnemyMovementFly : EnemyMovementControl
         base.Awake();
     }
 
-    private void Start()
+    protected override void Start()
     {
         m_initializePosition = transform.position;
 

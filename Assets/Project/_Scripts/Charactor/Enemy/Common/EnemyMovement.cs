@@ -27,6 +27,8 @@ public class EnemyMovement : EnemyMovementControl
     //private Vector2 verticalRaycastToRight = Vector2.zero;
     //private Vector2 raycastOrigin = Vector2.zero;
 
+    public bool isPatternActive => patternController.isPatternActive;
+
     protected Vector2 bounds;
     protected Vector2 boundsCenter;
     protected Vector2 boundsTopLeftCorner;
@@ -85,8 +87,6 @@ public class EnemyMovement : EnemyMovementControl
 
     protected override void Update()
     {
-        facingDirection = isFacingRight ? 1 : -1;
-
         SetRaysParameters();
 
         CastRay();
@@ -138,7 +138,7 @@ public class EnemyMovement : EnemyMovementControl
             Turn();
         }
 
-        if (base.animator != null)
+        if (base.animator != null && false == isPatternActive)
         {
             if (direction.x != 0f)
             {
