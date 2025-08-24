@@ -195,12 +195,6 @@ public class EnemyPatternController : MonoBehaviour
             m_globalCooldownTimer = m_globalTime;
 
             m_currentPatternInstance.Execute();
-
-            if (false == string.IsNullOrEmpty(m_currentPattern.animationBool))
-            {
-                Debug.Log("패턴 애니메이션 시작: " + m_currentPattern.animationBool);    
-                m_animator.SetBool(m_currentPattern.animationBool, true);
-            }
         }
     }
 
@@ -218,11 +212,6 @@ public class EnemyPatternController : MonoBehaviour
         if (m_currentPatternInstance != null)
         {
             m_currentPatternInstance.Finish();
-        }
-
-        if (false == string.IsNullOrEmpty(m_currentPattern.animationBool))
-        {
-            m_animator.SetBool(m_currentPattern.animationBool, false);
         }
 
         isPatternActive = false;

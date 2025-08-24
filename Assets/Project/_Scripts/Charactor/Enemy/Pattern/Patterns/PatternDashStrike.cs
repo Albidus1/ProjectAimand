@@ -28,7 +28,7 @@ public class PatternDashStrike : EnemyPatternBase
             dashEndPosition = enemyTransform.position + dashDirection * patternData.attackRange;
         }
 
-        //base.PlayAnimation();
+        base.PlayAnimation();
     }
 
     public override void Update()
