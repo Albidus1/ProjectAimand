@@ -3,6 +3,8 @@ using UnityEngine.PlayerLoop;
 
 public class EnemyMovementControl : CharacterMovement
 {
+    public bool initialFacingRight = true;
+
     [Header("플레이어")]
     public LayerMask playerLayerMask;
 
@@ -52,8 +54,8 @@ public class EnemyMovementControl : CharacterMovement
 
     protected virtual void Initiailization()
     {
-        isFacingRight = true;
-        CheckDirectionToFace(isFacingRight);
+        isFacingRight = initialFacingRight;
+        DirectionToFace(isFacingRight);
 
         isAttackingPlayer = false;
         isFalling = false;

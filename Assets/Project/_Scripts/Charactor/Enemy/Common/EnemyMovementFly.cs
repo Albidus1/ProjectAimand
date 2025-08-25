@@ -17,7 +17,6 @@ public class EnemyMovementFly : EnemyMovementControl
     protected override void Start()
     {
         m_initializePosition = transform.position;
-
     }
 
     protected override void Update()
@@ -101,6 +100,13 @@ public class EnemyMovementFly : EnemyMovementControl
         }
     }
 
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+    }
+
+#if UNITY_EDITOR
     private void OnValidate()
     {
         m_initializePosition = transform.position;
@@ -108,7 +114,6 @@ public class EnemyMovementFly : EnemyMovementControl
         attackRange = Mathf.Clamp(attackRange, attackRange, detectRange);
     }
 
-#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (Application.isPlaying)

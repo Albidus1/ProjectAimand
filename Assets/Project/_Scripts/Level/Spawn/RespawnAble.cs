@@ -1,4 +1,4 @@
-public interface RespawnAble
+public interface Respawnable
 {
-    void OnRespawnAble(CheckPoint _checkPoint, PlayerMovement _player);
+    void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player);
 }
