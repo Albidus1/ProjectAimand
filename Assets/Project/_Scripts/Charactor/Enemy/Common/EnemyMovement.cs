@@ -27,7 +27,7 @@ public class EnemyMovement : EnemyMovementControl
     //private Vector2 verticalRaycastToRight = Vector2.zero;
     //private Vector2 raycastOrigin = Vector2.zero;
 
-    public bool isPatternActive => patternController.isPatternActive;
+    public bool isPatternActive => base.patternController != null && patternController.isPatternActive;
 
     protected Vector2 bounds;
     protected Vector2 boundsCenter;
