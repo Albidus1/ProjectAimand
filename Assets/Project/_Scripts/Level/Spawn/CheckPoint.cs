@@ -26,12 +26,12 @@ public class CheckPoint : MonoBehaviour
     public UnityEvent OnCheckPointReached;
 
     private bool m_reached = false;
-    private List<Respawnable> m_listeners;
+    private List<RespawnAble> m_listeners;
 
 
     private void Awake()
     {
-        m_listeners = new List<Respawnable>();
+        m_listeners = new List<RespawnAble>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -56,13 +56,13 @@ public class CheckPoint : MonoBehaviour
     {
         _player.RespawnAt(transform, isFacingRight);
 
-        foreach(Respawnable listener in m_listeners)
+        foreach(RespawnAble listener in m_listeners)
         {
-            listener.OnPlayerRespawn(this, _player);
+            listener.OnRespawnAble(this, _player);
         }
     }
 
-    public void AssignObjectToCheckPoint(Respawnable _listener)
+    public void AssignObjectToCheckPoint(RespawnAble _listener)
     {
         m_listeners.Add(_listener);
     }
@@ -76,20 +76,20 @@ public class CheckPoint : MonoBehaviour
         if (false == LevelManager.HasInstance)
             return;
 
-        if (LevelManager.Instance.checkPoints == null)
+        if (LevelManager.Instance.m_checkPoints == null)
             return;
 
-        if (LevelManager.Instance.checkPoints.Count == 0 )
+        if (LevelManager.Instance.m_checkPoints.Count == 0 )
             return;
 
-        for (int i = 0; i < LevelManager.Instance.checkPoints.Count; i++)
+        for (int i = 0; i < LevelManager.Instance.m_checkPoints.Count; i++)
         {
-            if ((i + 1) <  LevelManager.Instance.checkPoints.Count)
+            if ((i + 1) <  LevelManager.Instance.m_checkPoints.Count)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(
-                    LevelManager.Instance.checkPoints[i].transform.position, 
-                    LevelManager.Instance.checkPoints[i + 1].transform.position);
+                    LevelManager.Instance.m_checkPoints[i].transform.position, 
+                    LevelManager.Instance.m_checkPoints[i + 1].transform.position);
             }
         }
     }

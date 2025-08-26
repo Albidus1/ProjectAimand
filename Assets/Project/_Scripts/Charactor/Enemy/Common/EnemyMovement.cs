@@ -27,7 +27,7 @@ public class EnemyMovement : EnemyMovementControl
     //private Vector2 verticalRaycastToRight = Vector2.zero;
     //private Vector2 raycastOrigin = Vector2.zero;
 
-    public bool isPatternActive => patternController != null && patternController.isPatternActive;
+    public bool isPatternActive => patternController.isPatternActive;
 
     protected Vector2 bounds;
     protected Vector2 boundsCenter;
@@ -50,12 +50,6 @@ public class EnemyMovement : EnemyMovementControl
     }
 
     #region INITIALIZATION
-    protected override void Initiailization()
-    {
-        base.Initiailization();
-        SetRaysParameters();
-    }
-
     private void SetRaysParameters()
     {
         float x = boxCollider.size.x;
@@ -247,11 +241,6 @@ public class EnemyMovement : EnemyMovementControl
         transform.Translate(newPosition, Space.Self);
     }
     #endregion
-
-    protected override void OnEnable()
-    {
-        Initiailization();
-    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

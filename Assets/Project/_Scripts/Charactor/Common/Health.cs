@@ -167,21 +167,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         OnDeath();
     }
 
-    public void Revive()
-    {
-        if (m_collider != null)
-        {
-            m_collider.enabled = true;
-        }
-
-        Initialization();
-        InitializeCurrentHealth();
-
-        UpdateHealthBar();
-        
-        
-    }
-
     public void UpdateHealthBar()
     {
         if (m_playerMovement != null)
