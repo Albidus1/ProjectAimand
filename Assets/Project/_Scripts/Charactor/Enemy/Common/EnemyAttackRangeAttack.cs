@@ -50,15 +50,22 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
         UpdateRangedWeapon();
 
-        if (m_attackTime < Time.time && enemyMovement.isAttacking)
+        if (target != null)
         {
-            Attack();
-        }
+            if (m_attackTime < Time.time && false == isAttacking)
+            {
+                //Attack();
+                base.isAttacking = true;
 
-        if (target != null && m_lineRenderer != null)
-        {
-            m_lineRenderer.SetPosition(0, bulletSpawn.transform.position);
-            m_lineRenderer.SetPosition(1, target.transform.position);
+                Debug.Log("확인용");
+                enemyMovement.animator.SetTrigger("isAttacking");
+            }
+
+            if (m_lineRenderer != null)
+            {
+                m_lineRenderer.SetPosition(0, bulletSpawn.transform.position);
+                m_lineRenderer.SetPosition(1, target.transform.position);
+            }
         }
     }
 
@@ -96,11 +103,6 @@ public class EnemyAttackRangeAttack : EnemyAttack
 
     protected override void Attack()
     {
-        if (target == null)
-        {
-            return;
-        }
-
         base.m_attackTime = Time.time + base.attackTime;
         GameObject nextGameObject = objectPooler.GetPooledGameObject();
 
@@ -120,5 +122,10 @@ public class EnemyAttackRangeAttack : EnemyAttack
         Projectile projectile = nextGameObject.GetComponent<Projectile>();
 
         projectile.SetDirection(m_direction.normalized, transform.rotation);
+    }
+
+    public void AttackAnimationEnd()
+    {
+        base.isAttacking = false;
     }
 }
