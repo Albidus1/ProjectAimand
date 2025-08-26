@@ -9,8 +9,9 @@ public class EnemyMovementControl : CharacterMovement
     [Header("속도")]
     public float minSpeed;
     public float maxSpeed;
-    public float normalSpeed;
     public float chaseSpeed;
+    [MyReadOnly]
+    public float currentSpeed;
 
     [Header("추격")]
     public float chaseWaitTime;
@@ -59,7 +60,7 @@ public class EnemyMovementControl : CharacterMovement
         isFalling = false;
         isStunned = false;
 
-        normalSpeed = Random.Range(minSpeed, maxSpeed);
+        currentSpeed = Random.Range(minSpeed, maxSpeed);
     }
 
     protected virtual void Update()
@@ -110,5 +111,10 @@ public class EnemyMovementControl : CharacterMovement
     protected virtual void OnEnable()
     {
         Initiailization();
+    }
+
+    protected virtual void OnDisable()
+    {
+
     }
 }

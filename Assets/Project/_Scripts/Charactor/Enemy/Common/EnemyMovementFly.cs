@@ -120,7 +120,7 @@ public class EnemyMovementFly : EnemyMovementControl
         {
             m_targetPosition = m_initializePosition;
             m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
-            m_currentSpeed = normalSpeed;
+            m_currentSpeed = currentSpeed;
         }
         else
         {

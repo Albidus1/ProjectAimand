@@ -99,9 +99,10 @@ public class EnemyMovement : EnemyMovementControl
     {
         Vector2 direction = Vector2.zero;
 
+        base.animator.SetBool("isMoving", false);
+
         if (isAttackingPlayer)
         {
-            base.animator.SetBool("isMoving", false);
             return;
         }
 
@@ -110,7 +111,8 @@ public class EnemyMovement : EnemyMovementControl
         {
             if (hitObject)
             {
-                Run(Vector2.zero);
+                direction = Vector2.zero;
+                Run(direction);
             }
             else
             {
@@ -123,7 +125,8 @@ public class EnemyMovement : EnemyMovementControl
                 }
                 else
                 {
-                    Run(Vector2.zero);
+                    direction = Vector2.zero;
+                    Run(direction);
                 }
             }
         }
@@ -140,13 +143,9 @@ public class EnemyMovement : EnemyMovementControl
 
         if (base.animator != null && false == isPatternActive)
         {
-            if (direction.x != 0f)
+            if (direction.x != 0 && base.currentSpeed > 0f)
             {
                 base.animator.SetBool("isMoving", true);
-            }
-            else
-            {
-                base.animator.SetBool("isMoving", false);
             }
         }
     }
@@ -233,9 +232,11 @@ public class EnemyMovement : EnemyMovementControl
     #region MOVE METHODS
     private void Run(Vector2 _direction)
     {
-        float speed = target != null ? base.chaseSpeed : normalSpeed;
+        base.currentSpeed = target != null ?
+            base.chaseSpeed :
+            Random.Range(base.minSpeed, base.maxSpeed);
 
-        Vector2 newPosition = new Vector2(_direction.normalized.x * speed, _direction.normalized.y);
+        Vector2 newPosition = new Vector2(_direction.normalized.x * base.currentSpeed, _direction.normalized.y);
         newPosition *= Time.deltaTime;
 
         transform.Translate(newPosition, Space.Self);
