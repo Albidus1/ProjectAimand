@@ -23,4 +23,17 @@ public static class MyMaths
     {
         return _c + (_value - _a) / (_b - _a) * (_d - _c);
     }
+
+
+    public static Vector2 GetRandomPointInCircle(float _radius)
+    {
+        float theta = Random.Range(0f, 2f * Mathf.PI);
+
+        float r = _radius * Mathf.Sqrt(Random.Range(0f, 1f));
+
+        float x = r * Mathf.Cos(theta);
+        float y = r * Mathf.Sin(theta);
+
+        return new Vector2(x, y);
+    }
 }

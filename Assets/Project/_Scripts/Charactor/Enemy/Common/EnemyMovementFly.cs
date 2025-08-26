@@ -2,11 +2,16 @@ using UnityEngine;
 
 public class EnemyMovementFly : EnemyMovementControl
 {
+    public float minScanTick = 0.5f;
+    public float maxScanTick = 2f;
+    [MyReadOnly]
+    public float currentScanTick = 0.5f;
+
     protected Vector2 m_moveDirection;
     protected Vector2 m_targetPosition;
     protected float m_currentSpeed;
     protected float m_chaseWaitTime = -0.1f;
-
+    protected float m_scanTimer = 0f;
 
 
     protected override void Awake()
@@ -17,6 +22,7 @@ public class EnemyMovementFly : EnemyMovementControl
     protected override void Start()
     {
         m_initializePosition = transform.position;
+        currentScanTick = GetPatrolTick();
     }
 
     protected override void Update()
@@ -36,7 +42,31 @@ public class EnemyMovementFly : EnemyMovementControl
 
     private void FixedUpdate()
     {
+        if (false == isAttacking && m_scanTimer + currentScanTick < Time.time)
+        {
+            currentScanTick = GetPatrolTick();
+            m_scanTimer = Time.time;
+
+            while (true)
+            {
+                m_targetPosition = MyMaths.GetRandomPointInCircle(activityRange);
+
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, m_targetPosition.normalized, m_targetPosition.magnitude, LayerManager.obstacleLayerMask);
+
+                if (false == hit)
+                {
+                    Debug.Log(hit.point);
+                    break;
+                }
+            }
+        }
+
         Move();
+    }
+
+    private float GetPatrolTick()
+    {
+        return Random.Range(minScanTick, maxScanTick);
     }
 
     private void DetectPlayer()
