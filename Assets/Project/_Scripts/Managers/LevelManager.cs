@@ -295,6 +295,7 @@ public class LevelManager : MySingleton<LevelManager>
 
     public void QuitGame()
     {
+#if UNITY_EDITOR
         if (Application.isEditor)
         {
             UnityEditor.EditorApplication.isPlaying = false;
@@ -303,5 +304,8 @@ public class LevelManager : MySingleton<LevelManager>
         {
             Application.Quit();
         }
+#else
+        Application.Quit();
+#endif
     }
 }
