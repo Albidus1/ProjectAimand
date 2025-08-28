@@ -57,7 +57,7 @@ public static class MyMaths
     }
 
 
-    public static Vector2 GetRandomPointInCircle(float _radius)
+    public static Vector3 GetRandomPointInCircle(float _radius)
     {
         float theta = Random.Range(0f, 2f * Mathf.PI);
 
@@ -66,6 +66,6 @@ public static class MyMaths
         float x = r * Mathf.Cos(theta);
         float y = r * Mathf.Sin(theta);
 
-        return new Vector2(x, y);
+        return new Vector3(x, y);
     }
 }

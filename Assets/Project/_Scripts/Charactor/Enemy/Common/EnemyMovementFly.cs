@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class EnemyMovementFly : EnemyMovementControl
@@ -9,7 +10,6 @@ public class EnemyMovementFly : EnemyMovementControl
 
     protected Vector2 m_moveDirection;
     protected Vector2 m_targetPosition;
-    protected float m_currentSpeed;
     protected float m_chaseWaitTime = -0.1f;
     protected float m_scanTimer = 0f;
 
@@ -21,44 +21,26 @@ public class EnemyMovementFly : EnemyMovementControl
 
     protected override void Start()
     {
-        m_initializePosition = transform.position;
+        base.Start();
+        GetRandomPosition();
         currentScanTick = GetPatrolTick();
     }
 
     protected override void Update()
     {
-        if (target != null && Mathf.Abs(target.transform.position.x - transform.position.x) > 0.1f)
-        {
-            facingDirection = target.transform.position.x < transform.position.x ? 1 : -1;
-        }
-        else
-        {
-            facingDirection = m_moveDirection.x < 0 ? 1 : -1;
-        }
-
-        DetectPlayer();
         base.Update();
+        DetectPlayer();
     }
 
     private void FixedUpdate()
     {
-        if (false == isAttacking && m_scanTimer + currentScanTick < Time.time)
+        if (false == isMoving && false == isAttacking &&
+            m_scanTimer + currentScanTick < Time.time)
         {
             currentScanTick = GetPatrolTick();
             m_scanTimer = Time.time;
 
-            while (true)
-            {
-                m_targetPosition = MyMaths.GetRandomPointInCircle(activityRange);
-
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, m_targetPosition.normalized, m_targetPosition.magnitude, LayerManager.obstacleLayerMask);
-
-                if (false == hit)
-                {
-                    Debug.Log(hit.point);
-                    break;
-                }
-            }
+            GetRandomPosition();
         }
 
         Move();
@@ -71,7 +53,7 @@ public class EnemyMovementFly : EnemyMovementControl
 
     private void DetectPlayer()
     {
-        Collider2D player = Physics2D.OverlapCircle(transform.position, detectRange, playerLayerMask);
+        Collider2D player = Physics2D.OverlapCircle(transform.position, base.detectRange, playerLayerMask);
 
         if (player != null)
         {
@@ -87,9 +69,7 @@ public class EnemyMovementFly : EnemyMovementControl
             base.animator.SetBool("isChasing", false);
         }
 
-        CalculateDirection();
-
-        if (Physics2D.OverlapCircle(transform.position, attackRange, playerLayerMask))
+        if (Physics2D.OverlapCircle(transform.position, base.attackRange, playerLayerMask))
         {
             isAttacking = true;
         }
@@ -103,14 +83,27 @@ public class EnemyMovementFly : EnemyMovementControl
     {
         if (Vector2.Distance(transform.position, m_targetPosition) > 0.1)
         {
-            Vector2 newPosition = m_moveDirection * m_currentSpeed;
+            m_previousPosition = m_currentPosition;
+
+            currentSpeed = target != null ? chaseSpeed : Random.Range(minSpeed, maxSpeed);
+
+            m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
+            Vector2 newPosition = m_moveDirection * currentSpeed;
             transform.Translate(newPosition * Time.deltaTime);
+
+            m_currentPosition = transform.position;
+
+            isMoving = true;
+        }
+        else
+        {
+            isMoving = false;
         }
     }
 
     private void CalculateDirection()
     {
-        if (target != null && false == isStunned)
+/*        if (target != null && false == isStunned)
         {
             m_targetPosition = (Vector2)target.transform.position;
             m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
@@ -127,12 +120,34 @@ public class EnemyMovementFly : EnemyMovementControl
             m_targetPosition = transform.position;
             m_moveDirection = Vector2.zero;
             m_currentSpeed = 0;
+        }*/
+    }
+
+    private void GetRandomPosition()
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            Vector2 randomDirection = Random.insideUnitCircle.normalized;
+            float randomDistance = Random.Range(0f, base.activityRange);
+
+            RaycastHit2D hit = Physics2D.Raycast(base.m_initializePosition, randomDirection, randomDistance, LayerManager.obstacleLayerMask);
+
+            if (false == hit)
+            {
+                m_targetPosition = base.m_initializePosition + randomDirection * randomDistance;
+                Debug.Log(m_targetPosition);
+                break;
+            }
+            else
+            {
+                m_targetPosition = transform.position;
+            }
         }
     }
 
     private void OnValidate()
     {
-        m_initializePosition = transform.position;
+        base.m_initializePosition = transform.position;
         detectRange = Mathf.Clamp(detectRange, detectRange, activityRange);
         attackRange = Mathf.Clamp(attackRange, attackRange, detectRange);
     }
@@ -143,13 +158,13 @@ public class EnemyMovementFly : EnemyMovementControl
         if (Application.isPlaying)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(m_initializePosition, activityRange);
+            Gizmos.DrawWireSphere(base.m_initializePosition, base.activityRange);
         }
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.DrawWireSphere(transform.position, base.detectRange);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(transform.position, base.attackRange);
     }
 #endif
 }

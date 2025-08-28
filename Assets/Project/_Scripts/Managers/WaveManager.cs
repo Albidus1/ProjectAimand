@@ -55,7 +55,7 @@ public class WaveManager : MySingleton<WaveManager>
             }
             //if (nextGameObject.GetComponent<MyPoolableObject>() == null)
             //{
-            //    throw new Exception(enemyTransform.name + "PoolalbeObject 없음");
+            //    throw new Exception(_list[i].enemyPrefab.name + "PoolalbeObject 없음");
             //}
 
             nextGameObject.transform.position = _list[i].spawnPosition;
@@ -86,7 +86,7 @@ public class WaveManager : MySingleton<WaveManager>
         }
 
         currentWave = _wave;
-        currentWaveID = _wave.waveID;
+        currentWaveID = _wave.waveEventID;
         m_waves = _wave.waves;
 
         ResetWaveIndex();
@@ -102,11 +102,6 @@ public class WaveManager : MySingleton<WaveManager>
             Debug.Log("모든 웨이브 완료");
 
             OnAllWavesCompleted?.Invoke();
-            if (m_waves[^1].waveEventType == WaveEventStartTypes.WaveCompleted)
-            {
-                Debug.Log($"종료 이벤트: {currentWaveID}");
-                WaveEvent.TriggerEvent(currentWave, m_waves[^1].waveEventTriggerType, currentWaveID);
-            }
 
             ResetWaveIndex();
 
@@ -125,14 +120,12 @@ public class WaveManager : MySingleton<WaveManager>
     {
         isWaveActive = true;
 
-        GetWavePool(_wave.enemyInfo);
-
+        GetWavePool(_wave.enemyInfo);      
         yield return new WaitForSeconds(_wave.spawnInterval);
 
         if (_wave.waveEventType == WaveEventStartTypes.StartWave)
         {
-            Debug.Log($"시작 이벤트: {currentWaveID}");
-            WaveEvent.TriggerEvent(currentWave, _wave.waveEventTriggerType, currentWaveID);
+            //Debug.Log($"시작 이벤트: {currentWaveID}");
             OnWaveStart?.Invoke(m_currentWaveIndex);
         }
 
@@ -140,9 +133,42 @@ public class WaveManager : MySingleton<WaveManager>
 
         yield return new WaitUntil(() => WaveManager.Instance.enemiesRemaining <= 0);
 
+        if (_wave.waveEventType == WaveEventStartTypes.EndWave)
+        {
+            //Debug.Log($"시작 이벤트: {currentWaveID}");
+            OnWaveCompleted?.Invoke(m_currentWaveIndex);
+        }
+
         yield return new WaitForSeconds(_wave.timeForNextWave);
 
+        OnWaveCompleted?.Invoke(m_currentWaveIndex);
         StartWave();
+    }
+
+    public void AddEnemyToWave(GameObject _enemy, Vector3 _spawnPosition)
+    {
+        if (_enemy == null)
+        {
+            return;
+        }
+
+        GameObject nextGameObject = pool.GetPooledGameObjectOfName(_enemy.name);
+
+        if (nextGameObject == null)
+        {
+            return;
+        }
+        //if (nextGameObject.GetComponent<MyPoolableObject>() == null)
+        //{
+        //    throw new Exception(enemyTransform.name + "PoolalbeObject 없음");
+        //}
+
+        nextGameObject.transform.position = _spawnPosition;
+
+        nextGameObject.SetActive(true);
+
+        m_enemies.Add(nextGameObject);
+        m_enemiesRemaining++;
     }
 
     public void RegisterEnemyDeath(GameObject _enemy)
@@ -160,5 +186,17 @@ public class WaveManager : MySingleton<WaveManager>
     {
         m_enemiesRemaining = 0;
         m_currentWaveIndex = -1;
+    }
+
+    private void OnEnable()
+    {
+        
+    }
+
+    private void OnDisable()
+    {
+        OnWaveStart.RemoveAllListeners();
+        OnWaveCompleted.RemoveAllListeners();
+        OnAllWavesCompleted.RemoveAllListeners();
     }
 }

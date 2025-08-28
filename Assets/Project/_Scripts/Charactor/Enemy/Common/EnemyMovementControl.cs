@@ -18,6 +18,7 @@ public class EnemyMovementControl : CharacterMovement
 
 
     public bool isFacingRight { get; set; }
+    public bool isMoving { get; protected set; }
     public bool isFalling { get; protected set; }
     public bool isAttacking { get; protected set; }
     public bool isAttackingPlayer { get; set; }
@@ -36,6 +37,8 @@ public class EnemyMovementControl : CharacterMovement
 
     public int facingDirection = 1;
     protected Vector2 m_initializePosition;
+    protected Vector2 m_currentPosition;
+    protected Vector2 m_previousPosition;
 
 
     protected virtual void Awake()
@@ -49,6 +52,9 @@ public class EnemyMovementControl : CharacterMovement
     protected virtual void Start()
     {
         Initiailization();
+
+        m_initializePosition = transform.position;
+        m_currentPosition = transform.position;
     }
 
     protected virtual void Initiailization()
@@ -75,6 +81,8 @@ public class EnemyMovementControl : CharacterMovement
         }
         else
         {
+            facingDirection = m_currentPosition.x - m_previousPosition.x > 0 ? 1 : -1;
+
             CheckDirectionToFace(facingDirection > 0);
         }
     }
