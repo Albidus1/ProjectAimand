@@ -50,8 +50,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 {
     //테스트
     public float maxHP = 100;
-    public Slider healthSlider;
-
     public bool invincible = false;
 
     [MyReadOnly]
@@ -118,18 +116,12 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         _damage = Mathf.Clamp(_damage, 0, maxHP);
         currentHP -= _damage;
 
-        if (healthSlider != null)
-        {
-            healthSlider.maxValue = 1;
-            healthSlider.value = currentHP / maxHP;
-        }
-
         OnDamageEvent.Invoke(_damage); // 대미지 이벤트 실행
 
-        if (Application.isPlaying)
-        {
-            Debug.Log($"현재 체력: {currentHP}");
-        }
+        //if (Application.isPlaying)
+        //{
+        //    Debug.Log($"현재 체력: {currentHP}");
+        //}
 
         if (_invincibilityDuration > 0 && gameObject.activeInHierarchy)
         {
@@ -165,6 +157,19 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
 
         OnDeath();
+    }
+
+    public void Revive()
+    {
+        if (m_collider != null)
+        {
+            m_collider.enabled = true;
+        }
+
+        Initialization();
+        InitializeCurrentHealth();
+
+        UpdateHealthBar();
     }
 
     public void UpdateHealthBar()

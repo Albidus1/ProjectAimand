@@ -30,57 +30,43 @@ public class EnemyMovementFly : EnemyMovementControl
     {
         base.Update();
         DetectPlayer();
-    }
-
-    private void FixedUpdate()
-    {
-        if (false == isMoving && false == isAttacking &&
-            m_scanTimer + currentScanTick < Time.time)
-        {
-            currentScanTick = GetPatrolTick();
-            m_scanTimer = Time.time;
-
-            GetRandomPosition();
-        }
-
         Move();
     }
 
-    private float GetPatrolTick()
-    {
-        return Random.Range(minScanTick, maxScanTick);
-    }
-
-    private void DetectPlayer()
+    protected override void DetectPlayer()
     {
         Collider2D player = Physics2D.OverlapCircle(transform.position, base.detectRange, playerLayerMask);
 
         if (player != null)
         {
             target = player.gameObject;
+            m_targetPosition = target.transform.position;
             m_chaseWaitTime = Time.time + chaseWaitTime;
 
             base.animator.SetBool("isChasing", true);
         }
-        else
+        else if (false == isMoving && false == isAttacking &&
+            m_scanTimer + currentScanTick < Time.time)
         {
+            currentScanTick = GetPatrolTick();
+            m_scanTimer = Time.time;
+
+            GetRandomPosition();
+
             target = null;
 
             base.animator.SetBool("isChasing", false);
         }
 
-        if (Physics2D.OverlapCircle(transform.position, base.attackRange, playerLayerMask))
-        {
-            isAttacking = true;
-        }
-        else
-        {
-            isAttacking = false;
-        }
+        isAttacking = Physics2D.OverlapCircle(transform.position, base.attackRange, playerLayerMask);
     }
-
-    private void Move()
+    protected override void Move()
     {
+        if (isStunned)
+        {
+            return;
+        }
+
         if (Vector2.Distance(transform.position, m_targetPosition) > 0.1)
         {
             m_previousPosition = m_currentPosition;
@@ -123,6 +109,12 @@ public class EnemyMovementFly : EnemyMovementControl
         }*/
     }
 
+    private float GetPatrolTick()
+    {
+        return Random.Range(minScanTick, maxScanTick);
+    }
+
+
     private void GetRandomPosition()
     {
         for (int i = 0; i < 20; i++)
@@ -135,7 +127,7 @@ public class EnemyMovementFly : EnemyMovementControl
             if (false == hit)
             {
                 m_targetPosition = base.m_initializePosition + randomDirection * randomDistance;
-                Debug.Log(m_targetPosition);
+                //Debug.Log(m_targetPosition);
                 break;
             }
             else
@@ -145,6 +137,12 @@ public class EnemyMovementFly : EnemyMovementControl
         }
     }
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+    }
+
+#if UNITY_EDITOR
     private void OnValidate()
     {
         base.m_initializePosition = transform.position;
@@ -152,7 +150,6 @@ public class EnemyMovementFly : EnemyMovementControl
         attackRange = Mathf.Clamp(attackRange, attackRange, detectRange);
     }
 
-#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (Application.isPlaying)

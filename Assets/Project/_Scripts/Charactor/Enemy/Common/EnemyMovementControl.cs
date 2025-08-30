@@ -1,10 +1,11 @@
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
-public class EnemyMovementControl : CharacterMovement
+
+
+
+public abstract class EnemyMovementControl : CharacterMovement
 {
-    [Header("플레이어")]
-    public LayerMask playerLayerMask;
+    public bool initialFacingRight = true;
 
     [Header("속도")]
     public float minSpeed;
@@ -16,6 +17,10 @@ public class EnemyMovementControl : CharacterMovement
     [Header("추격")]
     public float chaseWaitTime;
 
+    [Header("레이어")]
+    [SerializeField] protected LayerMask playerLayerMask;
+    [SerializeField] protected LayerMask groundLayer = LayerManager.platformsLayerMask;
+    [SerializeField] protected LayerMask obstacleLayer = LayerManager.obstacleLayerMask;
 
     public bool isFacingRight { get; set; }
     public bool isMoving { get; protected set; }
@@ -35,10 +40,11 @@ public class EnemyMovementControl : CharacterMovement
     public EnemyPatternController patternController { get; protected set; }
     public Animator animator { get; protected set; }
 
-    public int facingDirection = 1;
+    protected int m_facingDirection = 1;
     protected Vector2 m_initializePosition;
     protected Vector2 m_currentPosition;
     protected Vector2 m_previousPosition;
+    protected Vector2 m_speed;
 
 
     protected virtual void Awake()
@@ -54,14 +60,16 @@ public class EnemyMovementControl : CharacterMovement
         Initiailization();
 
         m_initializePosition = transform.position;
-        m_currentPosition = transform.position;
     }
 
     protected virtual void Initiailization()
     {
-        isFacingRight = true;
-        CheckDirectionToFace(isFacingRight);
+        m_currentPosition = transform.position;
 
+        isFacingRight = initialFacingRight;
+        DirectionToFace(isFacingRight);
+
+        isAttacking = false;
         isAttackingPlayer = false;
         isFalling = false;
         isStunned = false;
@@ -71,49 +79,51 @@ public class EnemyMovementControl : CharacterMovement
 
     protected virtual void Update()
     {
-        facingDirection = isFacingRight ? 1 : -1;
+        DetectPlayer();
+        HandleFacing();
+        UpdateSpeed();
+    }
 
+    protected void HandleFacing()
+    {
         if (target != null)
         {
-            int direction = (int)Mathf.Sign(target.transform.position.x - transform.position.x);
-
-            CheckDirectionToFace(direction > 0);
+            m_facingDirection = (int)Mathf.Sign(target.transform.position.x - transform.position.x);
         }
         else
         {
-            facingDirection = m_currentPosition.x - m_previousPosition.x > 0 ? 1 : -1;
-
-            CheckDirectionToFace(facingDirection > 0);
+            m_facingDirection = (int)Mathf.Sign(m_currentPosition.x - m_previousPosition.x);
         }
+
+        DirectionToFace(m_facingDirection > 0);
     }
+
+    protected void UpdateSpeed()
+    {
+        m_speed = m_currentPosition - m_previousPosition;
+    }
+
+    protected abstract void Move();
+    protected abstract void DetectPlayer();
 
     public virtual void DirectionToFace(bool _direction)
     {
         isFacingRight = _direction;
-        facingDirection = isFacingRight ? 1 : -1;
+        m_facingDirection = isFacingRight ? 1 : -1;
 
         Vector3 scale = transform.localScale;
         scale.x = isFacingRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
         transform.localScale = scale;
     }
 
-    public virtual void CheckDirectionToFace(bool _isMovingRight)
-    {
-        if (_isMovingRight != isFacingRight)
-        {
-            Turn();
-        }
-    }
-
     protected virtual void Turn()
     {
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-
-        transform.localScale = scale;
-
         isFacingRight = !isFacingRight;
-        facingDirection = isFacingRight ? 1 : -1;
+        m_facingDirection *= -1; 
+
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; 
+        transform.localScale = scale;
     }
 
     protected virtual void OnEnable()

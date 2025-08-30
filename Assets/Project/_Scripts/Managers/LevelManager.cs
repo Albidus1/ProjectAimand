@@ -48,7 +48,7 @@ public class LevelManager : MySingleton<LevelManager>
     public virtual CameraController levelCameraController { get; set; }
 
     public virtual PlayerMovement player { get; private set; }
-    public virtual List<CheckPoint> m_checkPoints { get; private set; }
+    public virtual List<CheckPoint> checkPoints { get; private set; }
     private int m_savedPoints;
     private BoxCollider2D m_collider2D;
     private Bounds m_bounds;
@@ -92,13 +92,13 @@ public class LevelManager : MySingleton<LevelManager>
             case CheckpointsAxis.x:
                 if (checkpointAttributeDirection == CheckpointDirection.Asending)
                 {
-                    m_checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                                     .OrderBy(o => o.transform.position.x)
                                     .ToList();
                 }
                 else
                 {
-                    m_checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                                     .OrderByDescending(o => o.transform.position.x)
                                     .ToList();
                 }
@@ -107,26 +107,26 @@ public class LevelManager : MySingleton<LevelManager>
             case CheckpointsAxis.y:
                 if (checkpointAttributeDirection == CheckpointDirection.Asending)
                 {
-                    m_checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                                     .OrderBy(o => o.transform.position.y)
                                     .ToList();
                 }
                 else
                 {
-                    m_checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                                     .OrderByDescending(o => o.transform.position.y)
                                     .ToList();
                 }
                 break;
 
             case CheckpointsAxis.checkpointOrder:
-                m_checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                checkPoints = FindObjectsByType<CheckPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                                 .OrderBy(o => o.checkpointOrder)
                                 .ToList();
                 break;
         }
 
-        currentCheckPoint = m_checkPoints.Count > 0 ? m_checkPoints[0] : null;
+        currentCheckPoint = checkPoints.Count > 0 ? checkPoints[0] : null;
     }
 
     //[ExecuteAlways]
@@ -170,13 +170,34 @@ public class LevelManager : MySingleton<LevelManager>
 
     private void CheckpointAssignment()
     {
-        IEnumerable<RespawnAble> listeners = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).OfType<RespawnAble>();
+        IEnumerable<Respawnable> listeners = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).OfType<Respawnable>();
+        AutoRespawn autoRespawn;
 
-        foreach (RespawnAble listener in listeners)
+        foreach (Respawnable listener in listeners)
         {
-            for (int i = m_checkPoints.Count - 1; i >= 0; i--)
+            for (int i = checkPoints.Count - 1; i >= 0; i--)
             {
-                Vector3 vectorDistance = ((MonoBehaviour)listener).transform.position - m_checkPoints[i].transform.position;
+                autoRespawn = (listener as MonoBehaviour).GetComponent<AutoRespawn>();
+                if (autoRespawn != null)
+                {
+                    if (autoRespawn.ignoreCheckPointsAlwaysRespawn)
+                    {
+                        checkPoints[i].AssignObjectToCheckPoint(listener);
+                        continue;
+                    }
+                    else
+                    {
+                        if (autoRespawn.associatedCheckpoints.Contains(checkPoints[i]))
+                        {
+                            checkPoints[i].AssignObjectToCheckPoint(listener);
+                        }
+
+                        continue;
+                    }
+                }
+
+
+                Vector3 vectorDistance = ((MonoBehaviour)listener).transform.position - checkPoints[i].transform.position;
 
                 float distance = 0;
                 if (checkpointAttributeAxis == CheckpointsAxis.x)
@@ -197,7 +218,7 @@ public class LevelManager : MySingleton<LevelManager>
                     continue;
                 }
 
-                m_checkPoints[i].AssignObjectToCheckPoint(listener);
+                checkPoints[i].AssignObjectToCheckPoint(listener);
                 break;
             }      
         }
@@ -267,6 +288,8 @@ public class LevelManager : MySingleton<LevelManager>
         yield return new WaitForSeconds(respawnDelay);
 
         col.enabled = true;
+
+        WaveManager.Instance.ResetWave();
 
         if (currentCheckPoint != null)
         {

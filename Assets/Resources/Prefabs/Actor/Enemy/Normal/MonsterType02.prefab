@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 3237034493235011368}
   - component: {fileID: 6350219536034993841}
   - component: {fileID: 2214862709534436939}
+  - component: {fileID: 1658697127296076376}
   m_Layer: 25
   m_Name: MonsterType02
   m_TagString: Enemy
@@ -291,7 +292,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 20
-  healthSlider: {fileID: 0}
   invincible: 0
   currentHP: 0
   OnDamageEvent:
@@ -309,23 +309,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd7ce66575538e49a537d83b9437351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
+  initialFacingRight: 1
   minSpeed: 0
   maxSpeed: 0
   chaseSpeed: 0
   currentSpeed: 0
   chaseWaitTime: 1
-  facingDirection: 1
-  attackCollider2D: {fileID: 0}
-  raysCount: 5
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 2944
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 3456
+  attackCollider2D: {fileID: 0}
+  raysCount: 5
 --- !u!114 &6350219536034993841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -375,6 +375,25 @@ MonoBehaviour:
   gameObjectToPool: {fileID: 8047954322326610999, guid: 8fea0695c920a2248a6d52fb36de876f, type: 3}
   poolSize: 10
   poolCanExpand: 1
+--- !u!114 &1658697127296076376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091521504391383391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021ac884df72c3d4da1f972d0fc67155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnOnPlayerRespawn: 1
+  repositionToInitOnPlayerRespawn: 0
+  autoRespawnDuration: 0
+  autoRespawnAmount: 0
+  autoRespawnRemainingAmount: 0
+  ignoreCheckPointsAlwaysRespawn: 1
+  associatedCheckpoints: []
 --- !u!1 &6665803256684860557
 GameObject:
   m_ObjectHideFlags: 0

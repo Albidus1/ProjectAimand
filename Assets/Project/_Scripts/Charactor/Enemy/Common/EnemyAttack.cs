@@ -102,6 +102,11 @@ public class EnemyAttack : MonoBehaviour
             return false;
         }
 
+        if (enemyMovement != null)
+        {
+            enemyMovement.isStunned = true;
+        }
+
         Debug.Log("자폭");
 
         ShowExplosion();

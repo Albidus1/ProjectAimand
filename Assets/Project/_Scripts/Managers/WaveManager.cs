@@ -25,7 +25,7 @@ public class WaveManager : MySingleton<WaveManager>
 
     public bool isWaveActive { get; private set; } = false;
     private List<Wave> m_waves = new List<Wave>();
-    private List<GameObject> m_enemies = new List<GameObject>();
+    public List<GameObject> m_enemies = new List<GameObject>();
     private int m_currentWaveIndex = -1;
     private int m_enemiesRemaining;
 
@@ -57,6 +57,11 @@ public class WaveManager : MySingleton<WaveManager>
             //{
             //    throw new Exception(_list[i].enemyPrefab.name + "PoolalbeObject 없음");
             //}
+
+            if (nextGameObject.TryGetComponent<AutoRespawn>(out var obj))
+            {
+                obj.respawnOnPlayerRespawn = false;
+            }
 
             nextGameObject.transform.position = _list[i].spawnPosition;
 
@@ -118,6 +123,11 @@ public class WaveManager : MySingleton<WaveManager>
 
     private IEnumerator SpawnWave(Wave _wave)
     {
+        if (_wave == null)
+        {
+            yield break;
+        }
+
         isWaveActive = true;
 
         GetWavePool(_wave.enemyInfo);      
@@ -142,6 +152,7 @@ public class WaveManager : MySingleton<WaveManager>
         yield return new WaitForSeconds(_wave.timeForNextWave);
 
         OnWaveCompleted?.Invoke(m_currentWaveIndex);
+
         StartWave();
     }
 
@@ -163,6 +174,8 @@ public class WaveManager : MySingleton<WaveManager>
         //    throw new Exception(enemyTransform.name + "PoolalbeObject 없음");
         //}
 
+        //if (nextGameObject.TryGetComponent<AutoResapwn>)
+
         nextGameObject.transform.position = _spawnPosition;
 
         nextGameObject.SetActive(true);
@@ -182,18 +195,38 @@ public class WaveManager : MySingleton<WaveManager>
         }
     }
 
+    public void ResetWave()
+    {
+        StopAllCoroutines();
+        ResetWaveIndex();
+
+        currentWave = null;
+        currentWaveID = "";
+
+        isWaveActive = false;
+    }
+
     private void ResetWaveIndex()
     {
+        if (m_enemies.Count > 0)
+        {
+            for (int i = 0; i < m_enemies.Count; ++i)
+            {
+                m_enemies[i].SetActive(false);
+            }
+
+            m_enemies.Clear();
+        }
+
         m_enemiesRemaining = 0;
         m_currentWaveIndex = -1;
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
-        
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         OnWaveStart.RemoveAllListeners();
         OnWaveCompleted.RemoveAllListeners();

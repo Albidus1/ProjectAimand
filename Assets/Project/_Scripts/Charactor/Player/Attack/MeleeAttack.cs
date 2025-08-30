@@ -136,13 +136,15 @@ public class MeleeAttack : MonoBehaviour
                 {
                     Debug.DrawLine(transform.position, hit.transform.position, Color.blue, 0.5f);
                     Health enemyHealth = hit.GetComponent<Health>();
-                    if (enemyHealth != null) enemyHealth.Damage(damage, 0.1f);
+                    if (enemyHealth != null) 
+                    {
+                        enemyHealth.Damage(damage, 0.5f); 
+                    }
                 }
                 else
                 {
                     Debug.DrawLine(transform.position, hit.transform.position, Color.gray, 0.5f);
                 }
-                return; // 공격을 1회만 하기 위한 강제 종료
             }
         }
     }
@@ -171,7 +173,7 @@ public class MeleeAttack : MonoBehaviour
                     Health enemyHealth = hit.GetComponent<Health>();
                     if (enemyHealth != null)
                     {
-                        enemyHealth.Damage(damage, 0.1f);
+                        enemyHealth.Damage(damage, 0.5f);
                         Debug.DrawLine(origin, hit.transform.position, Color.red, 0.5f);
                         Debug.Log("위쪽 적에게 공격 성공!");
                     }
@@ -180,7 +182,6 @@ public class MeleeAttack : MonoBehaviour
                 {
                     Debug.DrawLine(origin, hit.transform.position, Color.gray, 0.5f);
                 }
-                return; // 공격을 1회만 하기 위한 강제 종료
             }
         }
     }
@@ -219,10 +220,10 @@ public class MeleeAttack : MonoBehaviour
                         // 하강 공격시 무적 상태 {invincibleDurationAfterHit}초 후 풀리게
                         if (downwardAttacking) {
                         if (playerHealth != null && playerHealth.invincible)
-                            {
-                                Debug.Log("적과 부딪힘 → 무적 해제 시작");
-                                StartCoroutine(DisableInvincibilityAfterDelay());
-                            }
+                        {
+                            Debug.Log("적과 부딪힘 → 무적 해제 시작");
+                            StartCoroutine(DisableInvincibilityAfterDelay());
+                        }
                     }
                 }
                 return; // 공격을 1회만 하기 위한 강제 종료

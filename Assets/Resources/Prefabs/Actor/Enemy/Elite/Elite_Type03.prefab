@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6819273117891161977}
   - component: {fileID: 7125909382830091314}
   - component: {fileID: 8122500403756792924}
+  - component: {fileID: -6554971783000909130}
   m_Layer: 25
   m_Name: Elite_Type03
   m_TagString: Enemy
@@ -203,7 +204,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 30
-  healthSlider: {fileID: 0}
   invincible: 0
   currentHP: 0
   OnDamageEvent:
@@ -240,23 +240,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd7ce66575538e49a537d83b9437351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
+  initialFacingRight: 1
   minSpeed: 0
   maxSpeed: 0
   chaseSpeed: 5
   currentSpeed: 0
   chaseWaitTime: 0
-  facingDirection: 1
-  attackCollider2D: {fileID: 0}
-  raysCount: 5
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 2944
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 2432
+  attackCollider2D: {fileID: 0}
+  raysCount: 5
 --- !u!114 &8122500403756792924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,6 +273,25 @@ MonoBehaviour:
   - dropCount: 3
     probability: 1
   dropObjectPrefabs: {fileID: 540824470556695604, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+--- !u!114 &-6554971783000909130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 916063157910241703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021ac884df72c3d4da1f972d0fc67155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnOnPlayerRespawn: 1
+  repositionToInitOnPlayerRespawn: 0
+  autoRespawnDuration: 0
+  autoRespawnAmount: 0
+  autoRespawnRemainingAmount: 0
+  ignoreCheckPointsAlwaysRespawn: 1
+  associatedCheckpoints: []
 --- !u!1 &1064965975434690518
 GameObject:
   m_ObjectHideFlags: 0

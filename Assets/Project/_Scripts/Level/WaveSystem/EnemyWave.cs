@@ -56,7 +56,7 @@ public class EnemyWave : MonoBehaviour
         WaveManager.Instance.SetWave(this);
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         isWaveCompleted = false;
 
@@ -80,6 +80,11 @@ public class EnemyWave : MonoBehaviour
 
     private void WaveStart(int _index)
     {
+        if (_index < 0 || waves.Count - 1 < _index)
+        {
+            return;
+        }
+
         if (false == string.IsNullOrEmpty(waves[_index].waveEventID))
         {
             WaveEvent.TriggerEvent(this, waveEventID);
@@ -88,15 +93,15 @@ public class EnemyWave : MonoBehaviour
 
     private void WaveCompleted(int _index)
     {
+        if (_index < 0 || waves.Count - 1 < _index)
+        {
+            return;
+        }
+
         if (false == string.IsNullOrEmpty(waves[_index].waveEventID) &&
             waves[_index].waveEventType == WaveEventStartTypes.EndWave)
         {
             WaveEvent.TriggerEvent(this, waveEventID);
         }
-    }
-
-    private void OnDisable()
-    {
-        
     }
 }

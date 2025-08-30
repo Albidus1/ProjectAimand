@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 3424917778350089355}
   - component: {fileID: 2466249257536888257}
   - component: {fileID: 1881466028812697302}
+  - component: {fileID: 6057331207071024635}
   m_Layer: 25
   m_Name: MonsterType01
   m_TagString: Enemy
@@ -203,7 +204,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 20
-  healthSlider: {fileID: 0}
   invincible: 0
   currentHP: 0
   OnDamageEvent:
@@ -221,23 +221,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd7ce66575538e49a537d83b9437351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
+  initialFacingRight: 1
   minSpeed: 3
   maxSpeed: 5
   chaseSpeed: 5
   currentSpeed: 0
   chaseWaitTime: 1
-  facingDirection: 1
-  attackCollider2D: {fileID: 0}
-  raysCount: 5
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 2944
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 3456
+  attackCollider2D: {fileID: 0}
+  raysCount: 5
 --- !u!114 &1881466028812697302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +264,25 @@ MonoBehaviour:
   selfDestructDamage: 0
   selfDestructEffect: {fileID: 0}
   attackTime: 2
+--- !u!114 &6057331207071024635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540824470556695604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021ac884df72c3d4da1f972d0fc67155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnOnPlayerRespawn: 1
+  repositionToInitOnPlayerRespawn: 0
+  autoRespawnDuration: 0
+  autoRespawnAmount: 0
+  autoRespawnRemainingAmount: 0
+  ignoreCheckPointsAlwaysRespawn: 1
+  associatedCheckpoints: []
 --- !u!1 &1265693189026765416
 GameObject:
   m_ObjectHideFlags: 0
