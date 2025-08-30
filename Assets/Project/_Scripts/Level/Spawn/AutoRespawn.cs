@@ -10,7 +10,7 @@ public class AutoRespawn : MonoBehaviour, Respawnable
     [Tooltip("true로 설정하면, 플레이어가 부활할 때 이 객체도 마지막 위치에서 재생성.")]
     public bool respawnOnPlayerRespawn = true;
     [Tooltip("true로 설정하면, 플레이어가 부활할 때 이 객체를 초기 위치에 재배치.")]
-    public bool repositionToInitOnPlayerRespawn = false;
+    public bool repositionToInitOnPlayerRespawn = true;
     //[Tooltip("Kill 함수가 호출될 때 이 객체가 자신의 게임 오브젝트를 비활성화할지 여부")]
     //public bool disableOnKill = true;
 

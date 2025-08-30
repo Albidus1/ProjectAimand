@@ -153,7 +153,9 @@ public class EnemyMovement : EnemyMovementControl
 
     private void CliffCastRay()
     {
-        if (m_speed.y != 0)
+        Vector3 groundCheckPosition = transform.position - new Vector3(0, boundsHeight * 0.5f);
+        RaycastHit2D hitGround = MyDebug.Raycast(groundCheckPosition, -transform.up, 0.15f, groundLayer, Color.blue, true);
+        if (false == hitGround)
         {
             return;
         }
@@ -164,9 +166,9 @@ public class EnemyMovement : EnemyMovementControl
 
         position.y = boundsCenter.y - boundsHeight * 0.51f;
 
-        RaycastHit2D hitHole = MyDebug.Raycast(position, -transform.up, 0.3f, groundLayer, Color.cyan, true);
+        RaycastHit2D hitCliff = MyDebug.Raycast(position, -transform.up, 0.3f, groundLayer, Color.cyan, true);
 
-        if (false == hitHole)
+        if (false == hitCliff)
         {
             m_hitObject = true;
             return;
