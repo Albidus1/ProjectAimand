@@ -101,6 +101,11 @@ public class EnemyMovement : EnemyMovementControl
 
         base.animator.SetBool("isMoving", false);
 
+        if (base.isStunned || base.m_doKnockback)
+        {
+            return;
+        }
+
         if (isAttackingPlayer)
         {
             return;
@@ -219,6 +224,8 @@ public class EnemyMovement : EnemyMovementControl
                 isChasingPlayer = true;
                 playerPosition = player.transform.position;
 
+                base.currentSpeed = chaseSpeed;
+
                 base.isAttacking = Physics2D.OverlapCircle(transform.position, attackRange, playerLayerMask);
             }
         }
@@ -227,6 +234,8 @@ public class EnemyMovement : EnemyMovementControl
             base.target = null;
             isChasingPlayer = false;
             playerPosition = Vector2.zero;
+
+            base.currentSpeed = Random.Range(minSpeed, maxSpeed);
 
             base.isAttacking = false;
         }
@@ -237,9 +246,6 @@ public class EnemyMovement : EnemyMovementControl
     private void Run(Vector2 _direction)
     {
         base.m_previousPosition = m_currentPosition;
-
-        base.currentSpeed = target != null ?
-            base.chaseSpeed : base.currentSpeed;
 
         Vector2 newPosition = new Vector2(_direction.normalized.x * base.currentSpeed, _direction.normalized.y);
         newPosition *= Time.deltaTime;

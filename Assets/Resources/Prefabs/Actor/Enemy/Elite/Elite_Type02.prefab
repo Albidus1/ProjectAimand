@@ -204,9 +204,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0e0d992acc2d6f47a4cbae6e946371e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 30
-  invincible: 0
   currentHP: 0
+  temporarilyInvulnerable: 0
+  postDamageInvulnerable: 0
+  initialHP: 100
+  maxHP: 30
+  invulnerable: 0
+  immuneToDamage: 0
+  immuneToKnockback: 0
+  destroyOnDeath: 1
+  delayBeforeDestroy: 0
+  CollisionsOffOnDeath: 1
+  grabityOffOnDeath: 0
+  respawnAtInitialLocation: 0
   OnDamageEvent:
     m_PersistentCalls:
       m_Calls: []

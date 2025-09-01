@@ -140,12 +140,17 @@ public class PlayerMovement : CharacterMovement
     [Header("이벤트")]
     public bool SendStateChangeEvents = true;
 
+    private Health m_health;
+
+
+
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
-
         animator = GetComponent<Animator>();
+        m_health = GetComponent<Health>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
@@ -728,6 +733,9 @@ public class PlayerMovement : CharacterMovement
         transform.position = _spawnPoint.position;
 
         moveInput = Vector2.zero;
+
+        m_health.ResetHealthToMaxHealth();
+        m_health.Revive();
     }
     #endregion
 
@@ -1008,9 +1016,16 @@ public class PlayerMovement : CharacterMovement
     #endregion
 
     #region KNOCKBACK METHODS
-    public void Knockback(Vector2 _dir)
+    public void ApplyKnockback(Vector2 _dir)
     {
-        StartCoroutine(nameof(StartKnockBack), _dir);
+        if (m_health != null)
+        {
+            if (false == m_health.postDamageInvulnerable)
+            {
+                StartCoroutine(nameof(StartKnockBack), _dir);
+            }
+        }
+
         //doKnockback = true;
         //isJumping = true;
         //isWallJumping = false;

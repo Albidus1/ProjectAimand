@@ -146,12 +146,12 @@ public class EnemyAttack : MonoBehaviour
 
         if (false == isSelfDestruct)
         {
-            Debug.Log("적 공격");
+            //Debug.Log("적 공격");
             StartCoroutine(StartAttack());
         }
         else if (false == doSelfDestruct)
         {
-            Debug.Log("자폭 시작");
+            //Debug.Log("자폭 시작");
 
             doSelfDestruct = true;
             m_selfDestructTimer = Time.time + selfDestructWaitTime;

@@ -26,10 +26,16 @@ public class MeleeAttack : MonoBehaviour
     public float maxFallSpeed = -40f;
     private bool downwardAttacking = false;
 
+    [Header("넉백")]
+    public Vector2 knockbackForce = new Vector2(10f, 2f);
+
     [SerializeField] private float invincibleDurationAfterHit = 0.2f;
     private Health playerHealth;
 
     private float pressButtonTime;
+    private Vector2 m_knockbackForce;
+
+
 
     void Start()
     {
@@ -50,6 +56,14 @@ public class MeleeAttack : MonoBehaviour
 
         playerMovement = GetComponent<PlayerMovement>();
         playerHealth = GetComponentInParent<Health>();
+
+        //var md = fovMeshObject.AddComponent<DamageOnTouch>();
+        //md.targetLayerMask = LayerManager.enemiesLayerMask;
+        //md.applyDamageOnTriggerEnter = true;
+        //md.applyDamageOnTriggerStay = true;
+        //md.damage = damage;
+        //md.invincibilityDuration = 0.5f;
+        //md.damageCausedKnockbackForce = new Vector2(25f, 2f);
     }
 
     void Update()
@@ -83,7 +97,7 @@ public class MeleeAttack : MonoBehaviour
             if (Time.time >= lastAttackTime + attackInterval)
             {
                 DetectAndDamageEnemies();
-                Debug.Log("지상 근거리 공격 완료");
+                //Debug.Log("지상 근거리 공격 완료");
                 lastAttackTime = Time.time;
 
                 playerMovement.isAttacking = true;
@@ -138,7 +152,8 @@ public class MeleeAttack : MonoBehaviour
                     Health enemyHealth = hit.GetComponent<Health>();
                     if (enemyHealth != null) 
                     {
-                        enemyHealth.Damage(damage, 0.5f); 
+                        enemyHealth.Damage(damage, 0.1f);
+                        enemyHealth.ApplyKnockback(this.gameObject, knockbackForce);
                     }
                 }
                 else
@@ -174,6 +189,7 @@ public class MeleeAttack : MonoBehaviour
                     if (enemyHealth != null)
                     {
                         enemyHealth.Damage(damage, 0.5f);
+
                         Debug.DrawLine(origin, hit.transform.position, Color.red, 0.5f);
                         Debug.Log("위쪽 적에게 공격 성공!");
                     }
@@ -202,7 +218,7 @@ public class MeleeAttack : MonoBehaviour
 
         if (playerHealth != null)
         {
-            playerHealth.invincible = true;
+            playerHealth.invulnerable = true;
             Debug.Log("낙하 공격 중 무적 활성화");
         }
     }
@@ -219,7 +235,7 @@ public class MeleeAttack : MonoBehaviour
 
                         // 하강 공격시 무적 상태 {invincibleDurationAfterHit}초 후 풀리게
                         if (downwardAttacking) {
-                        if (playerHealth != null && playerHealth.invincible)
+                        if (playerHealth != null && playerHealth.invulnerable)
                         {
                             Debug.Log("적과 부딪힘 → 무적 해제 시작");
                             StartCoroutine(DisableInvincibilityAfterDelay());
@@ -242,14 +258,14 @@ public class MeleeAttack : MonoBehaviour
             yield return null;
         }
 
-        playerHealth.invincible = false;
+        playerHealth.invulnerable = false;
         downwardAttacking = false;
     }
 
     private IEnumerator DisableInvincibilityAfterDelay()
     {
         yield return new WaitForSeconds(invincibleDurationAfterHit);
-        playerHealth.invincible = false;
+        playerHealth.invulnerable = false;
 
         Debug.Log("무적 해제 및 점프 상태 초기화됨");
     }

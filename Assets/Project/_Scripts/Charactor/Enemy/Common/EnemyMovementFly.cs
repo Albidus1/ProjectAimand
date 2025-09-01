@@ -42,6 +42,7 @@ public class EnemyMovementFly : EnemyMovementControl
             target = player.gameObject;
             m_targetPosition = target.transform.position;
             m_chaseWaitTime = Time.time + chaseWaitTime;
+            base.currentSpeed = chaseSpeed;
 
             base.animator.SetBool("isChasing", true);
         }
@@ -50,6 +51,7 @@ public class EnemyMovementFly : EnemyMovementControl
         {
             currentScanTick = GetPatrolTick();
             m_scanTimer = Time.time;
+            base.currentSpeed = Random.Range(minSpeed, maxSpeed);
 
             GetRandomPosition();
 
@@ -62,16 +64,14 @@ public class EnemyMovementFly : EnemyMovementControl
     }
     protected override void Move()
     {
-        if (isStunned)
+        if (base.isStunned || base.m_doKnockback)
         {
             return;
         }
 
         if (Vector2.Distance(transform.position, m_targetPosition) > 0.1)
         {
-            m_previousPosition = m_currentPosition;
-
-            base.currentSpeed = target != null ? base.chaseSpeed : base.currentSpeed;
+            base.m_previousPosition = base.m_currentPosition;
 
             m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
             Vector2 newPosition = m_moveDirection * currentSpeed;

@@ -280,19 +280,15 @@ public class LevelManager : MySingleton<LevelManager>
 
     private IEnumerator Restart()
     {
-        Collider2D col = player.GetComponent<Collider2D>();
-        col.enabled = false;
-
         player.movementState.StateChange(PlayerStates.MovementStates.Die);
 
         yield return new WaitForSeconds(respawnDelay);
-
-        col.enabled = true;
 
         WaveManager.Instance.ResetWave();
 
         if (currentCheckPoint != null)
         {
+            player.gameObject.SetActive(true);
             player.movementState.StateChange(PlayerStates.MovementStates.Idle);
             currentCheckPoint.SpawnPlayer(player);
         }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 
@@ -45,7 +46,7 @@ public abstract class EnemyMovementControl : CharacterMovement
     protected Vector2 m_currentPosition;
     protected Vector2 m_previousPosition;
     protected Vector2 m_speed;
-
+    protected bool m_doKnockback = false;
 
     protected virtual void Awake()
     {
@@ -124,6 +125,41 @@ public abstract class EnemyMovementControl : CharacterMovement
         Vector3 scale = transform.localScale;
         scale.x *= -1; 
         transform.localScale = scale;
+    }
+
+    public virtual void ApplyKnockback(Vector2 _force)
+    {
+        StartCoroutine(Knockback(_force));       
+    }
+
+    protected virtual IEnumerator Knockback(Vector2 _force)
+    {
+        m_doKnockback = true;
+
+        isStunned = true;
+        isAttacking = false;
+        isAttackingPlayer = false;
+
+        float timer = 0f;
+
+        while (timer < 0.25f)
+        {
+            transform.Translate(_force * Time.deltaTime);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        m_doKnockback = false;
+        isStunned = false;
+    }
+
+    protected virtual void ResetKnockback()
+    {
+        isStunned = false;
+        rb.linearVelocity = Vector2.zero;
     }
 
     protected virtual void OnEnable()
