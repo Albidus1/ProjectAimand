@@ -71,13 +71,13 @@ public class EnemyMovementFly : EnemyMovementControl
         {
             m_previousPosition = m_currentPosition;
 
-            currentSpeed = target != null ? chaseSpeed : Random.Range(minSpeed, maxSpeed);
+            base.currentSpeed = target != null ? base.chaseSpeed : base.currentSpeed;
 
             m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
             Vector2 newPosition = m_moveDirection * currentSpeed;
             transform.Translate(newPosition * Time.deltaTime);
 
-            m_currentPosition = transform.position;
+            base.m_currentPosition = transform.position;
 
             isMoving = true;
         }

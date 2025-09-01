@@ -147,17 +147,17 @@ public class EnemyMovement : EnemyMovementControl
     {
         m_hitObject = false;
 
+        if (base.currentSpeed <= 0f)
+        {
+            return;
+        }
+
         CliffCastRay();
         WallRayCast();
     }
 
     private void CliffCastRay()
     {
-        if (base.currentSpeed <= 0f)
-        {
-            return;
-        }
-
         Vector3 groundCheckPosition = transform.position - new Vector3(0, boundsHeight * 0.5f);
         RaycastHit2D hitGround = MyDebug.Raycast(groundCheckPosition, -transform.up, 0.15f, groundLayer, Color.blue, true);
         if (false == hitGround)
@@ -239,8 +239,7 @@ public class EnemyMovement : EnemyMovementControl
         base.m_previousPosition = m_currentPosition;
 
         base.currentSpeed = target != null ?
-            base.chaseSpeed :
-            Random.Range(base.minSpeed, base.maxSpeed);
+            base.chaseSpeed : base.currentSpeed;
 
         Vector2 newPosition = new Vector2(_direction.normalized.x * base.currentSpeed, _direction.normalized.y);
         newPosition *= Time.deltaTime;
