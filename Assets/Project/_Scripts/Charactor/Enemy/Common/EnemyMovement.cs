@@ -153,6 +153,11 @@ public class EnemyMovement : EnemyMovementControl
 
     private void CliffCastRay()
     {
+        if (base.currentSpeed <= 0f)
+        {
+            return;
+        }
+
         Vector3 groundCheckPosition = transform.position - new Vector3(0, boundsHeight * 0.5f);
         RaycastHit2D hitGround = MyDebug.Raycast(groundCheckPosition, -transform.up, 0.15f, groundLayer, Color.blue, true);
         if (false == hitGround)
