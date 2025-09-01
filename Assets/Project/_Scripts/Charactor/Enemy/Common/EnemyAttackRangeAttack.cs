@@ -13,11 +13,13 @@ public class EnemyAttackRangeAttack : EnemyAttack
     public Transform bulletSpawn;
     public float bulletDuration;
 
+    [Header("대기 시간")]
+    public float initialDelayTime = 2f;
 
     private float bulletAngle;
     private Vector2 m_direction;
     private LineRenderer m_lineRenderer;
-
+    private float m_initialDelayTimer;
 
 
     protected override void Awake()
@@ -33,10 +35,17 @@ public class EnemyAttackRangeAttack : EnemyAttack
         m_lineRenderer.startColor = Color.red;
         m_lineRenderer.endColor = Color.white;
         m_lineRenderer.startWidth = 0.05f;
+
+        m_initialDelayTimer = Time.time;
     }
 
     protected override void Update()
     {
+        if (m_initialDelayTimer + initialDelayTime > Time.time)
+        {
+            return;
+        }
+
         target = base.enemyMovement.target;
 
         if (target == null)

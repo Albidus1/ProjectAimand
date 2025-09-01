@@ -342,6 +342,9 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     protected virtual void OnEnable()
     {
         InitializeCurrentHealth();
+        DamageEnabled();
+        DisablePostDamageInvulnerability();
+        UpdateHealthBar();
         this.EventStartListening<HealthDeathEvent>();
     }
 

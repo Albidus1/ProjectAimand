@@ -129,6 +129,11 @@ public abstract class EnemyMovementControl : CharacterMovement
 
     public virtual void ApplyKnockback(Vector2 _force)
     {
+        if (m_doKnockback)
+        {
+            return;
+        }
+
         StartCoroutine(Knockback(_force));       
     }
 
@@ -169,6 +174,6 @@ public abstract class EnemyMovementControl : CharacterMovement
 
     protected virtual void OnDisable()
     {
-
+        StopAllCoroutines();
     }
 }

@@ -43,7 +43,7 @@ public class PatternCooldownTracker
     {
         if (false == m_cooldownTimers.ContainsKey(_patterns.patternID))
         {
-            m_cooldownTimers[_patterns.patternID] = _patterns.cooldown;
+            m_cooldownTimers[_patterns.patternID] = 0f;
         }
     }
 
