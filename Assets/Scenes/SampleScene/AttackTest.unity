@@ -1806,6 +1806,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1292706384043592568, guid: 40066a5adbe16dd44a13f9a9f34c3814, type: 3}
+      propertyPath: triggerWave
+      value: Room3_Wave1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1292706384043592568, guid: 40066a5adbe16dd44a13f9a9f34c3814, type: 3}
+      propertyPath: triggerWaveID
+      value: Room3_Wave1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1292706384043592568, guid: 40066a5adbe16dd44a13f9a9f34c3814, type: 3}
       propertyPath: speedToDestination
       value: 15
       objectReference: {fileID: 0}
@@ -3370,14 +3378,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
-  - waveEventID: 
-    waveEventType: 0
+  - waveEventID: Room3_Wave1
+    waveEventType: 2
     waveEventTriggerType: 4
     enemyInfo:
     - enemyPrefab: {fileID: 1091521504391383391, guid: 3549b303e433f7f4e88f00c5b3444b70, type: 3}
       spawnPosition: {x: 51.723, y: -1.0277658}
-    - enemyPrefab: {fileID: 504191433656888092, guid: 8943d0a8360d0554bb977e609467cebd, type: 3}
-      spawnPosition: {x: 62.742615, y: -1.4806275}
+    spawnInterval: 0
+    timeForNextWave: 1
+  - waveEventID: Room3_Wave1
+    waveEventType: 1
+    waveEventTriggerType: 4
+    enemyInfo:
+    - enemyPrefab: {fileID: 1091521504391383391, guid: 3549b303e433f7f4e88f00c5b3444b70, type: 3}
+      spawnPosition: {x: 51.723, y: -1.0277658}
     spawnInterval: 0
     timeForNextWave: 1
   waveEventID: defaultWave

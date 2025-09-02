@@ -72,7 +72,7 @@ public class EnemyWave : MonoBehaviour
             WaveEvent.TriggerEvent(this, waveEventID);
         }
 
-        if (waveEndEvent && false == string.IsNullOrEmpty(startWaveEventID))
+        if (waveEndEvent && false == string.IsNullOrEmpty(endWaveEventID))
         {
             WaveEvent.TriggerEvent(this, endWaveEventID);
         }
@@ -85,9 +85,11 @@ public class EnemyWave : MonoBehaviour
             return;
         }
 
-        if (false == string.IsNullOrEmpty(waves[_index].waveEventID))
+        if (false == string.IsNullOrEmpty(waves[_index].waveEventID) &&
+            waves[_index].waveEventType == WaveEventStartTypes.StartWave)
         {
-            WaveEvent.TriggerEvent(this, waveEventID);
+            //Debug.Log("웨이브 시작 이벤트");
+            WaveEvent.TriggerEvent(this, waves[_index].waveEventID);
         }
     }
 
@@ -101,7 +103,8 @@ public class EnemyWave : MonoBehaviour
         if (false == string.IsNullOrEmpty(waves[_index].waveEventID) &&
             waves[_index].waveEventType == WaveEventStartTypes.EndWave)
         {
-            WaveEvent.TriggerEvent(this, waveEventID);
+            //Debug.Log("웨이브 종료 이벤트");
+            WaveEvent.TriggerEvent(this, waves[_index].waveEventID);
         }
     }
 }

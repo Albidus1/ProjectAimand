@@ -178,7 +178,11 @@ public class PlayerMovement : CharacterMovement
         var cam = FindFirstObjectByType<CinemachineCamera>();
         cam.Target.TrackingTarget = transform;
 
-        movementState.StateChange(PlayerStates.MovementStates.Idle);
+        if (movementState != null)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+
         moveInput = Vector2.zero;
     }
 
@@ -1018,6 +1022,11 @@ public class PlayerMovement : CharacterMovement
     #region KNOCKBACK METHODS
     public void ApplyKnockback(Vector2 _dir)
     {
+        if (false == this.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         if (m_health != null)
         {
             if (false == m_health.postDamageInvulnerable)

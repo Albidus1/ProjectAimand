@@ -135,7 +135,7 @@ public class WaveManager : MySingleton<WaveManager>
 
         if (_wave.waveEventType == WaveEventStartTypes.StartWave)
         {
-            //Debug.Log($"시작 이벤트: {currentWaveID}");
+            Debug.Log($"시작 이벤트: {currentWaveID}");
             OnWaveStart?.Invoke(m_currentWaveIndex);
         }
 
@@ -145,7 +145,7 @@ public class WaveManager : MySingleton<WaveManager>
 
         if (_wave.waveEventType == WaveEventStartTypes.EndWave)
         {
-            //Debug.Log($"시작 이벤트: {currentWaveID}");
+            Debug.Log($"종료 이벤트: {currentWaveID}");
             OnWaveCompleted?.Invoke(m_currentWaveIndex);
         }
 

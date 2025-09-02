@@ -129,6 +129,11 @@ public abstract class EnemyMovementControl : CharacterMovement
 
     public virtual void ApplyKnockback(Vector2 _force)
     {
+        if (false == this.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         if (m_doKnockback)
         {
             return;

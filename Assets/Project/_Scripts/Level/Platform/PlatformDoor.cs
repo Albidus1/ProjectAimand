@@ -34,7 +34,7 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
     public float homeWaitTime;
 
     [Header("이벤트")]
-    public string triggerWave = "defaultWave";
+    public string triggerWaveID = "defaultWave";
 
     public bool isMovingStart { get; private set; }
     public bool isMoving { get; private set; }
@@ -220,7 +220,7 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
     #region EVENT METHODS
     public void OnEvent(WaveEvent _event)
     {
-        if (triggerWave != _event.waveID)
+        if (triggerWaveID != _event.waveID)
         {
             return;
         }
