@@ -40,6 +40,9 @@ public class MeleeAttack : MonoBehaviour
     [Header("넉백 설정")]
     public Vector2 knockbackForce = new Vector2(10f, 2f);
 
+    private Health m_health;
+
+
     void Start()
     {
         fovMeshObject = new GameObject("FOV_Mesh");
@@ -219,16 +222,12 @@ public class MeleeAttack : MonoBehaviour
                     if (enemyHealth != null)
                     {
                         enemyHealth.Damage(dmg, 0.1f);
-                        // Rigidbody2D 임펄스
-                        if (hit.attachedRigidbody != null)
-                        {
-                            Vector2 force = new Vector2(knockbackForce.x * facingSign, knockbackForce.y);
-                            hit.attachedRigidbody.AddForce(force, ForceMode2D.Impulse);
-                        }
+                        enemyHealth.ApplyKnockback(this.gameObject, knockbackForce);
                     }
 
                     // 공격을 1회만 하기 위한 강제 종료(요구사항 유지)
-                    return;
+                    // 바로 빠지면 다중 공격이 안됩니다.
+                    //return;
                 }
                 else
                 {

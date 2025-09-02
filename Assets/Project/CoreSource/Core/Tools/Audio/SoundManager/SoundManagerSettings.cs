@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class SoundManagerSettings : MonoBehaviour
+public class SoundManagerSettings
 {
     public const float minVolume = 0.0001f;
     public const float maxVolume = 10f;

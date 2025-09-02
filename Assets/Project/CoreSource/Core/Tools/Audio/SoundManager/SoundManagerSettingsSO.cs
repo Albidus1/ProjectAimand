@@ -4,6 +4,7 @@ using UnityEngine.Audio;
 
 
 [System.Serializable]
+[CreateAssetMenu(menuName = "오디오/사운드 매니저 세팅")]
 public class SoundManagerSettingsSO : ScriptableObject
 {
     [Header("오디오 믹서")]

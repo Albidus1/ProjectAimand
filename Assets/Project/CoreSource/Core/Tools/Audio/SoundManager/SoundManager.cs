@@ -57,6 +57,7 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
 
 
 
+    #region INITIALIZAION
     protected override void Awake()
     {
         base.Awake();
@@ -83,7 +84,9 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
         m_fadeOutSoundCorotines = new Dictionary<AudioSource, Coroutine>();
         m_fadeTrackCorotines = new Dictionary<SoundManagerSound, Coroutine>();
     }
+    #endregion
 
+    #region PLAY SOUND
     public virtual AudioSource PlaySound(AudioClip _clip, SoundManagerPlayOptions options)
     {
         return PlaySound(
@@ -142,7 +145,7 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
 
         if (_attachToTransform != null)
         {
-
+            // 따라갈 타겟이 필요할 경우
         }
 
         if (settingsSO != null)
@@ -182,7 +185,7 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
 
         if (_fade)
         {
-
+            // 음악 페이드 효과
         }
 
         m_sound.ID = _ID;
@@ -210,7 +213,9 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
 
         return audioSource;
     }
+    #endregion
 
+    #region SOUND CONTROLS
     public virtual void PauseSound(AudioSource _source)
     {
         _source.Pause();
@@ -235,4 +240,76 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
             Destroy(_source.gameObject);
         }
     }
+    #endregion
+
+    #region ALL SOUNDS CONTROLS
+    public virtual void FreeAllSoundsButPersistent()
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (false == sound.persistent && sound.audioSource != null)
+            {
+                FreeSound(sound.audioSource);
+            }
+        }
+    }
+    #endregion
+
+    #region FIND SOUND SOURCE
+    public virtual AudioSource FindByID(int _ID)
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (sound.ID == _ID)
+            {
+                return sound.audioSource;
+            }
+        }
+
+        return null;
+    }
+
+    public virtual AudioSource FindByClip(AudioClip _clip)
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (sound.audioSource.clip == _clip)
+            {
+                return sound.audioSource;
+            }
+        }
+
+        return null;
+    }
+    #endregion
+
+    #region EVENT
+    protected virtual void OnEnable()
+    {
+        SoundManagerSoundPlayEvent.Register(OnSoundManagerSoundPlayEvent);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    protected void OnDisable()
+    {
+        if (base.m_enabled)
+        {
+            SoundManagerSoundPlayEvent.Unregister(OnSoundManagerSoundPlayEvent);
+
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+
+    public virtual AudioSource OnSoundManagerSoundPlayEvent(AudioClip _clip, SoundManagerPlayOptions _options)
+    {
+        return PlaySound(_clip, _options);
+    }
+
+
+    private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+    {
+        FreeAllSoundsButPersistent();
+    }
+    #endregion
 }
