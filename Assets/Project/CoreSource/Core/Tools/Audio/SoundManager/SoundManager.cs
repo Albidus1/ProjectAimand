@@ -1,6 +1,9 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 
 
@@ -8,7 +11,7 @@ using UnityEngine;
 [System.Serializable]
 public struct SoundManagerSound
 {
-    public int id;
+    public int ID;
     public SoundManager.SoundManagerTracks track;
     public AudioSource audioSource;
 
@@ -52,7 +55,7 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
     protected Dictionary<AudioSource, Coroutine> m_fadeOutSoundCorotines;
     protected Dictionary<SoundManagerSound, Coroutine> m_fadeTrackCorotines;
 
-    
+
 
     protected override void Awake()
     {
@@ -81,5 +84,155 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
         m_fadeTrackCorotines = new Dictionary<SoundManagerSound, Coroutine>();
     }
 
-    //public virtual AudioSource PlaySound(AudioClip _clip, SoundManager)
+    public virtual AudioSource PlaySound(AudioClip _clip, SoundManagerPlayOptions options)
+    {
+        return PlaySound(
+            _clip,
+            options.soundManagerTrack,
+            options.location,
+            options.audioMixerGroup,
+            options.ID,
+            options.loop,
+            options.valume,
+            options.pitch,
+            options.fade,
+            options.fadeInitialVolume,
+            options.fadeDuration,
+            options.fadeTween,
+            options.persistent,
+            options.priority,
+            options.recycleAudioSource,
+            options.playbackTime,
+            options.playbackDuration,
+            options.attachToTransform);
+    }
+
+    public virtual AudioSource PlaySound(AudioClip _clip, SoundManagerTracks _soundManagerTrack, Vector3 _location,
+        AudioMixerGroup _audioMixerGroup = null, int _ID = 0, bool _loop = false, float _volume = 0f, float _pitch = 0f, 
+        bool _fade = false, float _fadeInitialVolume = 0f, float _fadeDuration = 1f, Ease _fadeTween = Ease.InCubic,
+        bool _persistent = false, int _priority = 128,
+        AudioSource _recycleAudioSource = null,
+        float _playbackTime = 0f, float _playbackDuration = 0f,
+        Transform _attachToTransform = null)
+    {
+        if (this == null)
+        {
+            return null;
+        }
+
+        if (_clip == null)
+        {
+            return null;
+        }
+
+        AudioSource audioSource = _recycleAudioSource;
+        if (audioSource == null)
+        {
+            m_tempAudioSourceGameObject = new GameObject("Audio_" + _clip.name);
+            SceneManager.MoveGameObjectToScene(m_tempAudioSourceGameObject, this.gameObject.scene);
+            audioSource = m_tempAudioSourceGameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.transform.position = _location;
+        audioSource.clip = _clip;
+        audioSource.loop = _loop;
+        audioSource.pitch = _pitch;
+        audioSource.priority = _priority;
+        audioSource.time = _playbackTime;
+
+        if (_attachToTransform != null)
+        {
+
+        }
+
+        if (settingsSO != null)
+        {
+            audioSource.outputAudioMixerGroup = settingsSO.masterAudioMixerGroup;
+            switch (_soundManagerTrack)
+            {
+                case SoundManagerTracks.Master:
+                    audioSource.outputAudioMixerGroup = settingsSO.masterAudioMixerGroup;
+                    break;
+                case SoundManagerTracks.Music:
+                    audioSource.outputAudioMixerGroup = settingsSO.musicAudioMixerGroup;
+                    break;
+                case SoundManagerTracks.SFX:
+                    audioSource.outputAudioMixerGroup = settingsSO.sfxAudioMixerGroup;
+                    break;
+                case SoundManagerTracks.UI:
+                    audioSource.outputAudioMixerGroup = settingsSO.uiAudioMixerGroup;
+                    break;
+            }
+        }
+
+        if (_audioMixerGroup)
+        {
+            audioSource.outputAudioMixerGroup = _audioMixerGroup;
+        }
+        
+        audioSource.volume = _volume;
+
+        audioSource.Play();
+
+        if (false == _loop && _recycleAudioSource == null)
+        {
+            float destroyDelay = _playbackDuration > 0 ? _playbackDuration : _clip.length - _playbackTime;
+            Destroy(m_tempAudioSourceGameObject, destroyDelay);
+        }
+
+        if (_fade)
+        {
+
+        }
+
+        m_sound.ID = _ID;
+        m_sound.track = _soundManagerTrack;
+        m_sound.audioSource = audioSource;
+        m_sound.persistent = _persistent;
+        m_sound.playbackTime = _playbackTime;
+        m_sound.playbackDuration = _playbackDuration;
+
+        bool alreadyIn = false;
+        for (int i = 0; i < m_sounds.Count; i++)
+        {
+            if (m_sounds[i].audioSource == audioSource)
+            {
+                m_sounds[i] = m_sound;
+                alreadyIn = true;
+                break;
+            }
+        }
+
+        if (false == alreadyIn) 
+        {
+            m_sounds.Add(m_sound);
+        }
+
+        return audioSource;
+    }
+
+    public virtual void PauseSound(AudioSource _source)
+    {
+        _source.Pause();
+    }
+
+    public virtual void ResumeSound(AudioSource _source)
+    {
+        _source.Play();
+    }
+
+    public virtual void StopSound(AudioSource _source)
+    {
+        _source.Stop();
+    }
+
+    public virtual void FreeSound(AudioSource _source)
+    {
+        _source.Stop();
+
+        if (false == m_pool.FreeSound(_source))
+        {
+            Destroy(_source.gameObject);
+        }
+    }
 }
