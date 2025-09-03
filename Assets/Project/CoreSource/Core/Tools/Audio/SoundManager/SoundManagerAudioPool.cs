@@ -30,7 +30,7 @@ public class SoundManagerAudioPool
 
         for (int i = 0; i < _poolSize; i++)
         {
-            GameObject tempAudioHost = new GameObject("AudioSource_" + i);
+            GameObject tempAudioHost = new GameObject("AudioSourcePool_" + i);
             SceneManager.MoveGameObjectToScene(tempAudioHost, _parent.gameObject.scene);
             AudioSource tempSource = tempAudioHost.AddComponent<AudioSource>();
 
@@ -43,7 +43,7 @@ public class SoundManagerAudioPool
     public IEnumerator AutoDisableAudioSource(float _duration, AudioSource _source, AudioClip _clip, 
         bool _doNotAutoRecycleIfNotDonePlaying, float _playbackTime, float _playbackDuration)
     {
-        while (_source.time == 0 && _source.isPlaying) 
+        while (_source.isPlaying && _source.time == 0) 
         {
             yield return null;
         }
@@ -51,7 +51,7 @@ public class SoundManagerAudioPool
         float initialWait = _playbackDuration > 0 ? _playbackDuration : _duration;
         yield return MyCoroutine.WaitForUnscaled(initialWait);
 
-        if (_source.clip  != null)
+        if (_source.clip != _clip)
         {
             yield break;
         }

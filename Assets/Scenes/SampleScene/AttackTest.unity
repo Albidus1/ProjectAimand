@@ -191,6 +191,34 @@ PrefabInstance:
       propertyPath: initialHP
       value: 1000
       objectReference: {fileID: 0}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 20243209}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySound
+      objectReference: {fileID: 0}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: HitSound, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3424917778350089355, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      propertyPath: OnDamageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8526439105643708227, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
       propertyPath: m_GravityScale
       value: 1
@@ -198,8 +226,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 540824470556695604, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 20243209}
   m_SourcePrefab: {fileID: 100100000, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+--- !u!1 &20243208 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 540824470556695604, guid: cc1b3eafdf2bd2f4da34d56e1c1ca3f5, type: 3}
+  m_PrefabInstance: {fileID: 20243207}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &20243209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20243208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e220f363ea7bd554a9a179af0a9cc01b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundClips:
+  - {fileID: 8300000, guid: 9fa28e48bcb508c47bc5efb0d787368e, type: 3}
+  - {fileID: 8300000, guid: 5d8e319edfa07884c912b937419a3e6a, type: 3}
+  - {fileID: 8300000, guid: ad93bddbe5cbe5e468e951d8e1832c9c, type: 3}
+  - {fileID: 8300000, guid: 6c7763f5b203da74f94b9ba2968d6aba, type: 3}
+  - {fileID: 8300000, guid: 55cfb98246afa474d9fbb8972c85fceb, type: 3}
+  ID: 100
 --- !u!1 &208269556
 GameObject:
   m_ObjectHideFlags: 0
@@ -1735,9 +1790,6 @@ MonoBehaviour:
   CollisionsOffOnDeath: 1
   grabityOffOnDeath: 0
   respawnAtInitialLocation: 0
-  OnDamageEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1001 &1147749205
 PrefabInstance:
   m_ObjectHideFlags: 0

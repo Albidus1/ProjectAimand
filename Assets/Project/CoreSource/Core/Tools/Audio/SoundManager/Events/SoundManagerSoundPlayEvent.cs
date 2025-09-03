@@ -28,7 +28,7 @@ public struct SoundManagerSoundPlayEvent
 
     static public AudioSource Trigger(AudioClip _clip, SoundManagerPlayOptions _options)
     {
-        return OnEvent.Invoke(_clip, _options);
+        return OnEvent?.Invoke(_clip, _options);
     }
 
     static public AudioSource Trigger(AudioClip _clip, SoundManagerTracks _soundManagerTrack, Vector3 _location,
@@ -37,7 +37,7 @@ public struct SoundManagerSoundPlayEvent
         bool _persistent = false, int _priority = 128,
         AudioSource _recycleAudioSource = null,
         float _playbackTime = 0f, float _playbackDuration = 0f,
-        Transform _attachToTransform = null)
+        Transform _attachToTransform = null, bool _doNotAutoRecycleIfNotDonePlaying = false)
     {
         SoundManagerPlayOptions options = SoundManagerPlayOptions.DefaultOption;
 
@@ -58,6 +58,7 @@ public struct SoundManagerSoundPlayEvent
         options.playbackTime = _playbackTime;
         options.playbackDuration = _playbackDuration;
         options.attachToTransform = _attachToTransform;
+        options.doNotAutoRecycleIfNotDonePlaying = _doNotAutoRecycleIfNotDonePlaying;
 
         return OnEvent?.Invoke(_clip, options);
     }

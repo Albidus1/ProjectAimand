@@ -25,6 +25,7 @@ public struct SoundManagerPlayOptions
     [Range(0, 256)]
     public int priority;
     public Vector3 location;
+    public bool doNotAutoRecycleIfNotDonePlaying;
 
     [Header("Fade")]
     public bool fade;

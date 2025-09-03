@@ -56,7 +56,10 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     //public Vector2 deathForce = new Vector2(0f, 10f);
     //public bool resetForcesOnDeath = false;
 
-    public UnityEvent<float> OnDamageEvent;
+    public delegate void OnHitDelegate();
+
+    public event OnHitDelegate OnHit;
+
 
     public float lastDamage { get; set; }
     public Vector2 lastDamageDirection { get; set; }
@@ -149,7 +152,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
             return;
         }
 
-        OnDamageEvent?.Invoke(_damage);
+        OnHit?.Invoke();
 
         SetHealth(currentHP - _damage, _instigator);
 

@@ -13,6 +13,11 @@ public class BackgroundMusic : MonoBehaviour
 
     private void Start()
     {
+        PlaySound();
+    }
+
+    private void PlaySound()
+    {
         SoundManagerPlayOptions options = SoundManagerPlayOptions.DefaultOption;
 
         options.ID = ID;

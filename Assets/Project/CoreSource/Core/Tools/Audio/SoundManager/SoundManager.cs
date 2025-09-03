@@ -107,23 +107,24 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
             options.recycleAudioSource,
             options.playbackTime,
             options.playbackDuration,
-            options.attachToTransform);
+            options.attachToTransform,
+            options.doNotAutoRecycleIfNotDonePlaying);
     }
 
-    public virtual AudioSource PlaySound(AudioClip _clip, SoundManagerTracks _soundManagerTrack, Vector3 _location,
+    public virtual AudioSource PlaySound(AudioClip _audioClip, SoundManagerTracks _soundManagerTrack, Vector3 _location,
         AudioMixerGroup _audioMixerGroup = null, int _ID = 0, bool _loop = false, float _volume = 0f, float _pitch = 0f, 
         bool _fade = false, float _fadeInitialVolume = 0f, float _fadeDuration = 1f, Ease _fadeTween = Ease.InCubic,
         bool _persistent = false, int _priority = 128,
         AudioSource _recycleAudioSource = null,
         float _playbackTime = 0f, float _playbackDuration = 0f,
-        Transform _attachToTransform = null)
+        Transform _attachToTransform = null, bool _doNotAutoRecycleIfNotDonePlaying = false)
     {
         if (this == null)
         {
             return null;
         }
 
-        if (_clip == null)
+        if (_audioClip == null)
         {
             return null;
         }
@@ -131,13 +132,23 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
         AudioSource audioSource = _recycleAudioSource;
         if (audioSource == null)
         {
-            m_tempAudioSourceGameObject = new GameObject("Audio_" + _clip.name);
+            audioSource = m_pool.GetAvailableAudioSource(poolCanExpand, transform);
+
+            if (audioSource != null && false == _loop)
+            {
+                _recycleAudioSource = audioSource;
+                StartCoroutine(m_pool.AutoDisableAudioSource(_audioClip.length / Mathf.Abs(_pitch), audioSource, _audioClip, _doNotAutoRecycleIfNotDonePlaying, _playbackTime, _playbackDuration));
+            }
+        }
+        if (audioSource == null)
+        {
+            m_tempAudioSourceGameObject = new GameObject("Audio_" + _audioClip.name);
             SceneManager.MoveGameObjectToScene(m_tempAudioSourceGameObject, this.gameObject.scene);
             audioSource = m_tempAudioSourceGameObject.AddComponent<AudioSource>();
         }
 
         audioSource.transform.position = _location;
-        audioSource.clip = _clip;
+        audioSource.clip = _audioClip;
         audioSource.loop = _loop;
         audioSource.pitch = _pitch;
         audioSource.priority = _priority;
@@ -179,7 +190,7 @@ public class SoundManager : MyPersistentSingleton<SoundManager>
 
         if (false == _loop && _recycleAudioSource == null)
         {
-            float destroyDelay = _playbackDuration > 0 ? _playbackDuration : _clip.length - _playbackTime;
+            float destroyDelay = _playbackDuration > 0 ? _playbackDuration : _audioClip.length - _playbackTime;
             Destroy(m_tempAudioSourceGameObject, destroyDelay);
         }
 
