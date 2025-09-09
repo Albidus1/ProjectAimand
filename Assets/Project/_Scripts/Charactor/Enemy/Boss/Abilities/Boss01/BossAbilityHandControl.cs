@@ -219,7 +219,7 @@ public class BossAbilityHandControl : BossAbility
         a.a = 1f;
         indicatorRenderer.color = a;
 
-        Debug.Log(newPosition);
+        //Debug.Log(newPosition);
 
         indicatorRenderer.DOFade(0, fadeDuration)
             .OnComplete(() => indicator.SetActive(false));
@@ -235,7 +235,7 @@ public class BossAbilityHandControl : BossAbility
             var initialPosition = isRightHand ?
                 m_initialRightHandPosition : m_initialLeftHandPosition;
             var element = moveElements[m_currentPositionIndex];
-
+            
             sequence.Append(MoveTo(hand, element.movePosition, element.moveSpeed, element.moveEase));
             sequence.AppendInterval(0.1f);
             sequence.AppendCallback(SpawnLazerBeam);
@@ -257,7 +257,7 @@ public class BossAbilityHandControl : BossAbility
 
                     sequence.Append(MoveTo(hands.leftHand, e.movePosition, e.moveSpeed, e.moveEase));
                     sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase)
-                        .OnComplete(() => SetHandsCollision(true)));
+                        .OnComplete(() => SetHandsCollision(e.isOnCollision)));
                     sequence.AppendInterval(e.waitTime);
                 }
             }
@@ -286,7 +286,7 @@ public class BossAbilityHandControl : BossAbility
 
                         sequence.Append(m_currentHand.transform.DORotate(new Vector3(0, 0, rotate), 0));
                         sequence.Join(MoveTo(m_currentHand, position, e.moveSpeed, e.moveEase)
-                            .OnComplete(() => SetHandsCollision(true)));
+                            .OnComplete(() => SetHandsCollision(e.isOnCollision)));
                         sequence.AppendInterval(e.waitTime);
                     }
                 }

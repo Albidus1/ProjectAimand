@@ -460,8 +460,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -531074349
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 944099385, guid: 6ac76a3220e17c545a007b11b4360fa5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1095,7 +1095,6 @@ GameObject:
   - component: {fileID: 783986736}
   - component: {fileID: 783986735}
   - component: {fileID: 783986737}
-  - component: {fileID: 783986738}
   m_Layer: 17
   m_Name: RightSideHand
   m_TagString: Untagged
@@ -1144,8 +1143,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 719086249
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 1182132594, guid: 6ac76a3220e17c545a007b11b4360fa5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1219,32 +1218,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.6608086, y: 5.086593}
   m_EdgeRadius: 0
---- !u!114 &783986738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783986734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  killPlayer: 0
-  targetLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  applyDamageOnTriggerEnter: 1
-  applyDamageOnTriggerStay: 1
-  damage: 10
-  damageTakenEveryTime: 0
-  damageTakenDamageable: 0
-  damageTakenNonDamageable: 0
-  invincibilityDuration: 0.5
-  damageCausedKnockbackForce: {x: 10, y: 2}
-  stunTime: 1
-  owner: {fileID: 0}
 --- !u!1 &810030327
 GameObject:
   m_ObjectHideFlags: 0
@@ -3007,8 +2980,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 719086249
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 1182132594, guid: 6ac76a3220e17c545a007b11b4360fa5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3328,8 +3301,9 @@ GameObject:
   - component: {fileID: 1590933835}
   - component: {fileID: 1590933838}
   - component: {fileID: 1590933837}
+  - component: {fileID: 1590933839}
   - component: {fileID: 1590933836}
-  m_Layer: 25
+  m_Layer: 0
   m_Name: Hands
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3467,8 +3441,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHand: {fileID: 783986734}
   leftHand: {fileID: 1436209841}
-  rightCollider2D: {fileID: 0}
-  leftCollider2D: {fileID: 0}
+--- !u!114 &1590933839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590933834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killPlayer: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  applyDamageOnTriggerEnter: 1
+  applyDamageOnTriggerStay: 0
+  damage: 10
+  damageTakenEveryTime: 0
+  damageTakenDamageable: 0
+  damageTakenNonDamageable: 0
+  invincibilityDuration: 0.5
+  damageCausedKnockbackForce: {x: 10, y: 2}
+  stunTime: 1
+  owner: {fileID: 0}
 --- !u!1 &1594435987
 GameObject:
   m_ObjectHideFlags: 0

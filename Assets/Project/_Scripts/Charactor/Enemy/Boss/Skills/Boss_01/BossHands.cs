@@ -7,19 +7,37 @@ public class BossHands : MonoBehaviour
     public GameObject leftHand;
 
     public bool isAbilityActive { get; set; }
-    public bool isOnCollision { get; set; }
+    public bool isOnCollision 
+    {
+        get => m_isOnCollision;
+        set 
+        {
+            m_isOnCollision = value;
+
+            if (m_damageOnTouch != null)
+            {
+                if (value == false)
+                {
+                    Invoke(nameof(DisableDamageOnTouch), 0.1f);
+                }
+                else
+                {
+                    m_damageOnTouch.enabled = true;
+                }
+            }
+        }
+    }
     
     public bool hitPlayer { get; private set; }
 
 
-    public Collider2D rightCollider2D;
-    public Collider2D leftCollider2D;
+    private DamageOnTouch m_damageOnTouch;
     private bool m_isOnCollision;
 
 
     protected void Awake()
     {
-
+        m_damageOnTouch = GetComponent<DamageOnTouch>();
     }
 
     protected void Start()
@@ -34,6 +52,14 @@ public class BossHands : MonoBehaviour
         {
             isOnCollision = false;
             hitPlayer = true;
+        }
+    }
+
+    private void DisableDamageOnTouch()
+    {
+        if (m_damageOnTouch != null)
+        {
+            m_damageOnTouch.enabled = false;
         }
     }
 }
