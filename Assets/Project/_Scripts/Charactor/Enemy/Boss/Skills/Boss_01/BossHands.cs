@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class BossHands : MonoBehaviour
@@ -7,10 +8,21 @@ public class BossHands : MonoBehaviour
 
     public bool isAbilityActive { get; set; }
     public bool isOnCollision { get; set; }
+    
     public bool hitPlayer { get; private set; }
 
 
+    public Collider2D rightCollider2D;
+    public Collider2D leftCollider2D;
+    private bool m_isOnCollision;
+
+
     protected void Awake()
+    {
+
+    }
+
+    protected void Start()
     {
         isAbilityActive = false;
         isOnCollision = false;
@@ -20,7 +32,6 @@ public class BossHands : MonoBehaviour
     {
         if (isOnCollision && collision.CompareTag("Player"))
         {
-            Debug.Log($"{gameObject.name} - {collision.gameObject.name}에게 피해");
             isOnCollision = false;
             hitPlayer = true;
         }

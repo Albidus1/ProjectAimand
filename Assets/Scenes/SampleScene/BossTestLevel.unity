@@ -1095,9 +1095,10 @@ GameObject:
   - component: {fileID: 783986736}
   - component: {fileID: 783986735}
   - component: {fileID: 783986737}
-  m_Layer: 25
+  - component: {fileID: 783986738}
+  m_Layer: 17
   m_Name: RightSideHand
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1218,6 +1219,32 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.6608086, y: 5.086593}
   m_EdgeRadius: 0
+--- !u!114 &783986738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783986734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killPlayer: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  applyDamageOnTriggerEnter: 1
+  applyDamageOnTriggerStay: 1
+  damage: 10
+  damageTakenEveryTime: 0
+  damageTakenDamageable: 0
+  damageTakenNonDamageable: 0
+  invincibilityDuration: 0.5
+  damageCausedKnockbackForce: {x: 10, y: 2}
+  stunTime: 1
+  owner: {fileID: 0}
 --- !u!1 &810030327
 GameObject:
   m_ObjectHideFlags: 0
@@ -1796,7 +1823,7 @@ MonoBehaviour:
   skillsPool: {fileID: 0}
   singleSkill: 1
   abilityPrefab: {fileID: 0}
-  InitailCooldownTime: 20
+  InitailCooldownTime: 100
   cooldownTime: 5
   abilityActCount: 1
   afterCooldown: 1
@@ -2773,7 +2800,7 @@ MonoBehaviour:
   skillsPool: {fileID: 0}
   singleSkill: 1
   abilityPrefab: {fileID: 1768944623345376266, guid: 318b73ffca5c1c34f94f3a3193392cf8, type: 3}
-  InitailCooldownTime: 20
+  InitailCooldownTime: 100
   cooldownTime: 2
   abilityActCount: 1
   afterCooldown: 1
@@ -2931,9 +2958,10 @@ GameObject:
   - component: {fileID: 1436209843}
   - component: {fileID: 1436209842}
   - component: {fileID: 1436209844}
-  m_Layer: 25
+  - component: {fileID: 1436209845}
+  m_Layer: 17
   m_Name: LeftSideHand
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3054,6 +3082,32 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.6608086, y: 5.086593}
   m_EdgeRadius: 0
+--- !u!114 &1436209845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436209841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e14717fb2e90646ae6ef2f8d9440da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killPlayer: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  applyDamageOnTriggerEnter: 1
+  applyDamageOnTriggerStay: 1
+  damage: 10
+  damageTakenEveryTime: 0
+  damageTakenDamageable: 0
+  damageTakenNonDamageable: 0
+  invincibilityDuration: 0.5
+  damageCausedKnockbackForce: {x: 10, y: 2}
+  stunTime: 1
+  owner: {fileID: 0}
 --- !u!1 &1543019089
 GameObject:
   m_ObjectHideFlags: 0
@@ -3413,6 +3467,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHand: {fileID: 783986734}
   leftHand: {fileID: 1436209841}
+  rightCollider2D: {fileID: 0}
+  leftCollider2D: {fileID: 0}
 --- !u!1 &1594435987
 GameObject:
   m_ObjectHideFlags: 0
@@ -3709,7 +3765,7 @@ MonoBehaviour:
   skillsPool: {fileID: 0}
   singleSkill: 0
   abilityPrefab: {fileID: 7461276745289922475, guid: f87a2640d59a95b49a0f74d443e9077e, type: 3}
-  InitailCooldownTime: 1
+  InitailCooldownTime: 100
   cooldownTime: 5
   abilityActCount: 3
   afterCooldown: 1
@@ -4249,7 +4305,7 @@ MonoBehaviour:
   skillsPool: {fileID: 0}
   singleSkill: 1
   abilityPrefab: {fileID: 0}
-  InitailCooldownTime: 10
+  InitailCooldownTime: 1
   cooldownTime: 5
   abilityActCount: 3
   afterCooldown: 1
@@ -4361,7 +4417,7 @@ MonoBehaviour:
   skillsPool: {fileID: 0}
   singleSkill: 0
   abilityPrefab: {fileID: 5295347358254177380, guid: 08309a84283250f4691ca5d0d6f985e6, type: 3}
-  InitailCooldownTime: 7
+  InitailCooldownTime: 100
   cooldownTime: 5
   abilityActCount: 3
   afterCooldown: 1
@@ -4692,63 +4748,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1001 &5818231769333506009
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 258300620558345083, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_Name
-      value: Laser
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 7.000289
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -14.83885
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -90
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -4758,4 +4757,3 @@ SceneRoots:
   - {fileID: 922310136}
   - {fileID: 758372181}
   - {fileID: 699425865}
-  - {fileID: 5818231769333506009}

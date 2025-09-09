@@ -257,7 +257,7 @@ public class BossAbilityHandControl : BossAbility
 
                     sequence.Append(MoveTo(hands.leftHand, e.movePosition, e.moveSpeed, e.moveEase));
                     sequence.Join(MoveTo(hands.rightHand, mirrorPosition, e.moveSpeed, e.moveEase)
-                        .OnComplete(() => SetHandsCollision(e.isOnCollision)));
+                        .OnComplete(() => SetHandsCollision(true)));
                     sequence.AppendInterval(e.waitTime);
                 }
             }
@@ -286,7 +286,7 @@ public class BossAbilityHandControl : BossAbility
 
                         sequence.Append(m_currentHand.transform.DORotate(new Vector3(0, 0, rotate), 0));
                         sequence.Join(MoveTo(m_currentHand, position, e.moveSpeed, e.moveEase)
-                            .OnComplete(() => SetHandsCollision(e.isOnCollision)));
+                            .OnComplete(() => SetHandsCollision(true)));
                         sequence.AppendInterval(e.waitTime);
                     }
                 }
