@@ -24,7 +24,10 @@ public class PlayerMeleeAttack : MonoBehaviour
 
     private void Awake()
     {
-        attackCollider2DGameObject = transform.Find("AttackCollider2D").gameObject;
+        if (attackCollider2DGameObject == null)
+        {
+            attackCollider2DGameObject = transform.Find("AttackCollider2D").gameObject;
+        }
 
         if (attackCollider2DGameObject != null )
         {

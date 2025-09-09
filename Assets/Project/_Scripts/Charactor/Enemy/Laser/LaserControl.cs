@@ -37,6 +37,9 @@ public class LaserControl : MonoBehaviour
     public GameObject startVFX;
     public GameObject endVFX;
 
+
+    private DamageOnTouch m_damageOnTouch;
+    private BoxCollider2D m_boxCollider2D;
     private List<ParticleSystem> m_particles = new List<ParticleSystem>();
     private LineRenderer m_lineRenderer;
     private Vector3 m_direction;
@@ -45,6 +48,9 @@ public class LaserControl : MonoBehaviour
 
     private void Awake()
     {
+        m_damageOnTouch = GetComponent<DamageOnTouch>();
+        m_boxCollider2D = GetComponent<BoxCollider2D>();
+
         m_lineRenderer = GetComponent<LineRenderer>();
 
         if (startVFX == null)
@@ -113,7 +119,14 @@ public class LaserControl : MonoBehaviour
 
             if (hit)
             {
-                //Debug.Log("플레이어 감지됨: " + hit.collider.name);
+                float hitDistance = Vector2.Distance(transform.position, hit.point);
+                m_boxCollider2D.size = new Vector2(hitDistance / transform.lossyScale.x, m_boxCollider2D.size.y);
+                m_boxCollider2D.offset = new Vector2(hitDistance / 2f, m_boxCollider2D.offset.y);
+            }
+            else
+            {
+                m_boxCollider2D.size = new Vector2(force / transform.lossyScale.x, m_boxCollider2D.size.y);
+                m_boxCollider2D.offset = new Vector2(force / 2f, m_boxCollider2D.offset.y);
             }
         }
     }
@@ -192,13 +205,13 @@ public class LaserControl : MonoBehaviour
 
     private void OnValidate()
     {
-        if (false == Application.isPlaying)
-            return;
+        //if (false == Application.isPlaying)
+        //    return;
 
-        if (m_lineRenderer != null)
-        {
-            isFiringLaser = laserOn;
-        }
+        //if (m_lineRenderer != null)
+        //{
+        //    isFiringLaser = laserOn;
+        //}
     }
 #endif
 }

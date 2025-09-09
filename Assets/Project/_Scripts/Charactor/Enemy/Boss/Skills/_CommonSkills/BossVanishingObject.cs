@@ -31,7 +31,7 @@ public class BossVanishingObject : BossSkillBase
         yield return
             m_spriteRenderer.DOFade(endFade, base.disableTime)
             .SetEase(fadeEase)
-            .OnComplete(() => Destroy(gameObject));
+            .OnComplete(() => this.gameObject.SetActive(false));
     }
 
     private void AlphaChange(float _a)

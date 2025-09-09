@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,9 @@ public class DamageOnTouch : MonoBehaviour
 
     [Header("넉백")]
     public Vector2 damageCausedKnockbackForce = new Vector2(10, 2);
+
+    [Header("스턴")]
+    public float stunTime;
 
     [MyReadOnly]
     public GameObject owner;
@@ -202,6 +206,11 @@ public class DamageOnTouch : MonoBehaviour
         OnHitDamageable?.Invoke();
 
         m_colliderHealth.Damage(damage, this.gameObject, invincibilityDuration, m_damageDirection);
+
+        if (stunTime > 0)
+        {
+            m_colliderHealth.ApplyStun(m_collideingCollider.gameObject, stunTime);
+        }
 
         if (m_colliderHealth.currentHP <= 0)
         {

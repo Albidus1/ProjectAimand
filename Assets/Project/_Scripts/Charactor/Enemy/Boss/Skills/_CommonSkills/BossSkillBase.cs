@@ -13,14 +13,14 @@ public class BossSkillBase : MonoBehaviour
     public float damageTickTime = 0.5f;
     public float disableTime;
 
-    protected Collider2D m_col;
+    protected Collider2D m_collider2D;
     protected float m_damageTimer = -0.1f;
 
 
 
     protected virtual void Awake()
     {
-        m_col = GetComponent<Collider2D>();
+        m_collider2D = GetComponent<Collider2D>();
         playerMask = LayerMask.GetMask("Player");
     }
 

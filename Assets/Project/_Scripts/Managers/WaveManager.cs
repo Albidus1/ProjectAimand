@@ -228,8 +228,8 @@ public class WaveManager : MySingleton<WaveManager>
 
     protected virtual void OnDisable()
     {
-        OnWaveStart.RemoveAllListeners();
-        OnWaveCompleted.RemoveAllListeners();
-        OnAllWavesCompleted.RemoveAllListeners();
+        OnWaveStart?.RemoveAllListeners();
+        OnWaveCompleted?.RemoveAllListeners();
+        OnAllWavesCompleted?.RemoveAllListeners();
     }
 }

@@ -281,6 +281,19 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
     }
 
+    public void ApplyStun(GameObject _instigator, float _stunTime)
+    {
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.ApplyStun(_stunTime);
+
+        }
+        else if (m_enemyMovement != null)
+        {
+            m_enemyMovement.ApplyStun(_stunTime);
+        }
+    }
+
     public void GetHealth(float _health, GameObject _instigator)
     {
         SetHealth(Mathf.Min(currentHP + _health, maxHP), _instigator);

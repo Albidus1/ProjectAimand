@@ -6,8 +6,6 @@ public class BossSniper : BossSkillBase
     public float trackingTime = 3f;
     public float shotTime = 1f;
 
-    [Header("범위")]
-    public float circleRadius = 1.5f;
 
     private Vector2 m_velocity = Vector2.zero;
     private float m_trackingTimer;
@@ -29,6 +27,8 @@ public class BossSniper : BossSkillBase
 
     public void Initialization()
     {
+        m_collider2D.enabled = false;
+
         target = FindFirstObjectByType<PlayerMovement>().transform;
         m_trackingTimer = trackingTime;
         m_shotTimer = shotTime;
@@ -72,30 +72,19 @@ public class BossSniper : BossSkillBase
             return;
         }
 
-        RaycastHit2D[] hits = Physics2D.CircleCastAll
-            (transform.position,
-            circleRadius,
-            Vector2.zero,
-            0,
-            playerMask);
+        m_collider2D.enabled = true;
+        Invoke(nameof(OnDestroyObject), 0.1f);
+    }
 
-        foreach (var hit in hits)
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                Debug.Log($"{gameObject.name} - {hit.collider.gameObject.name}에게 {damage} 피해");
-                break;
-            }
-        }
-
-        Object.Destroy(gameObject);
+    private void OnDestroyObject()
+    {
+        this.gameObject.SetActive(false);
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, circleRadius);
+
     }
 #endif
 }

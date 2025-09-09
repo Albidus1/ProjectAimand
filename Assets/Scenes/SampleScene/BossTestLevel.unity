@@ -474,93 +474,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &244844009
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 244844010}
-  - component: {fileID: 244844011}
-  m_Layer: 0
-  m_Name: AbilityRange
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &244844010
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 244844009}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -30.081297, y: 17.54157, z: 0}
-  m_LocalScale: {x: 3, y: 2.9160144, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 699425865}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &244844011
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 244844009}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 698075539
-  m_SortingLayer: 1
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &541317093
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +784,6 @@ Transform:
   - {fileID: 1247899897}
   - {fileID: 242851224}
   - {fileID: 1866454209}
-  - {fileID: 244844010}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &739244033
@@ -1880,13 +1792,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a067c6d278cc54cbeee50a83d2c2a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityRangePool: {fileID: 0}
+  skillsPool: {fileID: 0}
   singleSkill: 1
   abilityPrefab: {fileID: 0}
   InitailCooldownTime: 20
   cooldownTime: 5
   abilityActCount: 1
   afterCooldown: 1
-  abilityRangePrefab: {fileID: 244844009}
   initialAbilityRangePosition: {fileID: 688423959}
   fadeDuration: 2
   autoResize: 0
@@ -1895,8 +1808,8 @@ MonoBehaviour:
   AxisYLock: 0
   debugText: {fileID: 744958663}
   hands: {fileID: 1590933838}
-  lazerBeamObject: {fileID: 8453571738731344605, guid: a36d5f21eaceee541b3a203c369f90ff, type: 3}
-  lazerBeamDuration: 2
+  laserBeamObject: {fileID: 0}
+  laserBeamDuration: 2
   moveElements: []
   moveLeftElements:
   - movePosition: {x: -8.738556, y: 4.1806746}
@@ -2856,13 +2769,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0cde28c943764449e97b2885e0c3bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityRangePool: {fileID: 0}
+  skillsPool: {fileID: 0}
   singleSkill: 1
   abilityPrefab: {fileID: 1768944623345376266, guid: 318b73ffca5c1c34f94f3a3193392cf8, type: 3}
   InitailCooldownTime: 20
   cooldownTime: 2
   abilityActCount: 1
   afterCooldown: 1
-  abilityRangePrefab: {fileID: 0}
   initialAbilityRangePosition: {fileID: 688423959}
   fadeDuration: 0
   autoResize: 0
@@ -3791,13 +3705,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0cde28c943764449e97b2885e0c3bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityRangePool: {fileID: 0}
+  skillsPool: {fileID: 0}
   singleSkill: 0
   abilityPrefab: {fileID: 7461276745289922475, guid: f87a2640d59a95b49a0f74d443e9077e, type: 3}
-  InitailCooldownTime: 10
+  InitailCooldownTime: 1
   cooldownTime: 5
   abilityActCount: 3
   afterCooldown: 1
-  abilityRangePrefab: {fileID: 244844009}
   initialAbilityRangePosition: {fileID: 688423959}
   fadeDuration: 3
   autoResize: 0
@@ -3883,6 +3798,8 @@ GameObject:
   - component: {fileID: 1866454209}
   - component: {fileID: 1866454211}
   - component: {fileID: 1866454210}
+  - component: {fileID: 1866454218}
+  - component: {fileID: 1866454217}
   - component: {fileID: 1866454216}
   - component: {fileID: 1866454215}
   - component: {fileID: 1866454214}
@@ -3923,6 +3840,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomAbilityUsage: 0
+  abilityRangePool: {fileID: 0}
+  pool: {fileID: 0}
   abilities:
   - {fileID: 1828034443}
   - {fileID: 2078619050}
@@ -3948,13 +3867,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0e0d992acc2d6f47a4cbae6e946371e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 200
-  healthSlider: {fileID: 2103801206}
-  invincible: 0
   currentHP: 0
-  OnDamageEvent:
-    m_PersistentCalls:
-      m_Calls: []
+  temporarilyInvulnerable: 0
+  postDamageInvulnerable: 0
+  initialHP: 100
+  maxHP: 200
+  invulnerable: 0
+  immuneToDamage: 0
+  immuneToKnockback: 0
+  destroyOnDeath: 1
+  delayBeforeDestroy: 0
+  CollisionsOffOnDeath: 1
+  grabityOffOnDeath: 0
+  respawnAtInitialLocation: 0
 --- !u!61 &1866454214
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4087,6 +4012,59 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1866454217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866454207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01d34b4efa1713148bb9e8b4b8027eb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mutualizeWaitingPools: 0
+  nestWaitingPool: 1
+  nestUnderThisObject: 0
+  poolingMode: 0
+  pool:
+  - gameObjectToPool: {fileID: 8453571738731344605, guid: a36d5f21eaceee541b3a203c369f90ff, type: 3}
+    poolSize: 3
+    poolCanExpand: 1
+    enabled: 1
+  - gameObjectToPool: {fileID: 7461276745289922475, guid: f87a2640d59a95b49a0f74d443e9077e, type: 3}
+    poolSize: 3
+    poolCanExpand: 1
+    enabled: 1
+  - gameObjectToPool: {fileID: 5295347358254177380, guid: 08309a84283250f4691ca5d0d6f985e6, type: 3}
+    poolSize: 3
+    poolCanExpand: 1
+    enabled: 1
+  - gameObjectToPool: {fileID: 1768944623345376266, guid: 318b73ffca5c1c34f94f3a3193392cf8, type: 3}
+    poolSize: 3
+    poolCanExpand: 1
+    enabled: 1
+  canPoolSameObjectTwice: 0
+  mutualizedPoolName: 
+--- !u!114 &1866454218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866454207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29cae3dfad6d74441bfe4f3a993c2bce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mutualizeWaitingPools: 0
+  nestWaitingPool: 1
+  nestUnderThisObject: 0
+  gameObjectToPool: {fileID: 6615059883540229294, guid: ddb59cc15bf310d42b4f97932a95b219, type: 3}
+  poolSize: 5
+  poolCanExpand: 1
 --- !u!1 &1982381304
 GameObject:
   m_ObjectHideFlags: 0
@@ -4267,13 +4245,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a067c6d278cc54cbeee50a83d2c2a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityRangePool: {fileID: 0}
+  skillsPool: {fileID: 0}
   singleSkill: 1
   abilityPrefab: {fileID: 0}
   InitailCooldownTime: 10
   cooldownTime: 5
   abilityActCount: 3
   afterCooldown: 1
-  abilityRangePrefab: {fileID: 244844009}
   initialAbilityRangePosition: {fileID: 688423959}
   fadeDuration: 2
   autoResize: 0
@@ -4282,8 +4261,8 @@ MonoBehaviour:
   AxisYLock: 0
   debugText: {fileID: 832935614}
   hands: {fileID: 1590933838}
-  lazerBeamObject: {fileID: 0}
-  lazerBeamDuration: 2
+  laserBeamObject: {fileID: 0}
+  laserBeamDuration: 2
   moveElements: []
   moveLeftElements: []
   moveRightElements: []
@@ -4378,13 +4357,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0cde28c943764449e97b2885e0c3bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityRangePool: {fileID: 0}
+  skillsPool: {fileID: 0}
   singleSkill: 0
   abilityPrefab: {fileID: 5295347358254177380, guid: 08309a84283250f4691ca5d0d6f985e6, type: 3}
   InitailCooldownTime: 7
   cooldownTime: 5
   abilityActCount: 3
   afterCooldown: 1
-  abilityRangePrefab: {fileID: 244844009}
   initialAbilityRangePosition: {fileID: 0}
   fadeDuration: 3
   autoResize: 0
@@ -4712,6 +4692,63 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1001 &5818231769333506009
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 258300620558345083, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_Name
+      value: Laser
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.000289
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -14.83885
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380499398135170649, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4eb42f13f26ec9d4289a9365c6a27887, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -4721,3 +4758,4 @@ SceneRoots:
   - {fileID: 922310136}
   - {fileID: 758372181}
   - {fileID: 699425865}
+  - {fileID: 5818231769333506009}

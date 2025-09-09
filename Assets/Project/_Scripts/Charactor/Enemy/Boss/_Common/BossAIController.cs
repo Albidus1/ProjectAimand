@@ -9,6 +9,8 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 {
     [Header("보스 능력 설정")]
     public bool randomAbilityUsage = false;
+    public MySimpleObjectPooler abilityRangePool;
+    public MyMultipleObjectPooler pool;
     public List<BossAbility> abilities = new List<BossAbility>();
 
     [Header("보스 페이즈 설정")]
@@ -30,9 +32,12 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
 
 
 
+
     private void Awake()
     {
-        m_health = GetComponent<Health>();     
+        m_health = GetComponent<Health>();  
+        abilityRangePool = GetComponent<MySimpleObjectPooler>();
+        pool = GetComponent<MyMultipleObjectPooler>();
     }
 
     private void Start()
@@ -50,6 +55,14 @@ public class BossAIController : MonoBehaviour, IEventListener<AbilityEvent>
         m_currentPhase = 0;
 
 
+        if (pool != null)
+        {
+            foreach (BossAbility ab in abilities)
+            {
+                ab.abilityRangePool = abilityRangePool;
+                ab.skillsPool = pool;
+            }
+        }
     }
 
     private void Update()

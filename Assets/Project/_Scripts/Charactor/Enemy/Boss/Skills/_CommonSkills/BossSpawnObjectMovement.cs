@@ -19,7 +19,7 @@ public class BossSpawnObjectMovement : BossSkillBase
     {
         transform.DOMove((Vector2)transform.position + moveDirection, moveSpeed)
             .SetEase(moveEase)
-            .OnComplete(() => Object.Destroy(gameObject));
+            .OnComplete(() => this.gameObject.SetActive(false));
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)

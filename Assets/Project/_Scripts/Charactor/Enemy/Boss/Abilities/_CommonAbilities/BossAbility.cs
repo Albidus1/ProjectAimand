@@ -31,6 +31,9 @@ public struct AbilityEvent
 
 public class BossAbility : MonoBehaviour
 {
+    public MySimpleObjectPooler abilityRangePool;
+    public MyMultipleObjectPooler skillsPool;
+
     [Header("스킬 세팅")]
     public bool singleSkill = true;
     [Space(10)]
@@ -42,7 +45,6 @@ public class BossAbility : MonoBehaviour
     public bool afterCooldown = false;
 
     [Header("스킬 범위 표시")]
-    public GameObject abilityRangePrefab;
     public Transform initialAbilityRangePosition;
     public float fadeDuration = 2f;
     [Space(5)]
@@ -123,16 +125,29 @@ public class BossAbility : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
-    protected virtual void AbilityRangeVisualizer()
+    protected virtual void AbilityRangeVisualizer(Vector3 _spawnPoint)
     {
-        GameObject indicator = Instantiate(abilityRangePrefab, m_spawnPoint, Quaternion.identity);
+        if (abilityRangePool == null)
+        {
+            return;
+        }
+
+        //GameObject indicator = Instantiate(abilityRangePrefab, m_spawnPoint, Quaternion.identity);
+        GameObject indicator = abilityRangePool.GetPooledGameObject();
         SpriteRenderer indicatorRenderer = indicator.GetComponent<SpriteRenderer>();
 
-        if (autoResize)
+        if (indicator == null)
         {
-            BoxCollider2D spawnObj = abilityPrefab.GetComponent<BoxCollider2D>();
+            Debug.Log("범위 프리팹 없음");
+            return;
+        }
 
-            indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
+        if (autoResize)
+        {       
+            if (abilityPrefab.TryGetComponent<BoxCollider2D>(out var spawnObj))
+            {
+                indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
+            }
             //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
         }
         else
@@ -141,7 +156,7 @@ public class BossAbility : MonoBehaviour
             //abilityRangeSprite.size = new Vector2(base.abilityRangeSize.x, base.abilityRangeSize.y);
         }
 
-        Vector2 newPosition = indicator.transform.position;
+        Vector2 newPosition = _spawnPoint;
         if (AxisXLock)
         {
             newPosition.x = initialAbilityRangePosition.transform.position.x;
@@ -151,9 +166,16 @@ public class BossAbility : MonoBehaviour
             newPosition.y = initialAbilityRangePosition.transform.position.y;
         }
         indicator.transform.position = newPosition;
+        indicator.transform.localEulerAngles = Vector3.zero;
+
+        Color c = indicatorRenderer.color;
+        c.a = 1f;
+        indicatorRenderer.color = c;
+
+        indicator.SetActive(true);
 
         indicatorRenderer.DOFade(0, fadeDuration)
-            .OnComplete(() => Destroy(indicator, fadeDuration));
+            .OnComplete(() => indicator.SetActive(false));
     }
 
     public virtual void PhaseChange()
