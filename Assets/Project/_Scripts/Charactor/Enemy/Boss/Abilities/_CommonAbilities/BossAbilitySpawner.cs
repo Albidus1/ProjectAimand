@@ -154,7 +154,7 @@ public class BossAbilitySpawner : BossAbility
         for (int i = 0; i < m_spawnedObjectCount; i++)
         {
             m_spawnPoint = SetSpawnPoint();
-            Debug.Log(m_spawnPoint);
+            //Debug.Log(m_spawnPoint);
 
             if (base.abilityPrefab != null)
             {
