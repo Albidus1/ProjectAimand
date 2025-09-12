@@ -2,12 +2,37 @@ using UnityEngine;
 
 
 
-[RequireComponent(typeof(BoxCollider2D))]
-public class TriggerEvent : MonoBehaviour
+public struct TriggerEvent
 {
+    static TriggerEvent e;
+
+    public string eventID;
+    public TriggerEventSetting setting;
+
+    public TriggerEvent(string _eventID, TriggerEventSetting _setting)
+    {
+        eventID = _eventID;
+        setting = _setting;
+    }
+    public static void Trigger(string _eventID, TriggerEventSetting _setting)
+    {
+        e.eventID = _eventID;
+        e.setting = _setting;
+        EventManager.TriggerEvent(e);
+    }
+}
+
+[RequireComponent(typeof(BoxCollider2D))]
+public class TriggerEventSetting : MonoBehaviour
+{
+    [Header("이벤트")]
+    public string eventID = "default";
+
     [Header("기본 설정")]
     public bool triggerOnce;
     public float triggerCooldownTime;
+    public LayerMask targetLayer;
+
 
     public bool isTrigger => m_triggered;
 
@@ -48,6 +73,8 @@ public class TriggerEvent : MonoBehaviour
         m_triggerOnce = triggerOnce;
         m_triggered = true;
 
+        TriggerEvent.Trigger(eventID, this);
+
         if (triggerCooldownTime > 0)
         {
             Invoke(nameof(ResetTriggerCooldown), triggerCooldownTime);
@@ -61,6 +88,8 @@ public class TriggerEvent : MonoBehaviour
     }
 
     protected virtual void ResetTriggerCooldown() => m_triggered = false;
+
+
 
 
 #if UNITY_EDITOR

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 
 [SelectionBase]
-public class PlatformMoving : MyPath, ISaveLoadManagerMethods
+public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadManagerMethods
 {
     public enum RotateDirection
     {
@@ -34,6 +34,11 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     [MyConditionalHide("isAccelerateAble", true)]
     public float speedThreshold;
 
+    [Header("이벤트")]
+    public bool useTriggerEvent = false;
+    [MyConditionalHide("useTriggerEvent", true)]
+    public string eventID;
+
 
     public Rigidbody2D rb { get; private set; }
     public float jumpTime { get; private set; }
@@ -43,6 +48,8 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     private Vector3 m_lastPosition;
     private PlayerMovement m_player;
     private bool m_playerSync = false;
+    private TriggerEventSetting m_eventSetting;
+
 
     #region SAVELOAD
     public virtual string Save()
@@ -192,17 +199,31 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     #region CHECK METHODES
     private bool PlatformCanMove()
     {
-        if (m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
+        if (useTriggerEvent)
         {
-            return true;
+            if (m_eventSetting != null && m_eventSetting.isTrigger)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-
-        if (m_playerSync)
+        else
         {
-            return true;
-        }
+            if (m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
+            {
+                return true;
+            }
 
-        return false;
+            if (m_playerSync)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     private void CheckAccelerateAble()
@@ -252,4 +273,34 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         }
     }
     #endregion
+
+    public void OnEvent(TriggerEvent e)
+    {
+        if (e.eventID != this.eventID)
+        {
+            return;
+        }
+
+        m_eventSetting = e.setting;
+
+        if (m_eventSetting != null)
+        {
+            if (m_eventSetting.isTrigger)
+            {
+                return;
+            }
+
+            
+        }
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<TriggerEvent>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<TriggerEvent>();
+    }
 }

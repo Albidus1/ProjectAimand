@@ -10,7 +10,7 @@ public class SpawnerElement
     public Vector3 spawnPosition;
 }
 
-public class TriggerEnemySpawner : TriggerEvent
+public class TriggerEnemySpawner : TriggerEventSetting
 {
     public List<GameObject> enemyPrefabs = new List<GameObject>();
     public List<SpawnerElement> enemyList = new List<SpawnerElement>();
@@ -33,7 +33,7 @@ public class TriggerEnemySpawner : TriggerEvent
             return;
         }
 
-        if (collision.CompareTag("Player"))
+        if (MyLayers.LayerInLayerMask(collision.gameObject.layer, targetLayer))
         {
             Trigger();
         }
