@@ -40,14 +40,4 @@ public class BossVanishingObject : BossSkillBase
         c.a = Mathf.Clamp(_a, 0f, 1f);
         m_spriteRenderer.color = c;
     }
-
-    protected override void OnTriggerEnter2D(Collider2D collision)
-    {
-        base.OnTriggerEnter2D(collision);
-    }
-
-    protected override void OnTriggerStay2D(Collider2D collision)
-    {
-        base.OnTriggerStay2D(collision);
-    }
 }

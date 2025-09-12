@@ -21,14 +21,4 @@ public class BossSpawnObjectMovement : BossSkillBase
             .SetEase(moveEase)
             .OnComplete(() => this.gameObject.SetActive(false));
     }
-
-    protected override void OnTriggerEnter2D(Collider2D collision)
-    {
-        base.OnTriggerEnter2D(collision);
-    }
-
-    protected override void OnTriggerStay2D(Collider2D collision)
-    {
-        base.OnTriggerStay2D(collision);
-    }
 }

@@ -7,14 +7,9 @@ public class BossSkillBase : MonoBehaviour
     public LayerMask playerMask;
 
     [Header("기본 스킬 설정")]
-    public float damage;
-    public bool isDoT = false;
-    [MyConditionalHide("isDoT", true)]
-    public float damageTickTime = 0.5f;
     public float disableTime;
 
     protected Collider2D m_collider2D;
-    protected float m_damageTimer = -0.1f;
 
 
 
@@ -32,37 +27,5 @@ public class BossSkillBase : MonoBehaviour
     public virtual void UseSkill()
     {
 
-    }
-
-    protected virtual void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (isDoT)
-        {
-            return;
-        }
-
-        if (collision.CompareTag("Player"))
-        {
-            Debug.Log($"{gameObject.name} - {collision.gameObject.name}에게 {damage} 피해");
-        }
-    }
-
-    protected virtual void OnTriggerStay2D(Collider2D collision)
-    {
-        if (!isDoT)
-        {
-            return;
-        }
-
-        if (Time.time < m_damageTimer)
-        {
-            return;
-        }
-
-        if (collision.CompareTag("Player"))
-        {
-            m_damageTimer = Time.time + damageTickTime;
-            Debug.Log($"{gameObject.name} - {collision.gameObject.name}에게 {damage} 피해 (DoT)");
-        }
     }
 }
