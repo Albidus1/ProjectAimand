@@ -22,7 +22,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
     public float movementSpeed;
 
     [Header("회전")]
-    public bool isRotateAble = false;
+    public bool isRotateAble;
     [MyConditionalHide("isRotateAble", true)]
     public float rotateSpeed = 0f;
     [MyConditionalHide("isRotateAble", true)]
@@ -112,13 +112,19 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
             || base.m_endReached
             || false == canMove)
         {
+            if ((m_eventSetting != null && m_eventSetting.isTrigger) ||
+                false == useTriggerEvent)
+            {
+                RotatePlatform();
+            }
+
             return;
         }
 
         if (PlatformCanMove())
         {
             CheckAccelerateAble();
-            Rotate();
+            RotatePlatform();
             Move();
         }
 
@@ -167,31 +173,55 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
     #endregion
 
     #region ROTATE
-    private void Rotate()
+    private void RotatePlatform()
     {
-        if (isRotateAble == false)
+        Debug.Log(isRotateAble);
+
+        if (false == isRotateAble)
         {
             return;
         }
 
-        Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
-        Vector3 moveDirection = position - transform.position;
-        //float rotationSmoothing = 0.1f;
-
-        if (base.CycleOption == CycleOptions.PingPong && base.m_direction < 0)
+        if (pathElements.Count > 1)
         {
-            moveDirection = transform.position - position;
+            Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
+            Vector3 moveDirection = position - transform.position;
+            //float rotationSmoothing = 0.1f;
+
+            if (base.CycleOption == CycleOptions.PingPong && base.m_direction < 0)
+            {
+                moveDirection = transform.position - position;
+            }
+
+            if (moveDirection != Vector3.zero)
+            {
+                float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+                Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+                transform.rotation = Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    rotateSpeed * Time.deltaTime);
+            }
         }
-
-        if (moveDirection != Vector3.zero)
+        else
         {
-            float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-            Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            Debug.Log(rotateDirection);
 
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                rotateSpeed * Time.deltaTime);
+            Quaternion rotation = transform.rotation;
+            switch (rotateDirection)
+            {
+                case RotateDirection.None:
+                    return;
+                case RotateDirection.Left:
+                    rotation *= Quaternion.Euler(0, 0, rotateSpeed * Time.deltaTime);
+                    break;
+                case RotateDirection.Right:
+                    rotation *= Quaternion.Euler(0, 0, -rotateSpeed * Time.deltaTime);
+                    break;
+            }
+
+            transform.rotation = rotation;
         }
     }
     #endregion
@@ -210,20 +240,18 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
                 return false;
             }
         }
-        else
+
+        if (false == m_playerSync)
         {
-            if (m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
-            {
-                return true;
-            }
-
-            if (m_playerSync)
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
+
+        if (m_player != null && m_playerSync && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void CheckAccelerateAble()
@@ -288,9 +316,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
             if (m_eventSetting.isTrigger)
             {
                 return;
-            }
-
-            
+            }           
         }
     }
 
