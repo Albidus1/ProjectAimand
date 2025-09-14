@@ -18,7 +18,7 @@ public class MyPathEditor2 : Editor
 
         foreach (var platform in platforms)
         {
-            if (false == platform.isInitialized)
+            if (false == platform.Initialized)
             {
                 platform.InitializePoints();
                 EditorUtility.SetDirty(platform);

@@ -11,8 +11,8 @@ public class BossAbilityHandControl : BossAbility
 {
     [Header("손 오브젝트")]
     public BossHands hands;
-    public GameObject lazerBeamObject;
-    public float lazerBeamDuration = 2f;
+    public GameObject laserBeamObject;
+    public float laserBeamDuration = 2f;
 
     [Header("지정 좌표")]
     [MyReadOnly]
@@ -76,7 +76,7 @@ public class BossAbilityHandControl : BossAbility
 
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
-        AbilityRangeVisualizer();
+        AbilityRangeVisualizer(m_spawnPoint);
         yield return new WaitForSeconds(base.fadeDuration);
 
         yield return StartCoroutine(ObjectsActivate());
@@ -86,7 +86,7 @@ public class BossAbilityHandControl : BossAbility
         hands.isAbilityActive = false;
     }
 
-    protected override void AbilityRangeVisualizer()
+    protected override void AbilityRangeVisualizer(Vector3 _spawnPoint)
     {
         if (lazerPattern)
         {
@@ -95,7 +95,7 @@ public class BossAbilityHandControl : BossAbility
             base.abilityPrefab = isRightHand ?
                 hands.rightHand : hands.leftHand;
 
-            base.AbilityRangeVisualizer();
+            base.AbilityRangeVisualizer(_spawnPoint);
         }
         else
         {
@@ -119,17 +119,17 @@ public class BossAbilityHandControl : BossAbility
                     isRightFirst = Random.Range(0, 2) == 0;
                     if (isRightFirst)
                     {
-                        HandIndicatorRender(base.abilityRangePrefab, pos2, dir2);
+                        HandIndicatorRender(pos2, dir2);
                     }
                     else
                     {
-                        HandIndicatorRender(base.abilityRangePrefab, pos1, dir1);
+                        HandIndicatorRender(pos1, dir1);
                     }
                 }
                 else
                 {
-                    HandIndicatorRender(base.abilityRangePrefab, pos1, dir1);
-                    HandIndicatorRender(base.abilityRangePrefab, pos2, dir2);
+                    HandIndicatorRender(pos1, dir1);
+                    HandIndicatorRender(pos2, dir2);
                 }
             }
         }
@@ -169,9 +169,20 @@ public class BossAbilityHandControl : BossAbility
         }
     }
 
-    private void HandIndicatorRender(GameObject _obj, Vector3 _pos, Vector3 _dir)
+    private void HandIndicatorRender(Vector3 _pos, Vector3 _dir)
     {
-        GameObject indicator = Instantiate(_obj, m_spawnPoint, Quaternion.identity);
+        if (abilityRangePool == null)
+        {
+            return;
+        }
+
+        GameObject indicator = abilityRangePool.GetPooledGameObject();
+
+        if (indicator == null)
+        {
+            Debug.Log("범위 표시 프리팹 없음");
+            return;
+        }
 
         float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg;
         indicator.transform.rotation = Quaternion.Euler(0, 0, angle);
@@ -181,7 +192,7 @@ public class BossAbilityHandControl : BossAbility
 
         if (autoResize)
         {
-            BoxCollider2D spawnObj = _obj.GetComponent<BoxCollider2D>();
+            BoxCollider2D spawnObj = indicator.GetComponent<BoxCollider2D>();
 
             indicator.transform.localScale = new Vector2(spawnObj.bounds.size.x, spawnObj.bounds.size.y);
             //abilityRangeSprite.size = new Vector2(m_collider2D.bounds.size.x, m_collider2D.bounds.size.y);
@@ -201,10 +212,17 @@ public class BossAbilityHandControl : BossAbility
         {
             newPosition.y = initialAbilityRangePosition.transform.position.y;
         }
+
         indicator.transform.position = newPosition;
 
+        Color a = indicatorRenderer.color;
+        a.a = 1f;
+        indicatorRenderer.color = a;
+
+        //Debug.Log(newPosition);
+
         indicatorRenderer.DOFade(0, fadeDuration)
-            .OnComplete(() => Destroy(indicator, fadeDuration));
+            .OnComplete(() => indicator.SetActive(false));
     }
 
     private IEnumerator ObjectsActivate()
@@ -217,11 +235,11 @@ public class BossAbilityHandControl : BossAbility
             var initialPosition = isRightHand ?
                 m_initialRightHandPosition : m_initialLeftHandPosition;
             var element = moveElements[m_currentPositionIndex];
-
+            
             sequence.Append(MoveTo(hand, element.movePosition, element.moveSpeed, element.moveEase));
             sequence.AppendInterval(0.1f);
             sequence.AppendCallback(SpawnLazerBeam);
-            sequence.AppendInterval(lazerBeamDuration);
+            sequence.AppendInterval(laserBeamDuration);
             sequence.Append(MoveTo(hand, initialPosition, moveSpeed, moveEase));
             sequence.AppendInterval(0.1f);
         }
@@ -287,7 +305,7 @@ public class BossAbilityHandControl : BossAbility
 
     private void SetHandsCollision(bool _OnOff)
     {
-        Debug.Log($"손 콜리전 {_OnOff}");
+        //Debug.Log($"손 콜리전 {_OnOff}");
         hands.isOnCollision = _OnOff;
     }
 
@@ -299,20 +317,28 @@ public class BossAbilityHandControl : BossAbility
 
     private void SpawnLazerBeam()
     {     
-        if (lazerBeamObject == null)
+        if (laserBeamObject == null)
         {
             return;
         }
 
-        Vector3 half = new Vector2(lazerBeamObject.transform.localScale.x * 0.5f, 0);
+        Vector3 half = new Vector2(laserBeamObject.transform.localScale.x * 0.5f, 0);
         Vector2 position = isRightHand ?
             hands.rightHand.transform.position - half :
             hands.leftHand.transform.position + half;
 
 
-        BossVanishingObject obj = Instantiate(lazerBeamObject, position, Quaternion.identity).GetComponent<BossVanishingObject>();
-        obj.disableTime = lazerBeamDuration;
-        obj.UseSkill();
+        GameObject laser = skillsPool.GetPooledGameObjectOfName(laserBeamObject.name);
+
+        laser.transform.position = position;
+        laser.gameObject.SetActive(true);
+
+        if (laser.TryGetComponent<BossVanishingObject>(out var obj))
+        {
+            obj.disableTime = laserBeamDuration;
+            obj.UseSkill();
+        }
+
     }
 
     #region GENERAL METHODS

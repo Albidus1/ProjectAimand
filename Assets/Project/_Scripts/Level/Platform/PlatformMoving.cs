@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 
 [SelectionBase]
-public class PlatformMoving : MyPath, ISaveLoadManagerMethods
+public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadManagerMethods
 {
     public enum RotateDirection
     {
@@ -22,7 +22,7 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     public float movementSpeed;
 
     [Header("회전")]
-    public bool isRotateAble = false;
+    public bool isRotateAble;
     [MyConditionalHide("isRotateAble", true)]
     public float rotateSpeed = 0f;
     [MyConditionalHide("isRotateAble", true)]
@@ -34,6 +34,11 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     [MyConditionalHide("isAccelerateAble", true)]
     public float speedThreshold;
 
+    [Header("이벤트")]
+    public bool useTriggerEvent = false;
+    [MyConditionalHide("useTriggerEvent", true)]
+    public string eventID;
+
 
     public Rigidbody2D rb { get; private set; }
     public float jumpTime { get; private set; }
@@ -43,6 +48,8 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     private Vector3 m_lastPosition;
     private PlayerMovement m_player;
     private bool m_playerSync = false;
+    private TriggerEventSetting m_eventSetting;
+
 
     #region SAVELOAD
     public virtual string Save()
@@ -105,13 +112,19 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
             || base.m_endReached
             || false == canMove)
         {
+            if ((m_eventSetting != null && m_eventSetting.isTrigger) ||
+                false == useTriggerEvent)
+            {
+                RotatePlatform();
+            }
+
             return;
         }
 
         if (PlatformCanMove())
         {
             CheckAccelerateAble();
-            Rotate();
+            RotatePlatform();
             Move();
         }
 
@@ -160,31 +173,55 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     #endregion
 
     #region ROTATE
-    private void Rotate()
+    private void RotatePlatform()
     {
-        if (isRotateAble == false)
+        Debug.Log(isRotateAble);
+
+        if (false == isRotateAble)
         {
             return;
         }
 
-        Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
-        Vector3 moveDirection = position - transform.position;
-        //float rotationSmoothing = 0.1f;
-
-        if (base.CycleOption == CycleOptions.PingPong && base.m_direction < 0)
+        if (pathElements.Count > 1)
         {
-            moveDirection = transform.position - position;
+            Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
+            Vector3 moveDirection = position - transform.position;
+            //float rotationSmoothing = 0.1f;
+
+            if (base.CycleOption == CycleOptions.PingPong && base.m_direction < 0)
+            {
+                moveDirection = transform.position - position;
+            }
+
+            if (moveDirection != Vector3.zero)
+            {
+                float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+                Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+                transform.rotation = Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    rotateSpeed * Time.deltaTime);
+            }
         }
-
-        if (moveDirection != Vector3.zero)
+        else
         {
-            float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-            Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            Debug.Log(rotateDirection);
 
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                rotateSpeed * Time.deltaTime);
+            Quaternion rotation = transform.rotation;
+            switch (rotateDirection)
+            {
+                case RotateDirection.None:
+                    return;
+                case RotateDirection.Left:
+                    rotation *= Quaternion.Euler(0, 0, rotateSpeed * Time.deltaTime);
+                    break;
+                case RotateDirection.Right:
+                    rotation *= Quaternion.Euler(0, 0, -rotateSpeed * Time.deltaTime);
+                    break;
+            }
+
+            transform.rotation = rotation;
         }
     }
     #endregion
@@ -192,12 +229,24 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
     #region CHECK METHODES
     private bool PlatformCanMove()
     {
-        if (m_player != null && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
+        if (useTriggerEvent)
+        {
+            if (m_eventSetting != null && m_eventSetting.isTrigger)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        if (false == m_playerSync)
         {
             return true;
         }
 
-        if (m_playerSync)
+        if (m_player != null && m_playerSync && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
         {
             return true;
         }
@@ -252,4 +301,32 @@ public class PlatformMoving : MyPath, ISaveLoadManagerMethods
         }
     }
     #endregion
+
+    public void OnEvent(TriggerEvent e)
+    {
+        if (e.eventID != this.eventID)
+        {
+            return;
+        }
+
+        m_eventSetting = e.setting;
+
+        if (m_eventSetting != null)
+        {
+            if (m_eventSetting.isTrigger)
+            {
+                return;
+            }           
+        }
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<TriggerEvent>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<TriggerEvent>();
+    }
 }

@@ -9,6 +9,8 @@ public interface IEnemyPattern
     void Update();
     void Finish();
     bool isFinished();
+    void SetAnimationTrigger(string _triggerName);
+    void SetAnimationBool(string _boolName, bool _value);
 }
 
 public abstract class EnemyPatternBase : IEnemyPattern
@@ -20,7 +22,11 @@ public abstract class EnemyPatternBase : IEnemyPattern
     protected Health m_health;
     protected Health m_targetHealth;
     protected Collider2D m_collider;
+    protected Animator m_animator;
 
+    protected bool m_initialized = false;
+    protected bool isAnimationPlaying;
+    protected float m_animationTimer;
     protected bool isPatternReady;
     protected float preparationTimer;
 
@@ -36,10 +42,18 @@ public abstract class EnemyPatternBase : IEnemyPattern
 
         preparationTimer = patternData.preparationTime;
         isPatternReady = false;
+        isAnimationPlaying = false;
+        m_animationTimer = 0f;
+
 
         if (m_collider == null)
         {
-            m_collider = enemyTransform.gameObject.GetComponent<Collider2D>();
+            m_collider = _controller.gameObject.GetComponent<Collider2D>();
+        }
+
+        if (m_animator == null)
+        {
+            m_animator = _controller.gameObject.GetComponent<Animator>();
         }
     }
 
@@ -56,6 +70,56 @@ public abstract class EnemyPatternBase : IEnemyPattern
     }
     public virtual void Finish() { }
     public virtual bool isFinished() => true;
+    public void SetAnimationTrigger(string _triggerName)
+    {
+        if (m_animator != null)
+        {
+            m_animator.SetTrigger(_triggerName);
+        }
+    }
+    public void SetAnimationBool(string _boolName, bool _value)
+    {
+        if (m_animator != null)
+        {
+            m_animator.SetBool(_boolName, _value);
+        }
+    }
+    public virtual void PlayAnimation()
+    {
+        if (m_animator == null)
+            return;
+
+
+        if (false == string.IsNullOrEmpty(patternData.animationTrigger))
+        {
+            SetAnimationTrigger(patternData.animationTrigger);
+        }
+
+        if (false == string.IsNullOrEmpty(patternData.animationBool))
+        {
+            //Debug.Log($"PlayAnimation: {patternData.animationBool}");
+            SetAnimationBool(patternData.animationBool, true);
+        }
+
+        isAnimationPlaying = true;
+        m_animationTimer = 0f;
+    }
+
+    public virtual void StopAnimation()
+    {
+        if (m_animator == null)
+            return;
+
+
+        if (false == string.IsNullOrEmpty(patternData.animationBool))
+        {
+            SetAnimationBool(patternData.animationBool, false);
+        }
+
+        isAnimationPlaying = false;
+        m_animationTimer = 0f;
+    }
+
 
     protected void MoveTowards(Vector3 _targetPosition, float _moveSpeed, bool _moveHorizontal = true)
     {
@@ -97,8 +161,12 @@ public abstract class EnemyPatternBase : IEnemyPattern
 
     protected bool IsTargetInRange(Vector2 _size, LayerMask _mask)
     {
+        Vector2 newPosition = new Vector2
+            (enemyTransform.position.x + patternData.areaEffectOffset.x * enemyTransform.localScale.x,
+             enemyTransform.position.y + patternData.areaEffectOffset.y);
+
         RaycastHit2D hit = MyDebug.BoxCast(
-            enemyTransform.position,
+            newPosition,
             _size,
             0f,
             Vector2.zero,

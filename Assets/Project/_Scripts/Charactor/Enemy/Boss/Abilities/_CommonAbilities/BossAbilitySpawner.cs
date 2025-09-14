@@ -59,6 +59,33 @@ public class BossAbilitySpawner : BossAbility
         }
     }
 
+    public void GetWavePool()
+    {
+        if (abilityPrefab == null)
+        {
+            return;
+        }
+
+        GameObject nextGameObject = skillsPool.GetPooledGameObjectOfName(abilityPrefab.name);
+
+        if (nextGameObject == null)
+        {
+            return;
+        }
+        //if (nextGameObject.GetComponent<MyPoolableObject>() == null)
+        //{
+        //    throw new Exception(_list[i].enemyPrefab.name + "PoolalbeObject 없음");
+        //}
+
+        nextGameObject.transform.position = SetSpawnPoint();
+
+        if (nextGameObject.TryGetComponent<BossSkillBase>(out var obj))
+        {
+            m_spawnedObjects.Add(obj);
+            nextGameObject.SetActive(true);
+        }
+    }
+
     public override void SkillReset()
     {
         base.SkillReset();
@@ -75,7 +102,7 @@ public class BossAbilitySpawner : BossAbility
         base.SetAbilityActive(true);
         //Debug.Log("스폰 능력 사용_" + transform.name);
 
-        AbilityRangeVisualizer();
+        AbilityRangeVisualizer(m_spawnPoint);
         yield return new WaitForSeconds(base.fadeDuration);
 
         base.SetAbilityActive(false);
@@ -114,7 +141,7 @@ public class BossAbilitySpawner : BossAbility
         return spawnPoint[index];
     }
 
-    protected override void AbilityRangeVisualizer()
+    protected override void AbilityRangeVisualizer(Vector3 _spawnPoint)
     {
         if (m_spawnedObjectCount <= 1)
         {
@@ -127,15 +154,35 @@ public class BossAbilitySpawner : BossAbility
         for (int i = 0; i < m_spawnedObjectCount; i++)
         {
             m_spawnPoint = SetSpawnPoint();
+            //Debug.Log(m_spawnPoint);
 
-            if (base.abilityRangePrefab != null)
+            if (base.abilityPrefab != null)
             {
-                base.AbilityRangeVisualizer();
-            }
+                base.AbilityRangeVisualizer(m_spawnPoint);
 
-            BossSkillBase obj = Instantiate(base.abilityPrefab, m_spawnPoint, Quaternion.identity).GetComponent<BossSkillBase>();
+                //BossSkillBase obj = Instantiate(base.abilityPrefab, m_spawnPoint, Quaternion.identity).GetComponent<BossSkillBase>();
+                GameObject skillBase = skillsPool.GetPooledGameObjectOfName(base.abilityPrefab.name);
+                //GameObject skillBase = skillsPool.GetPooledGameObjectAtIndex(1);
+
+                if (skillBase == null)
+                {
+                    Debug.Log("프리팹 없음");
+                    return;
+                }
+
+                skillBase.SetActive(true);
+
+                if (skillBase.TryGetComponent<BossSkillBase>(out var obj))
+                {
+                    obj.transform.position = m_spawnPoint;
+                    m_spawnedObjects.Add(obj);
+                }
+            }
+        }
+
+        foreach (BossSkillBase obj in m_spawnedObjects)
+        {
             obj.gameObject.SetActive(false);
-            m_spawnedObjects.Add(obj);
         }
     }
 

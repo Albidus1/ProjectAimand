@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,9 @@ public class DamageOnTouch : MonoBehaviour
 
     [Header("넉백")]
     public Vector2 damageCausedKnockbackForce = new Vector2(10, 2);
+
+    [Header("스턴")]
+    public float stunTime;
 
     [MyReadOnly]
     public GameObject owner;
@@ -192,7 +196,7 @@ public class DamageOnTouch : MonoBehaviour
 
     private void OnCollideWithDamageable(Health _health)
     {
-        if (_health.invincible)
+        if (_health.invulnerable)
         {
             return;
         }
@@ -201,7 +205,12 @@ public class DamageOnTouch : MonoBehaviour
 
         OnHitDamageable?.Invoke();
 
-        m_colliderHealth.Damage(damage, invincibilityDuration);
+        m_colliderHealth.Damage(damage, this.gameObject, invincibilityDuration, m_damageDirection);
+
+        if (stunTime > 0)
+        {
+            m_colliderHealth.ApplyStun(m_collideingCollider.gameObject, stunTime);
+        }
 
         if (m_colliderHealth.currentHP <= 0)
         {
@@ -244,7 +253,14 @@ public class DamageOnTouch : MonoBehaviour
             Vector2 relativePosition = p.transform.position - owner.transform.position;
             m_knockbackForce.x *= Mathf.Sign(relativePosition.x);
             m_knockbackForce.y = damageCausedKnockbackForce.y;
-            p.Knockback(m_knockbackForce);
+            p.ApplyKnockback(m_knockbackForce);
+        }
+        else if (m_collideingCollider.TryGetComponent<EnemyMovementControl>(out var e))
+        {
+            Vector2 relativePosition = e.transform.position - owner.transform.position;
+            m_knockbackForce.x *= Mathf.Sign(relativePosition.x);
+            m_knockbackForce.y = damageCausedKnockbackForce.y;
+            e.ApplyKnockback(m_knockbackForce);
         }
 
         m_startTime = invincibilityDuration;
@@ -257,7 +273,7 @@ public class DamageOnTouch : MonoBehaviour
         {
             //Debug.Log("[DamageOnTouch] 자해 데미지: " + _damage);
             m_damageDirection = Vector2.up;
-            m_health.Damage(_damage, invincibilityDuration);
+            m_health.Damage(_damage, this.gameObject, invincibilityDuration, m_damageDirection);
         }
     }
 }

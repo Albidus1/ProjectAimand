@@ -63,6 +63,7 @@ public class EnemyPatternController : MonoBehaviour
         if (IsAnyPatternReady())
         {
             m_enemyMovement.enabled = true;
+            m_enemyMovement.DirectionToFace(m_enemyMovement.isFacingRight);
 
             SelectNextPattern();
         }
@@ -104,6 +105,7 @@ public class EnemyPatternController : MonoBehaviour
     }
     #endregion
 
+    #region PATTERN METHODS
     private bool IsAnyPatternReady()
     {
         if (m_globalCooldownTimer > 0)
@@ -120,7 +122,7 @@ public class EnemyPatternController : MonoBehaviour
         {
             if (m_patternCooldownTracker.IsCooldownReady(pattern.patternID))
             {
-                Debug.Log($"패턴 {pattern.patternID} 준비 완료");
+                //Debug.Log($"패턴 {pattern.patternID} 준비 완료");
                 return true;
             }
         }
@@ -152,10 +154,19 @@ public class EnemyPatternController : MonoBehaviour
 
         if (candidatePatterns.Count > 0)
         {
-            candidatePatterns.Sort((a, b) => b.priority.CompareTo(a.priority));
+            candidatePatterns.Sort((a, b) => a.priority.CompareTo(b.priority));
 
-            m_currentPatternIndex = Mathf.Min(3, candidatePatterns.Count);
-            m_currentPattern = candidatePatterns[Random.Range(0, m_currentPatternIndex)];
+            if (isSequentialPattern)
+            {
+                m_currentPatternIndex = 0;
+                m_currentPattern = candidatePatterns[0];
+            }
+            else
+            {
+                m_currentPatternIndex = Mathf.Min(3, candidatePatterns.Count);
+                m_currentPattern = candidatePatterns[Random.Range(0, m_currentPatternIndex)];
+            }
+
 
             Debug.Log($"선택된 패턴: {m_currentPattern.patternID}");
 
@@ -165,10 +176,10 @@ public class EnemyPatternController : MonoBehaviour
 
     private void StartPatternExecution()
     {
-        m_enemyMovement.enabled = false;
-        int direction = (int)Mathf.Sign(target.position.x - transform.position.x);
-        m_enemyMovement.CheckDirectionToFace(direction > 0);
+        int direction = (int)Mathf.Sign(target.transform.position.x - transform.position.x);
+        m_enemyMovement.DirectionToFace(direction > 0);
 
+        m_enemyMovement.enabled = false;
         m_currentPatternInstance = PatternFactory.CreatePattern(m_currentPattern.patternType, m_currentPattern);
 
         if (m_currentPatternInstance != null)
@@ -184,12 +195,6 @@ public class EnemyPatternController : MonoBehaviour
             m_globalCooldownTimer = m_globalTime;
 
             m_currentPatternInstance.Execute();
-
-            if (false == string.IsNullOrEmpty(m_currentPattern.animationTrigger))
-            {
-                //Debug.Log("애니메이션 트리거 설정: " + m_currentPattern.animationTrigger);
-                m_animator.SetBool(m_currentPattern.animationTrigger, true);
-            }
         }
     }
 
@@ -197,6 +202,7 @@ public class EnemyPatternController : MonoBehaviour
     {
         if (m_currentPatternInstance != null)
         {
+
             m_currentPatternInstance.Update();
         }
     }
@@ -208,17 +214,13 @@ public class EnemyPatternController : MonoBehaviour
             m_currentPatternInstance.Finish();
         }
 
-        if (false == string.IsNullOrEmpty(m_currentPattern.animationTrigger))
-        {
-            m_animator.SetBool(m_currentPattern.animationTrigger, false);
-        }
-
         isPatternActive = false;
         patternCooldownTimer = m_currentPattern.cooldown;
         m_currentPattern = null;
         m_currentPatternInstance = null;
         currentPatternID = "None";
     }
+    #endregion
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

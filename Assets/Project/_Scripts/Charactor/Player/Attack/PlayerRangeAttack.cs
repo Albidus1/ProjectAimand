@@ -52,12 +52,12 @@ public class PlayerRangeAttack : MonoBehaviour
 
     private void OnEnable()
     {
-        playerHealth.OnDamageEvent.AddListener(OnDamaged);
+        //playerHealth.OnHit += OnDamaged;
     }
 
     private void OnDisable()
     {
-        playerHealth.OnDamageEvent.RemoveListener(OnDamaged);
+        //playerHealth.OnDamageEvent.RemoveListener(OnDamaged);
     }
 
     private void InitializeRangeAttackSquareMesh()

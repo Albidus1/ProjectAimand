@@ -10,6 +10,7 @@ public class EnemyAttack : MonoBehaviour
     [Header("공격 설정")]
     public float damage = 10f;
     public float invulnerabilityTime = 0.5f;
+    public Collider2D attackCollider2D;
 
     [Header("범위")]
     public float activityRange = 13f;
@@ -29,7 +30,6 @@ public class EnemyAttack : MonoBehaviour
     protected float m_attackTime;
     protected bool doSelfDestruct;
     protected float m_selfDestructTimer = 0.1f;
-
     protected bool isAttacking = false;
     protected bool isAttackEnabled = true;
 
@@ -40,6 +40,11 @@ public class EnemyAttack : MonoBehaviour
 
         enemyMovement = GetComponent<EnemyMovement>();
         enemyMovement = enemyMovement == null ? GetComponent<EnemyMovementFly>() : enemyMovement;
+
+        if (attackCollider2D == null)
+        {
+            //attackCollider2D = transform.Find("AttackCollider2D").GetComponent<Collider2D>();
+        }
 
         Initialization();
     }
@@ -52,6 +57,11 @@ public class EnemyAttack : MonoBehaviour
             enemyMovement.attackRange = attackRange;
             //enemyMovement.chaseRangePosition = chaseRangeCenter.position;
             //enemyMovement.attackRangePosition = attackRangeCenter.position;
+        }
+
+        if (attackCollider2D != null)
+        {
+            attackCollider2D.enabled = false;
         }
 
         isAttackEnabled = true;
@@ -90,6 +100,11 @@ public class EnemyAttack : MonoBehaviour
         if (m_selfDestructTimer > Time.time)
         {
             return false;
+        }
+
+        if (enemyMovement != null)
+        {
+            enemyMovement.isStunned = true;
         }
 
         Debug.Log("자폭");
@@ -131,12 +146,12 @@ public class EnemyAttack : MonoBehaviour
 
         if (false == isSelfDestruct)
         {
-            Debug.Log("적 공격");
+            //Debug.Log("적 공격");
             StartCoroutine(StartAttack());
         }
         else if (false == doSelfDestruct)
         {
-            Debug.Log("자폭 시작");
+            //Debug.Log("자폭 시작");
 
             doSelfDestruct = true;
             m_selfDestructTimer = Time.time + selfDestructWaitTime;
@@ -145,6 +160,16 @@ public class EnemyAttack : MonoBehaviour
         }
     }
     
+    public void AttackColliderEnable()
+    {
+        attackCollider2D.enabled = true;
+    }
+
+    public void AttackColliderDisable()
+    {
+        attackCollider2D.enabled = false;
+    }
+
     private IEnumerator StartAttack()
     {
         isAttacking = true;
@@ -156,12 +181,15 @@ public class EnemyAttack : MonoBehaviour
 
         if (target == null)
         {
-            isAttacking = false;
-            enemyMovement.isAttackingPlayer = false;
+            AttackEnd();
             yield break;
         }
 
-        Vector3 position = transform.localScale.x > 0 ?
+        enemyMovement.animator.SetTrigger("isAttacking");
+        yield return new WaitUntil(() => enemyMovement.animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+        yield return new WaitForSeconds(0.5f);
+
+        /*Vector3 position = transform.localScale.x > 0 ?
             new Vector3(transform.position.x + attackRange * 0.3f, transform.position.y, 0) :
             new Vector3(transform.position.x - attackRange * 0.3f, transform.position.y, 0);
 
@@ -205,8 +233,13 @@ public class EnemyAttack : MonoBehaviour
             }
         }
 
-        Destroy(attackBox, 0.1f);
+        Destroy(attackBox, 0.1f);*/
 
+        AttackEnd();
+    }
+
+    private void AttackEnd()
+    {
         isAttacking = false;
         enemyMovement.isAttackingPlayer = false;
     }
@@ -218,16 +251,16 @@ public class EnemyAttack : MonoBehaviour
 
     private void OnValidate()
     {
-        if (enemyMovement == null)
-        {
-            enemyMovement = GetComponent<EnemyMovement>();
+        //if (enemyMovement == null)
+        //{
+        //    enemyMovement = GetComponent<EnemyMovement>();
 
-            Initialization();
-        }
-        else
-        {
-            Initialization();
-        }
+        //    Initialization();
+        //}
+        //else
+        //{
+        //    Initialization();
+        //}
     }
 
 #if UNITY_EDITOR

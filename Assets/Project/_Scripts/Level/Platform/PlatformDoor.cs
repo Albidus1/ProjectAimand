@@ -34,7 +34,7 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
     public float homeWaitTime;
 
     [Header("이벤트")]
-    public string triggerWave = "defaultWave";
+    public string triggerWaveID = "defaultWave";
 
     public bool isMovingStart { get; private set; }
     public bool isMoving { get; private set; }
@@ -69,16 +69,16 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
         DirectionCalculate();
     }
 
-    [HideInInspector] public bool isInitialized = false;
+    [HideInInspector] public bool Initialized = false;
     public void InitializePoints()
     {
-        if (false == isInitialized)
+        if (false == Initialized)
         {
             pointA = transform.position;
             pointB = transform.position + Vector3.right * 5f;
         }
 
-        isInitialized = true;
+        Initialized = true;
     }
 
     private void Update()
@@ -220,20 +220,17 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
     #region EVENT METHODS
     public void OnEvent(WaveEvent _event)
     {
-        if (triggerWave != _event.waveID)
+        if (triggerWaveID != _event.waveID)
         {
             return;
         }
 
-        if (_event.eventTriggerType == ObjectTriggerTypes.Toggle)
-        {
-            Debug.Log("웨이브 감지됨");
+        Debug.Log("웨이브 감지됨");
 
-            isMoving = true;
-            isReturning = false;
-            m_waitTime = startWaitTime;
-            DirectionCalculate();
-        }
+        isMoving = true;
+        isReturning = false;
+        m_waitTime = startWaitTime;
+        DirectionCalculate();
     }
 
     protected override void OnEnable()

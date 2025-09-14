@@ -7,35 +7,36 @@ public class TrackingTarget : MonoBehaviour
     public float detectionRadius = 10f;
     public float trackingStartTime = 0;
     public float trackingTime = 3f;
+    public float trackingEndTime = 1f;
     public bool lockedLocation;
 
+    protected Health m_health;
     protected Projectile m_projectile;
-    protected Transform m_target;
+    protected Vector3 m_targetPosition;
     protected Vector3 m_direction;
     protected Quaternion m_rotation;
     protected float m_trackingStartTimer;
     protected float m_trackingTimer;
+    protected float m_trackingEndTimer;
     protected bool isTracking;
-    protected bool isLocked = false;
+    protected bool isLocked;
+    protected bool m_targetPointArrival;
 
     private void Awake()
     {
         m_projectile = GetComponent<Projectile>();
-
-        if (m_projectile == null)
-        {
-            Debug.LogError("Projectile 컴포넌트 없음");
-            enabled = false;
-        }
+        m_health = GetComponent<Health>();
     }
 
     private void OnEnable()
     {
         m_trackingStartTimer = trackingStartTime;
         m_trackingTimer = trackingTime;
-        m_target = null;
+        m_trackingEndTimer = trackingEndTime;
+        m_targetPosition = Vector3.zero;
         isTracking = false;
         isLocked = false;
+        m_targetPointArrival = false;
     }
 
     private void Update()
@@ -52,29 +53,47 @@ public class TrackingTarget : MonoBehaviour
             m_trackingTimer -= Time.deltaTime;
             FindTarget();
         }
+
+        if (m_targetPointArrival || m_trackingTimer < 0f)
+        {
+            m_trackingEndTimer -= Time.deltaTime;
+
+            if (m_trackingEndTimer < 0f)
+            {
+                m_health.Kill();
+            }
+        }
     }
 
     private void FindTarget()
-    {     
-        if (false == isLocked)
+    {      
+        if (false == isLocked || m_targetPosition == null)
         {
             Collider2D target = Physics2D.OverlapCircle(transform.position, detectionRadius, targetLayerMask);
 
             if (target != null)
             {
-                m_target = target.transform;
+                m_targetPosition = target.transform.position;
             }
 
-            if (m_target != null)
+            if (m_targetPosition != null)
             {
-                m_direction = (m_target.transform.position - transform.position).normalized;
+                m_direction = (m_targetPosition - transform.position).normalized;
                 m_rotation = Quaternion.LookRotation(Vector3.forward, m_direction);
             }
 
             isLocked = lockedLocation;
         }
 
-        m_projectile.SetDirection(m_direction, m_rotation);
+        if (Vector2.Distance(transform.position, m_targetPosition) < 0.1f)
+        {
+            m_projectile.SetDirection(Vector2.zero, m_rotation);
+            m_targetPointArrival = true;
+        }
+        else
+        {
+            m_projectile.SetDirection(m_direction, m_rotation);
+        }
     }
 
 #if UNITY_EDITOR
@@ -83,10 +102,10 @@ public class TrackingTarget : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
 
-        if (m_target != null && m_trackingTimer > 0)
+        if (m_targetPosition != null && m_trackingTimer > 0)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, m_target.position);
+            Gizmos.DrawLine(transform.position, m_targetPosition);
         }
     }
 #endif

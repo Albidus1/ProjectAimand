@@ -1,31 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 
 
-public struct HealthChangeEvent
-{
-    static HealthChangeEvent e;
-
-    public Health affectedHealth;
-    public float newHealth;
-
-    public HealthChangeEvent(Health _affectedHealth, float _newHealth)
-    {
-        affectedHealth = _affectedHealth;
-        newHealth = _newHealth;
-    }
-
-    public static void Trigger(Health _affectedHealth, float _newHealth)
-    {
-        e.affectedHealth = _affectedHealth;
-        e.newHealth = _newHealth;
-        EventManager.TriggerEvent(e);
-    }
-}
 
 public struct HealthDeathEvent
 {
@@ -48,25 +26,53 @@ public struct HealthDeathEvent
 
 public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 {
-    //테스트
-    public float maxHP = 100;
-    public Slider healthSlider;
-
-    public bool invincible = false;
-
     [MyReadOnly]
     public float currentHP;
+    [MyReadOnly]
+    public bool temporarilyInvulnerable = false;
+    [MyReadOnly]
+    public bool postDamageInvulnerable = false;
 
-    public EnemyWave enemyWave { get; set; }
+    [Header("체력 설정")]
+    public float initialHP = 100f;
+    public float maxHP = 100f;
+    public bool invulnerable = false;
 
-    private ReSpawner m_respawner;
+    [Header("데미지")]
+    public bool immuneToDamage = false;
+
+    [Header("넉백")]
+    public bool immuneToKnockback = false;
+
+    [Header("사망")]
+    public bool destroyOnDeath = true;
+    public float delayBeforeDestroy = 0f;
+    public bool CollisionsOffOnDeath = true;
+    public bool grabityOffOnDeath = false;
+    public bool respawnAtInitialLocation = false;
+
+    //[Header("사망 시 힘")]
+    //public bool applyDeathForce = true;
+    //public Vector2 deathForce = new Vector2(0f, 10f);
+    //public bool resetForcesOnDeath = false;
+
+    public delegate void OnHitDelegate();
+
+    public event OnHitDelegate OnHit;
+
+
+    public float lastDamage { get; set; }
+    public Vector2 lastDamageDirection { get; set; }
+    public bool initialized => m_initialized;
+
+    private bool m_initialized = false;
+    private Vector3 m_initialPosition;
 
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
     private EnemyMovementControl m_enemyMovement;
-    private GameObject m_owner;
-
-    public UnityEvent<float> OnDamageEvent;
+    private HealthBar m_healthBar;
+    private AutoRespawn m_autoRespawn;
 
 
 
@@ -78,65 +84,90 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
     private void Initialization()
     {
-        if (m_collider == null)
-        {
-            m_collider = GetComponent<Collider2D>();
-        }
-
-        m_collider.enabled = true;
-
+        m_collider = GetComponent<Collider2D>();
         m_playerMovement = GetComponent<PlayerMovement>();
-        if (m_playerMovement == null)
-        {
-            m_enemyMovement = GetComponent<EnemyMovement>();
-            m_enemyMovement = m_enemyMovement == null ? GetComponent<EnemyMovementFly>() : m_enemyMovement;
-        }
+        m_enemyMovement = GetComponent<EnemyMovementControl>();
+        m_healthBar = GetComponentInChildren<HealthBar>();
+        m_autoRespawn = GetComponent<AutoRespawn>();
 
-        m_owner = this.gameObject;
+        m_initialPosition = transform.position;
+        DamageEnabled();
+        DisablePostDamageInvulnerability();
+        UpdateHealthBar();
 
-        m_respawner = FindFirstObjectByType<ReSpawner>();
-
-        invincible = false;
+        m_initialized = true;
     }
 
     public void InitializeCurrentHealth()
     {
-        //Debug.Log($"현재 체력: {currentHP}");
-        currentHP = maxHP;
+        SetHealth(initialHP, this.gameObject);
+    }
 
-        if(healthSlider != null)
+    public bool CanTakeDamage()
+    {
+        if (invulnerable || immuneToDamage)
         {
-            healthSlider.value = currentHP / maxHP;
+            return false;
         }
+
+        if (false == this.enabled)
+        {
+            return false;
+        }
+
+        if (currentHP <= 0 && initialHP != 0)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void Damage(float _damage, float _invincibilityDuration)
     {
-        if (invincible)
-            return; // ✅ 무적일 땐 체력 변경 안 함
+        Damage(_damage, this.gameObject, _invincibilityDuration, Vector2.zero);
+    }
 
+    public void Damage(float _damage, GameObject _instigator, float _invincibilityDuration, Vector2 _damageDirection)
+    {
+        if (false == this.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        if (temporarilyInvulnerable || invulnerable || immuneToDamage || postDamageInvulnerable)
+        {
+            return;
+        }
+
+        if (false == CanTakeDamage())
+        {
+            return;
+        }
 
         _damage = Mathf.Clamp(_damage, 0, maxHP);
-        currentHP -= _damage;
-
-        if (healthSlider != null)
+        
+        if (_damage <= 0)
         {
-            healthSlider.maxValue = 1;
-            healthSlider.value = currentHP / maxHP;
+            return;
         }
 
-        OnDamageEvent.Invoke(_damage); // 대미지 이벤트 실행
+        OnHit?.Invoke();
 
-        if (Application.isPlaying)
+        SetHealth(currentHP - _damage, _instigator);
+
+        lastDamage = _damage;
+        lastDamageDirection = _damageDirection;
+
+        currentHP = Mathf.Max(currentHP, currentHP, 0f);
+
+        if (_invincibilityDuration > 0 && this.gameObject.activeInHierarchy)
         {
-            Debug.Log($"현재 체력: {currentHP}");
+            EnablePostDamageInvulnerability();
+            StartCoroutine(DisablePostDamageInvulnerability(_invincibilityDuration));
         }
 
-        if (_invincibilityDuration > 0 && gameObject.activeInHierarchy)
-        {
-            invincible = true;
-            StartCoroutine(DisableInvincible(_invincibilityDuration));
-        }
+        UpdateHealthBar();
 
         if (currentHP <= 0)
         {
@@ -146,51 +177,196 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
     public void Kill()
     {
-        HealthDeathEvent.Trigger(this);
+        if (immuneToDamage)
+        {
+            return;
+        }
 
         if (m_playerMovement != null)
         {
             Debug.Log("플레이어 사망");
             LevelManager.Instance.PlayerDead(m_playerMovement);
-            InitializeCurrentHealth();
-            return;
         }
         else if (m_enemyMovement != null)
         {
             WaveManager.Instance.RegisterEnemyDeath(this.gameObject);
+        }
 
-            OnDeath();
+        SetHealth(0f, this.gameObject);
+
+        DamageDisabled();
+        HealthDeathEvent.Trigger(this);
+
+        if (m_playerMovement != null)
+        {
+            if (m_collider != null)
+            {
+                m_collider.enabled = false;
+            }
+        }
+
+        if (delayBeforeDestroy > 0f)
+        {
+            Invoke(nameof(DestroyObject), delayBeforeDestroy);
+        }
+        else
+        {
+            DestroyObject();
+        }
+    }
+
+    public void Revive()
+    {
+        if (false == m_initialized)
+        {
             return;
         }
 
-        OnDeath();
-    }
-
-    private IEnumerator DisableInvincible(float _delay)
-    {
-        yield return new WaitForSeconds(_delay);
-        invincible = false;
-    }
-
-    private void OnDeath()
-    {
         if (m_collider != null)
         {
-            m_collider.enabled = false;
+            m_collider.enabled = true;
         }
 
-        gameObject.SetActive(false);
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+
+        if (respawnAtInitialLocation)
+        {
+            transform.position = m_initialPosition;
+        }
+
+        Initialization();
+        InitializeCurrentHealth();
+
+        UpdateHealthBar();
+    }
+
+    private void DestroyObject()
+    {
+        if (false == destroyOnDeath)
+        {
+            return;
+        }
+
+        if (m_autoRespawn == null)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            m_autoRespawn.Kill();
+        }
+    }
+
+    public void ApplyKnockback(GameObject _instigator, Vector2 _dir)
+    {
+        if (immuneToKnockback)
+        {
+            return;
+        }
+
+        Vector2 relativePosition = transform.position - _instigator.transform.position;
+        Vector2 knockbackForce = new Vector2(_dir.x, _dir.y);
+        knockbackForce.x *= Mathf.Sign(relativePosition.x);
+
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.ApplyKnockback(knockbackForce);
+        }
+        else if (m_enemyMovement != null)
+        {
+            m_enemyMovement.ApplyKnockback(knockbackForce);
+        }
+    }
+
+    public void ApplyStun(GameObject _instigator, float _stunTime)
+    {
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.ApplyStun(_stunTime);
+
+        }
+        else if (m_enemyMovement != null)
+        {
+            m_enemyMovement.ApplyStun(_stunTime);
+        }
+    }
+
+    public void GetHealth(float _health, GameObject _instigator)
+    {
+        SetHealth(Mathf.Min(currentHP + _health, maxHP), _instigator);
+        UpdateHealthBar();
+    }
+
+    public void SetHealth(float _newHealth, GameObject _instigator)
+    {
+        currentHP = Mathf.Min(_newHealth, maxHP);
+        UpdateHealthBar();
+    }
+
+    public void ResetHealthToMaxHealth()
+    {
+        currentHP = maxHP;
+        UpdateHealthBar();
+    }
+
+    public void UpdateHealthBar()
+    {
+        if (m_healthBar != null)
+        {
+            //m_healthBar.UpdateBar(currentHP, 0f, maxHP, _show);
+        }
+
+        if (m_playerMovement != null)
+        {
+            if (GUIManager.HasInstance)
+            {
+                Debug.Log($"플레이어 체력 업데이트: {currentHP}");
+                GUIManager.Instance.UpdateHealthBar(currentHP, 0f, maxHP);
+            }
+        }
+    }
+
+    public void DamageEnabled()
+    {
+        temporarilyInvulnerable = false;
+    }
+
+    public void DamageDisabled()
+    {
+        temporarilyInvulnerable = true;
+    }
+
+    public void EnablePostDamageInvulnerability()
+    {
+        postDamageInvulnerable = true;
+    }
+
+    public void DisablePostDamageInvulnerability()
+    {
+        postDamageInvulnerable = false;
+    }
+
+    public IEnumerator DisablePostDamageInvulnerability(float _delay)
+    {
+        yield return new WaitForSeconds(_delay);
+        postDamageInvulnerable = false;
     }
 
     protected virtual void OnEnable()
     {
-        Initialization();
         InitializeCurrentHealth();
+        DamageEnabled();
+        DisablePostDamageInvulnerability();
+        UpdateHealthBar();
         this.EventStartListening<HealthDeathEvent>();
     }
 
     protected virtual void OnDisable()
     {
+        CancelInvoke();
         this.EventStopListening<HealthDeathEvent>();
     }
 

@@ -19,26 +19,36 @@ public class PatternMeleeAttack : EnemyPatternBase
             return;
         }
 
-        MoveTowards(base.target.position, patternData.moveSpeed);
 
-        if (false == m_hasAttacked && base.InTarget(base.patternData, LayerManager.playerLayerMask))
+        if (base.IsTargetInRange(patternData.attackRange, LayerManager.playerLayerMask))
         {
-            if (base.m_targetHealth == null)
+            if (false == m_hasAttacked && base.InTarget(base.patternData, LayerManager.playerLayerMask))
             {
-                base.m_targetHealth = base.target.GetComponent<Health>();
-            }
+                if (base.m_targetHealth == null)
+                {
+                    base.m_targetHealth = base.target.GetComponent<Health>();
+                }
 
-            if (base.m_targetHealth != null)
-            {
-                base.m_targetHealth.Damage(patternData.damage, patternData.invincibilityDuration);
-            }
+                if (base.m_targetHealth != null)
+                {
+                    base.m_targetHealth.Damage(patternData.damage, patternData.invincibilityDuration);
+                }
 
-            m_hasAttacked = true;
+                //Debug.Log($"PatternMeleeAttack: {base.patternData.patternID} - Target: {base.target.name} - Damage: {patternData.damage}");
+                base.StopAnimation();
+                m_hasAttacked = true;
+            }
+        }
+        else
+        {
+            MoveTowards(base.target.position, patternData.moveSpeed);
         }
     }
 
     public override bool isFinished()
     {
+        base.StopAnimation();
+
         return m_hasAttacked;
     }
 }

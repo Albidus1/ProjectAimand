@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -83,13 +82,22 @@ public class EnemyDrops : MonoBehaviour, IEventListener<HealthDeathEvent>
     {
         if (dropObjectPrefabs != null)
         {
-            Vector3 randomOffset = new Vector3(
-                Random.Range(-0.5f, 0.5f),
-                0,
-                Random.Range(-0.5f, 0.5f)
-            );
+            if (dropObjectPrefabs.TryGetComponent<EnemyMovement>(out var enemy))
+            {
+                if (WaveManager.Instance.isWaveActive)
+                {
+                    WaveManager.Instance.AddEnemyToWave(enemy.gameObject, position);
+                }
+            }
+            else
+            {
+                Vector3 randomOffset = new Vector3(
+                    Random.Range(-0.5f, 0.5f),
+                    0,
+                    Random.Range(-0.5f, 0.5f));
 
-            Instantiate(dropObjectPrefabs, position + randomOffset, Quaternion.identity);
+                Instantiate(dropObjectPrefabs, position + randomOffset, Quaternion.identity);
+            }
         }
     }
 

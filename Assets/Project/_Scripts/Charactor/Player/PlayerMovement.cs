@@ -140,12 +140,18 @@ public class PlayerMovement : CharacterMovement
     [Header("이벤트")]
     public bool SendStateChangeEvents = true;
 
+    private Health m_health;
+
+
+
+
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
-
         animator = GetComponent<Animator>();
+        m_health = GetComponent<Health>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
@@ -173,7 +179,11 @@ public class PlayerMovement : CharacterMovement
         var cam = FindFirstObjectByType<CinemachineCamera>();
         cam.Target.TrackingTarget = transform;
 
-        movementState.StateChange(PlayerStates.MovementStates.Idle);
+        if (movementState != null)
+        {
+            movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+
         moveInput = Vector2.zero;
     }
 
@@ -223,64 +233,72 @@ public class PlayerMovement : CharacterMovement
         #region INPUT HANDLER
         if (false == isControlSleep)
         {
-            int currentDirection = 0;
-
-            moveInput.x = Input.GetAxisRaw("Horizontal");
-            moveInput.y = Input.GetAxisRaw("Vertical");
-
-            if (moveInput.x != 0)
+            if (isStunned)
             {
-                CheckDirectionToFace(moveInput.x > 0);
-
-                currentDirection = (moveInput.x > 0) ? 1 : -1;
+                moveInput.x = 0;
+                
             }
-
-            if (true == isWallGrabbing && false == isLookingOther)
+            else
             {
-                CheckDirectionToFace(lastGrabDirection == 1);
-            }
+                int currentDirection = 0;
 
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                OnJumpInput();
-            }
+                moveInput.x = Input.GetAxisRaw("Horizontal");
+                moveInput.y = Input.GetAxisRaw("Vertical");
 
-            if (Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                OnJumpUpInput();
-            }
+                if (moveInput.x != 0)
+                {
+                    CheckDirectionToFace(moveInput.x > 0);
 
-            if (Input.GetKeyDown(KeyCode.X) && false == data.doDoubleTap)
-            {
-                OnDashInput();
-            }
+                    currentDirection = (moveInput.x > 0) ? 1 : -1;
+                }
 
-            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) && 
-                false == isDashing && data.doDoubleTap)
-            {
-                bool sameDirection = (currentDirection == lastMoveDirection) ? true : false;
+                if (true == isWallGrabbing && false == isLookingOther)
+                {
+                    CheckDirectionToFace(lastGrabDirection == 1);
+                }
 
-                if (Time.time - lastPressedMoveInputTime <= data.doubleTapThreshold && sameDirection)
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    OnJumpInput();
+                }
+
+                if (Input.GetKeyUp(KeyCode.UpArrow))
+                {
+                    OnJumpUpInput();
+                }
+
+                if (Input.GetKeyDown(KeyCode.X) && false == data.doDoubleTap)
                 {
                     OnDashInput();
-                    lastPressedMoveInputTime = -1f;
-                    lastMoveDirection = 0;
                 }
-                else
+
+                if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) &&
+                    false == isDashing && data.doDoubleTap)
                 {
-                    lastPressedMoveInputTime = Time.time;
-                    lastMoveDirection = currentDirection;
+                    bool sameDirection = (currentDirection == lastMoveDirection) ? true : false;
+
+                    if (Time.time - lastPressedMoveInputTime <= data.doubleTapThreshold && sameDirection)
+                    {
+                        OnDashInput();
+                        lastPressedMoveInputTime = -1f;
+                        lastMoveDirection = 0;
+                    }
+                    else
+                    {
+                        lastPressedMoveInputTime = Time.time;
+                        lastMoveDirection = currentDirection;
+                    }
                 }
-            }
 
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                checkOneWayPlatformBelow = true;
-            }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    checkOneWayPlatformBelow = true;
+                }
 
-            if (Input.GetKey(KeyCode.C))
-            {
-                OnGrabInput();
+                if (Input.GetKey(KeyCode.C))
+                {
+                    OnGrabInput();
+                }
             }
         }
         #endregion
@@ -728,6 +746,9 @@ public class PlayerMovement : CharacterMovement
         transform.position = _spawnPoint.position;
 
         moveInput = Vector2.zero;
+
+        m_health.ResetHealthToMaxHealth();
+        m_health.Revive();
     }
     #endregion
 
@@ -1008,9 +1029,21 @@ public class PlayerMovement : CharacterMovement
     #endregion
 
     #region KNOCKBACK METHODS
-    public void Knockback(Vector2 _dir)
+    public void ApplyKnockback(Vector2 _dir)
     {
-        StartCoroutine(nameof(StartKnockBack), _dir);
+        if (false == this.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        if (m_health != null)
+        {
+            if (false == m_health.postDamageInvulnerable)
+            {
+                StartCoroutine(nameof(StartKnockBack), _dir);
+            }
+        }
+
         //doKnockback = true;
         //isJumping = true;
         //isWallJumping = false;
