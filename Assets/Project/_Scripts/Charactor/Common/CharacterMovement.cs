@@ -5,7 +5,7 @@ public class CharacterMovement : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
 
-    public bool isStunned { get; protected set; }
+    public bool isStunned { get; set; }
 
     
 

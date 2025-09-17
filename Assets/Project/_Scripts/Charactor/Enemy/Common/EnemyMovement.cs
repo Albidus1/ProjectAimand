@@ -186,7 +186,7 @@ public class EnemyMovement : EnemyMovementControl
     }
 
     private void WallRayCast()
-    { 
+    {
         Vector2 dir = Vector2.zero;
         dir.x = m_facingDirection;
 

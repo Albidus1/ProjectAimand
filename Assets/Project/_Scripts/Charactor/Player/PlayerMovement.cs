@@ -1,7 +1,9 @@
-using System;
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Splines;
+
 
 
 
@@ -16,8 +18,7 @@ public class PlayerStates
         Falling, 
         Sliding, 
         Grabbing, 
-        Dashing,
-        Attacking,
+        Dashing
     }
 }
 
@@ -29,7 +30,7 @@ public class PlayerMovement : CharacterMovement
     public PlayerData data;
 
     public Rigidbody2D rb { get; private set; }
-    public Collider2D col { get; private set; }
+    public BoxCollider2D boxCollider { get; private set; }
 
     public Animator animator;
 
@@ -105,9 +106,7 @@ public class PlayerMovement : CharacterMovement
     public float lastPressedDashTime { get; private set; }
 
     [Header("콜라이더 확인")]
-    [SerializeField] private Transform groundCheckPoint;
-    [SerializeField] private Vector2 groundCheckSize = new Vector2(0.49f, 0.03f);
-    [Space(5)]
+    public int numberOfVerticalRays = 4;
 
     [SerializeField] private Transform headCheckPoint;
     [SerializeField] private Vector2 headCheckSize = new Vector2(0.49f, 0.03f);
@@ -132,7 +131,6 @@ public class PlayerMovement : CharacterMovement
     public LayerMask platform;
     public LayerMask movingPlatform;
     public LayerMask onewayPlatform;
-    public LayerMask magnetPlatform;
 
     [SerializeField] private LayerMask groundLayer;
     [MyReadOnly] public LayerMask m_currentPlatform;
@@ -141,16 +139,30 @@ public class PlayerMovement : CharacterMovement
     public bool SendStateChangeEvents = true;
 
     private Health m_health;
-
+    private Vector2 m_bounds;
+    private Vector2 m_boundsCenter;
+    private Vector2 m_boundsTopLeftCorner;
+    private Vector2 m_boundsBottomLeftCorner;
+    private Vector2 m_boundsTopRightCorner;
+    private Vector2 m_boundsBottomRightCorner;
+    private float m_boundsWidth;
+    private float m_boundsHeight;
+    private RaycastHit2D[] m_belowHitsStorage;
+    private Vector2 m_virticalRaycastFromLeft;
+    private Vector2 m_virticalRaycastToRight;
+    public bool isOnSlope;
+    public float m_belowSlopeAngle;
+    public Vector2 m_currentSlopeDirection;
+    private RaycastHit2D m_stickRaycast;
 
 
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<BoxCollider2D>();
-        animator = GetComponent<Animator>();
+        boxCollider = GetComponent<BoxCollider2D>();
         m_health = GetComponent<Health>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
@@ -162,10 +174,11 @@ public class PlayerMovement : CharacterMovement
         //CinemachineCamera cam = FindAnyObjectByType<CinemachineCamera>();
         //cam.Target.TrackingTarget = transform;
 
+        m_belowHitsStorage = new RaycastHit2D[numberOfVerticalRays];
+
         groundLayer |= platform;
         groundLayer |= movingPlatform;
         groundLayer |= onewayPlatform;
-        groundLayer |= magnetPlatform;
     }
     private void Start()
     {
@@ -250,6 +263,12 @@ public class PlayerMovement : CharacterMovement
                     CheckDirectionToFace(moveInput.x > 0);
 
                     currentDirection = (moveInput.x > 0) ? 1 : -1;
+                    
+                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                }
+                else
+                {
+                    rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
                 }
 
                 if (true == isWallGrabbing && false == isLookingOther)
@@ -304,48 +323,46 @@ public class PlayerMovement : CharacterMovement
         #endregion
 
         #region COLLISION CHECKS
+        SetRaysParameters();
         if (false == isDashing)
         {
-            if (Time.time > m_jumpEndIgnoreGroundUntil &&
-                Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
+            if (Time.time > m_jumpEndIgnoreGroundUntil)
             {
-                lastOnGroundTime = data.coyoteTime;
-                lastOnGrabTime = data.grabStamina;
-                dashesLeft = data.dashAmount;
+                CastRaysBelow();
 
                 if (checkOneWayPlatformBelow)
                 {
-                    Collider2D oneway = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, onewayPlatform);
+                    //Collider2D oneway = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, onewayPlatform);
 
-                    if (oneway != null)
-                    {
-                        StartCoroutine(DownJump(oneway));
-                    }
+                    //if (oneway != null)
+                    //{
+                    //    StartCoroutine(DownJump(oneway));
+                    //}
                 }
             }
 
-            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
-                || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
-                false == isJumping && false == isWallJumping)
-            {
-                //Debug.Log("오른쪽 벽 확인");
-                lastOnWallRightTime = data.coyoteTime;
-            }
+            //if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
+            //    || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)) &&
+            //    false == isJumping && false == isWallJumping)
+            //{
+            //    //Debug.Log("오른쪽 벽 확인");
+            //    lastOnWallRightTime = data.coyoteTime;
+            //}
 
-            if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
-                || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
-                false == isJumping && false == isWallJumping)
-            {
-                //Debug.Log("왼쪽 벽 확인");
-                lastOnWallLeftTime = data.coyoteTime;
-            }
+            //if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && false == isFacingRight)
+            //    || (Physics2D.OverlapBox(backWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)) &&
+            //    false == isJumping && false == isWallJumping)
+            //{
+            //    //Debug.Log("왼쪽 벽 확인");
+            //    lastOnWallLeftTime = data.coyoteTime;
+            //}
 
-            lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);
+            //lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime);
         }
 
         checkOneWayPlatformBelow = false;
 
-        EdgeDetection();
+        //EdgeDetection();
 
         #endregion
 
@@ -543,11 +560,11 @@ public class PlayerMovement : CharacterMovement
         #region GRAVITY
         if (false == isDashAttacking)
         {
-            if (true == isSliding)
+            if (isSliding)
             {
                 SetGravityScale(0);
             }
-            else if (true == isWallGrabbing && false == isJumping && false == isWallJumping)
+            else if (isWallGrabbing && false == isJumping && false == isWallJumping)
             {
                 SetGravityScale(0);
             }
@@ -558,14 +575,14 @@ public class PlayerMovement : CharacterMovement
                 rb.linearVelocity =
                     new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFastFallSpeed));
             }
-            else if (true == isJumpCut)
+            else if (isJumpCut)
             {
                 SetGravityScale(data.gravityScale * data.jumpCutGravityMult);
 
                 rb.linearVelocity =
                     new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFallSpeed));
             }
-            else if ((true == isJumping || true == isWallJumping || true == isJumpFalling) &&
+            else if ((isJumping || isWallJumping || isJumpFalling) &&
                 Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
             {
                 SetGravityScale(data.gravityScale * data.jumpHangGravityMult);
@@ -589,38 +606,31 @@ public class PlayerMovement : CharacterMovement
         #endregion
 
         #region STATE CHANGE
-        animator.SetBool("isAttacking", false);
-        animator.SetBool("isDashing", false);
-        animator.SetBool("isRunning", false);
-        animator.SetBool("isJumping", false);
-        animator.SetBool("isFalling", false);
+        //animator.SetBool("isAttacking", false);
+        //animator.SetBool("isDashing", false);
+        //animator.SetBool("isRunning", false);
+        //animator.SetBool("isJumping", false);
+        //animator.SetBool("isFalling", false);
 
         if (isDashing)
         {
             movementState.StateChange(PlayerStates.MovementStates.Dashing);
-            animator.SetBool("isDashing", true);
-        }
-        else if (isAttacking)
-        {
-            movementState.StateChange(PlayerStates.MovementStates.Attacking);
-            animator.SetTrigger("isAttacking");
-
-            isAttacking = false;
+            //animator.SetBool("isDashing", true);
         }
         else if (isJumping)
         {
             movementState.StateChange(PlayerStates.MovementStates.Jumping);
-            animator.SetBool("isJumping", true);
+            //animator.SetBool("isJumping", true);
         }
         else if (isJumpFalling)
         {
             movementState.StateChange(PlayerStates.MovementStates.Falling);
-            animator.SetBool("isFalling", true);
+            //animator.SetBool("isFalling", true);
         }
         else if (moveInput.x != 0 && lastOnGroundTime > 0)
         {
             movementState.StateChange(PlayerStates.MovementStates.Running);
-            animator.SetBool("isRunning", true);
+            //animator.SetBool("isRunning", true);
         }
         else
         {
@@ -636,18 +646,18 @@ public class PlayerMovement : CharacterMovement
             return;
         }
 
-        if (true == isOnMovingPlatform)
+        if (isOnMovingPlatform)
         {
             OnMovingPlatform();
         }
 
         if (false == isDashing)
         {
-            if (true == isWallJumping)
+            if (isWallJumping)
             {
                 Run(data.wallJumpRunLerp);
             }
-            else if (true == isWallGrabbing && 0 < lastOnGrabTime)
+            else if (isWallGrabbing && 0 < lastOnGrabTime)
             {
                 //Run(0);
             }
@@ -719,9 +729,9 @@ public class PlayerMovement : CharacterMovement
 
     private IEnumerator DownJump(Collider2D _col)
     {
-        Physics2D.IgnoreCollision(col, _col, true);
+        Physics2D.IgnoreCollision(boxCollider, _col, true);
         yield return new WaitForSeconds(0.25f);
-        Physics2D.IgnoreCollision(col, _col, false);
+        Physics2D.IgnoreCollision(boxCollider, _col, false);
     }
 
     private IEnumerator PerformControllSleep(float _duration)
@@ -752,6 +762,149 @@ public class PlayerMovement : CharacterMovement
     }
     #endregion
 
+    private void SetRaysParameters()
+    {
+        //Debug.Log(boxCollider.size);
+        float x = boxCollider.size.x;
+        float y = boxCollider.size.y;
+
+        float right = x * 0.5f;
+        float left = -x * 0.5f;
+        float top = y * 0.5f;
+        float bottom = -y * 0.5f;
+
+
+        m_boundsCenter = boxCollider.bounds.center;
+
+        m_boundsTopLeftCorner.x = left;
+        m_boundsTopLeftCorner.y = top;
+
+        m_boundsBottomLeftCorner.x = left;
+        m_boundsBottomLeftCorner.y = bottom;
+
+        m_boundsTopRightCorner.x = right;
+        m_boundsTopRightCorner.y = top;
+
+        m_boundsBottomRightCorner.x = right;
+        m_boundsBottomRightCorner.y = bottom;
+
+        m_boundsTopLeftCorner = transform.TransformPoint(m_boundsTopLeftCorner);
+        m_boundsBottomLeftCorner = transform.TransformPoint(m_boundsBottomLeftCorner);
+        m_boundsTopRightCorner = transform.TransformPoint(m_boundsTopRightCorner);
+        m_boundsBottomRightCorner = transform.TransformPoint(m_boundsBottomRightCorner);
+
+        m_boundsWidth = Vector2.Distance(m_boundsTopLeftCorner, m_boundsTopRightCorner);
+        m_boundsHeight = Vector2.Distance(m_boundsTopLeftCorner, m_boundsBottomLeftCorner);
+    }
+
+    private void CastRaysBelow()
+    {
+        m_virticalRaycastFromLeft = (m_boundsBottomLeftCorner + m_boundsTopLeftCorner) * 0.5f;
+        m_virticalRaycastToRight = (m_boundsBottomRightCorner + m_boundsTopRightCorner) * 0.5f;
+
+        if (m_belowHitsStorage.Length != numberOfVerticalRays)
+        {
+            m_belowHitsStorage = new RaycastHit2D[numberOfVerticalRays];
+        }
+
+        float smallestDistance = float.MaxValue;
+        int smallestDistanceIndex = 0;
+        bool hitConnected = false;
+        for (int i = 0; i < numberOfVerticalRays; i++)
+        {
+            Vector2 rayOriginPoint = Vector2.Lerp(m_virticalRaycastFromLeft, m_virticalRaycastToRight, (float)i / (numberOfVerticalRays - 1));
+            rayOriginPoint.y = m_boundsBottomLeftCorner.y + 0.001f;
+
+            m_belowHitsStorage[i] = MyDebug.Raycast(rayOriginPoint, Vector2.down, 0.2f, groundLayer, Color.blue, true);
+
+            float distance = MyMaths.DistanceBetweenPointAndLine(m_belowHitsStorage[i].point, m_virticalRaycastFromLeft, m_virticalRaycastToRight);
+
+            if (m_belowHitsStorage[i])
+            {
+                hitConnected = true;
+
+                if (m_belowHitsStorage[i].distance < smallestDistance)
+                {
+                    smallestDistance = m_belowHitsStorage[i].distance;
+                    smallestDistanceIndex = i;
+                }
+            }
+
+            if (distance < 0.0001f)
+            {
+                break;
+            }
+        }
+
+        if (hitConnected)
+        {
+            if (false == MyLayers.LayerInLayerMask(m_belowHitsStorage[smallestDistanceIndex].collider.gameObject.layer, groundLayer))
+            {
+                return;
+            }
+
+            lastOnGroundTime = data.coyoteTime;
+            lastOnGrabTime = data.grabStamina;
+            dashesLeft = data.dashAmount;
+        }
+
+        Slope();
+    }
+
+    
+    private float maxSlopeAngle = 46f;
+    private void Slope()
+    {
+        isOnSlope = false;
+        m_currentSlopeDirection = Vector2.zero;
+        m_belowSlopeAngle = 0f;
+
+        // 점프 중이거나 공중에 있을 때는 경사면 검사 생략
+        if (isJumping || lastOnGroundTime < 0)
+        {
+            return;
+        }
+
+        // 레이캐스트 길이 계산
+        float rayLength = m_boundsWidth * Mathf.Abs(Mathf.Tan(maxSlopeAngle * Mathf.Deg2Rad));
+        rayLength += m_boundsHeight * 0.5f + 0.1f; // RayOffsetVertical 대신 작은 오프셋 추가
+
+        Vector2 raycastOrigin = m_boundsCenter;
+        raycastOrigin.y = m_boundsBottomLeftCorner.y;
+
+        // 왼쪽과 오른쪽에서 레이캐스트 수행
+        raycastOrigin.x = m_boundsBottomLeftCorner.x;
+        RaycastHit2D stickRaycastLeft = MyDebug.Raycast(raycastOrigin, -transform.up, rayLength, groundLayer, Color.blue, true);
+
+        raycastOrigin.x = m_boundsBottomRightCorner.x;
+        RaycastHit2D stickRaycastRight = MyDebug.Raycast(raycastOrigin, -transform.up, rayLength, groundLayer, Color.blue, true);
+
+        // 두 레이캐스트 중 더 가까운 히트 선택
+        bool castFromLeft = stickRaycastLeft.distance < stickRaycastRight.distance;
+        RaycastHit2D slopeHit = castFromLeft ? stickRaycastLeft : stickRaycastRight;
+
+        if (slopeHit.collider != null)
+        {
+            // 경사면 각도 계산
+            m_belowSlopeAngle = Vector2.Angle(slopeHit.normal, Vector2.up);
+
+            // 경사면이 허용 각도 내에 있는지 확인
+            if (m_belowSlopeAngle > 5f && m_belowSlopeAngle < maxSlopeAngle)
+            {
+                isOnSlope = true;
+
+                // 경사면의 접선 방향 계산
+                m_currentSlopeDirection = Vector2.Perpendicular(slopeHit.normal).normalized;
+
+                // 접선 방향이 아래를 향하면 반전
+                if (m_currentSlopeDirection.y < 0)
+                {
+                    m_currentSlopeDirection *= -1;
+                }
+            }
+        }
+    }
+
     #region RUN METHODS
     private void Run(float _lerpAmount)
     {
@@ -765,19 +918,18 @@ public class PlayerMovement : CharacterMovement
         float accelerate;
 
         // 가속 중인지 여부(회전 포함)에 따라 가속도 값 계산
-        // 감속 포함
         if (lastOnGroundTime > 0)
         {
             accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
         }
         else
         {
-            accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ? 
+            accelerate = (Mathf.Abs(targetSpeed) > 0.01f) ?
                 data.runAccelAmount * data.accelInAir : data.runDeccelAmount * data.deccelInAir;
         }
 
         // 점프의 정점에 도달하면 가속도와 최대 속도가 증가
-        if ((true == isJumping || true == isWallJumping || true == isJumpFalling) &&
+        if ((isJumping || isWallJumping || isJumpFalling) &&
             Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
         {
             accelerate *= data.jumpHangAccelerationMult;
@@ -785,24 +937,46 @@ public class PlayerMovement : CharacterMovement
         }
 
         // 속도 제어
-        if (true == data.doConserveMomentum &&
+        if (data.doConserveMomentum &&
             Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) &&
             Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) &&
             Mathf.Abs(targetSpeed) > 0.01f &&
             lastOnGroundTime < 0)
         {
-            // 감속이 발생하지 않도록 방지
             accelerate = 0;
         }
 
         // 현재 속도와 원하는 속도 간의 차이 계산
-        // 플레이어에게 적용할 X축을 따라 힘 계산
         float speed_dif = targetSpeed - rb.linearVelocity.x;
-
         float movement = speed_dif * accelerate;
 
-        // 벡터로 변환
-        rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
+        // 경사면에서의 이동 처리
+        if (isOnSlope)
+        {
+            // 경사면 각도에 따른 속도 보정
+            float slopeFactor = Mathf.Cos(m_belowSlopeAngle * Mathf.Deg2Rad);
+
+            // 올라갈 때와 내려갈 때 다른 보정 적용
+            if (Mathf.Sign(moveInput.x) == Mathf.Sign(m_currentSlopeDirection.x))
+            {
+                // 올라갈 때: 약간의 추가 힘 필요
+                slopeFactor = Mathf.Clamp(slopeFactor * 1.1f, 0.8f, 1.2f);
+            }
+            else
+            {
+                // 내려갈 때: 약간의 제동 필요
+                slopeFactor = Mathf.Clamp(slopeFactor * 0.9f, 0.8f, 1.2f);
+            }
+
+            // 경사면 방향으로 힘 적용 (수평 속도 유지)
+            Vector2 slopeForce = movement * m_currentSlopeDirection * slopeFactor;
+            rb.AddForce(slopeForce, ForceMode2D.Force);
+        }
+        else
+        {
+            // 평지 이동
+            rb.AddForce(new Vector2(movement, 0), ForceMode2D.Force);
+        }
     }
 
     private void OnMovingPlatform()
@@ -1207,37 +1381,7 @@ public class PlayerMovement : CharacterMovement
     private void OnDrawGizmos()
     {
 #if UNITY_EDITOR
-        BoxCollider2D col = GetComponent<BoxCollider2D>();
-        Vector2 size = new Vector2 (col.size.x * transform.localScale.x, col.size.y * transform.localScale.y);
 
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(transform.position, size);
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(groundCheckPoint.position, groundCheckSize);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(headCheckPoint.position, headCheckSize);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(frontWallCheckPoint.position, wallCheckSize);
-        Gizmos.DrawWireCube(backWallCheckPoint.position, wallCheckSize);
-
-        if (true == isWallGrabbing)
-        {
-            Gizmos.color = Color.green;
-            if (true == isLookingOther)
-            {
-                Gizmos.DrawWireCube(backWallCheckPoint.position, grabCheckSize);
-            }
-            else
-            {
-                Gizmos.DrawWireCube(frontWallCheckPoint.position, grabCheckSize);
-            }
-        }
-        else
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(frontWallCheckPoint.position, grabCheckSize);
-        }
 #endif
     }
     #endregion

@@ -89,24 +89,24 @@ public class EnemyMovementFly : EnemyMovementControl
 
     private void CalculateDirection()
     {
-/*        if (target != null && false == isStunned)
-        {
-            m_targetPosition = (Vector2)target.transform.position;
-            m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
-            m_currentSpeed = chaseSpeed;
-        }
-        else if (m_chaseWaitTime < Time.time && false == isStunned)
-        {
-            m_targetPosition = m_initializePosition;
-            m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
-            m_currentSpeed = currentSpeed;
-        }
-        else
-        {
-            m_targetPosition = transform.position;
-            m_moveDirection = Vector2.zero;
-            m_currentSpeed = 0;
-        }*/
+        /*        if (target != null && false == isStunned)
+                {
+                    m_targetPosition = (Vector2)target.transform.position;
+                    m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
+                    m_currentSpeed = chaseSpeed;
+                }
+                else if (m_chaseWaitTime < Time.time && false == isStunned)
+                {
+                    m_targetPosition = m_initializePosition;
+                    m_moveDirection = (m_targetPosition - (Vector2)transform.position).normalized;
+                    m_currentSpeed = currentSpeed;
+                }
+                else
+                {
+                    m_targetPosition = transform.position;
+                    m_moveDirection = Vector2.zero;
+                    m_currentSpeed = 0;
+                }*/
     }
 
     private float GetPatrolTick()

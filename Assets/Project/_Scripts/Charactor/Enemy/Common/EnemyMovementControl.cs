@@ -28,7 +28,6 @@ public abstract class EnemyMovementControl : CharacterMovement
     public bool isFalling { get; protected set; }
     public bool isAttacking { get; protected set; }
     public bool isAttackingPlayer { get; set; }
-    public bool isStunned { get; set; }
 
     public float activityRange { get; set; }
     public float detectRange { get; set; }
@@ -120,10 +119,10 @@ public abstract class EnemyMovementControl : CharacterMovement
     protected virtual void Turn()
     {
         isFacingRight = !isFacingRight;
-        m_facingDirection *= -1; 
+        m_facingDirection *= -1;
 
         Vector3 scale = transform.localScale;
-        scale.x *= -1; 
+        scale.x *= -1;
         transform.localScale = scale;
     }
 
@@ -139,7 +138,7 @@ public abstract class EnemyMovementControl : CharacterMovement
             return;
         }
 
-        StartCoroutine(Knockback(_force));       
+        StartCoroutine(Knockback(_force));
     }
 
     protected virtual IEnumerator Knockback(Vector2 _force)

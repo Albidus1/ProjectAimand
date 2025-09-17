@@ -175,7 +175,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
     #region ROTATE
     private void RotatePlatform()
     {
-        Debug.Log(isRotateAble);
+        //Debug.Log(isRotateAble);
 
         if (false == isRotateAble)
         {
@@ -206,7 +206,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
         }
         else
         {
-            Debug.Log(rotateDirection);
+            //Debug.Log(rotateDirection);
 
             Quaternion rotation = transform.rotation;
             switch (rotateDirection)

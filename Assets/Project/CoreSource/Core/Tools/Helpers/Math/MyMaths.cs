@@ -56,6 +56,30 @@ public static class MyMaths
         return _c + (_value - _a) / (_b - _a) * (_d - _c);
     }
 
+    /// <summary>
+    /// 점을 선에 수직으로 내렸을 때의 거리 반환
+    /// </summary>
+    /// <param name="_point"></param>
+    /// <param name="_lineStart"></param>
+    /// <param name="_lineEnd"></param>
+    /// <returns></returns>
+    public static float DistanceBetweenPointAndLine(Vector3 _point, Vector3 _lineStart, Vector3 _lineEnd)
+    {
+        Vector3 rhs = _point - _lineStart;
+        Vector3 vector2 = (_lineEnd - _lineStart);
+        float magnitude = vector2.magnitude;
+        Vector3 lhs = vector2;
+
+        if (magnitude > 1E-06f)
+        {
+            lhs /= magnitude;
+        }
+
+        float num2 = Mathf.Clamp(Vector3.Dot(lhs, rhs), 0f, magnitude); 
+        float distance = Vector3.Magnitude(_lineStart + (Vector3)(lhs * num2));
+
+        return distance;
+    }
 
     public static Vector3 GetRandomPointInCircle(float _radius)
     {
