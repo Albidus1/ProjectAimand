@@ -18,6 +18,7 @@ public class MyPath : MonoBehaviour
     public enum MovementDirection { Ascending, Descending }
 
 
+    public int startAt = 0;
 
     [Header("경로")]
     public CycleOptions CycleOption = CycleOptions.Single;

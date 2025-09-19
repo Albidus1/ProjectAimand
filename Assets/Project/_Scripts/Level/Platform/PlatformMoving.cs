@@ -72,12 +72,21 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     
     protected override void Start()
     {
+        m_lastPosition = transform.position;
+        m_initialRotation = transform.rotation;
+
+        Initialization();
+    }
+
+    public override void Initialization()
+    {
         base.Initialization();
         base.canMove = true;
 
-        m_lastPosition = transform.position;
-        m_playerSync = !isPlayerSync;
-        m_initialRotation = transform.rotation;
+        m_playerSync = false;
+        m_eventSetting = null;
+        isMoving = false;
+        transform.rotation = m_initialRotation;
     }
 
     protected override void Update()
@@ -244,7 +253,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
             }
         }
 
-        if (false == m_playerSync)
+        if (false == isPlayerSync)
         {
             return true;
         }
@@ -285,7 +294,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
                 m_player = collision.gameObject.GetComponent<PlayerMovement>();
             }
 
-            m_playerSync = true;
+            m_playerSync = isPlayerSync;
             m_player.isOnMovingPlatform = true;
             m_player.platformTransform = transform;
             m_player.lastPlatformPosition = transform.position;
@@ -309,12 +318,8 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     {
         Debug.Log("확인용");
 
-        base.Initialization();
+        Initialization();
         base.canMove = true;
-
-        m_eventSetting = null;
-        isMoving = false;
-        transform.rotation = m_initialRotation;
     }
 
     public void OnEvent(TriggerEvent e)
