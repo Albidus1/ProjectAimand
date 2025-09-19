@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Splines;
 
 
@@ -183,23 +184,36 @@ public class PlayerMovement : CharacterMovement
         groundLayer |= onewayPlatform;
     }
     private void Start()
-    {
-        SetGravityScale(data.gravityScale);
-
+    {   
+        Initialization();
         isFacingRight = true;   
     }
 
     private void OnEnable()
     {
+        Initialization();
+    }
+
+    private void Initialization()
+    {
         var cam = FindFirstObjectByType<CinemachineCamera>();
         cam.Target.TrackingTarget = transform;
+
+        moveInput = Vector2.zero;
 
         if (movementState != null)
         {
             movementState.StateChange(PlayerStates.MovementStates.Idle);
         }
 
-        moveInput = Vector2.zero;
+        SetGravityScale(data.gravityScale);
+
+        isJumping = false;
+        isJumpFalling = false;
+        isJumpCut = false;
+        isDashing = false;
+        isStunned = false;
+        doKnockback = false;
     }
 
     private void Update()
@@ -757,10 +771,10 @@ public class PlayerMovement : CharacterMovement
 
         transform.position = _spawnPoint.position;
 
-        moveInput = Vector2.zero;
-
         m_health.ResetHealthToMaxHealth();
         m_health.Revive();
+
+        Initialization();
     }
     #endregion
 
@@ -1268,7 +1282,7 @@ public class PlayerMovement : CharacterMovement
             rb.linearVelocity = _dir.normalized * data.dashSpeed;
 
             if (rb.linearVelocity.y > 0 &&
-                Physics2D.OverlapBox(headCheckPoint.position, headCheckSize, 0, groundLayer & ~onewayPlatform))
+                Physics2D.OverlapBox((m_boundsTopLeftCorner + m_boundsBottomRightCorner) * 0.5f , new Vector2(m_boundsWidth, 0.3f), 0, groundLayer & ~onewayPlatform))
             {
                 break;
             }

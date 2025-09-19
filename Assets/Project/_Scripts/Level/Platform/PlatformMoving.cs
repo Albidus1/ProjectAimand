@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 
 [SelectionBase]
-public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadManagerMethods
+public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>, ISaveLoadManagerMethods
 {
     public enum RotateDirection
     {
@@ -44,11 +44,13 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
     public float jumpTime { get; private set; }
     public bool isMoving { get; private set; }
 
+    private Quaternion m_initialRotation;
     private float m_waitTimer;
     private Vector3 m_lastPosition;
     private PlayerMovement m_player;
     private bool m_playerSync = false;
     private TriggerEventSetting m_eventSetting;
+
 
 
     #region SAVELOAD
@@ -75,6 +77,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
 
         m_lastPosition = transform.position;
         m_playerSync = !isPlayerSync;
+        m_initialRotation = transform.rotation;
     }
 
     protected override void Update()
@@ -301,6 +304,18 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>  ,ISaveLoadMa
         }
     }
     #endregion
+
+    public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    {
+        Debug.Log("확인용");
+
+        base.Initialization();
+        base.canMove = true;
+
+        m_eventSetting = null;
+        isMoving = false;
+        transform.rotation = m_initialRotation;
+    }
 
     public void OnEvent(TriggerEvent e)
     {

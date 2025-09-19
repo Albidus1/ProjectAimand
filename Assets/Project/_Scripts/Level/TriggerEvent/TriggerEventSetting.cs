@@ -23,7 +23,7 @@ public struct TriggerEvent
 }
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class TriggerEventSetting : MonoBehaviour
+public class TriggerEventSetting : MonoBehaviour, Respawnable
 {
     [Header("이벤트")]
     public string eventID = "default";
@@ -53,6 +53,11 @@ public class TriggerEventSetting : MonoBehaviour
         {
             m_boxCollider2D.isTrigger = true; 
         }
+    }
+
+    protected virtual void Initializtion()
+    {
+        ResetTrigger();
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
@@ -89,7 +94,10 @@ public class TriggerEventSetting : MonoBehaviour
 
     protected virtual void ResetTriggerCooldown() => m_triggered = false;
 
-
+    public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    {
+        Initializtion();
+    }
 
 
 #if UNITY_EDITOR
