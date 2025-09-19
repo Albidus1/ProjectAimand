@@ -77,6 +77,8 @@ public class PlayerMovement : CharacterMovement
     private bool isJumpFalling;
     private float m_jumpDisableGroundCheckTime = 0.1f;
     private float m_jumpEndIgnoreGroundUntil = -1f;
+    public float jumpsLeft { get; private set; }
+    private bool jumpRefilling;
 
     // 벽 점프
     private float wallJumpStartTime;
@@ -999,6 +1001,11 @@ public class PlayerMovement : CharacterMovement
     #region JUMP METHODS
     public void Jump(float _force, Vector2 _dir = default)
     {
+        if (jumpsLeft <= 0)
+        {
+            return;
+        }
+
         lastPressedJumpTime = 0;
         lastOnGroundTime = 0;
 
@@ -1024,6 +1031,8 @@ public class PlayerMovement : CharacterMovement
         }
 
         rb.AddForce(_dir * _force, ForceMode2D.Impulse);
+
+        jumpsLeft -= 1;
     }
 
     private void WallJump(int _dir)
@@ -1298,7 +1307,14 @@ public class PlayerMovement : CharacterMovement
 
     private bool CanJump()
     {
-        return (lastOnGroundTime > 0) && false == isJumping;
+        if (false == isJumping &&
+            false == isWallJumping &&
+            lastOnGroundTime > 0)
+        {
+            jumpsLeft = Mathf.Min(data.jumpAmount, jumpsLeft + 1);
+        }
+
+        return jumpsLeft > 0;
     }
 
     private bool CanJumpCut()
