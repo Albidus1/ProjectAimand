@@ -817,6 +817,8 @@ public class PlayerMovement : CharacterMovement
     {
         m_virticalRaycastFromLeft = (m_boundsBottomLeftCorner + m_boundsTopLeftCorner) * 0.5f;
         m_virticalRaycastToRight = (m_boundsBottomRightCorner + m_boundsTopRightCorner) * 0.5f;
+        m_virticalRaycastFromLeft += (Vector2)transform.up * 0.01f;
+        m_virticalRaycastToRight += (Vector2)transform.up * 0.01f;
 
         if (m_belowHitsStorage.Length != numberOfVerticalRays)
         {
@@ -854,7 +856,9 @@ public class PlayerMovement : CharacterMovement
 
         if (hitConnected)
         {
-            if (false == MyLayers.LayerInLayerMask(m_belowHitsStorage[smallestDistanceIndex].collider.gameObject.layer, groundLayer))
+            LayerMask layer = m_belowHitsStorage[smallestDistanceIndex].collider.gameObject.layer;
+
+            if (false == MyLayers.LayerInLayerMask(layer, groundLayer))
             {
                 return;
             }
@@ -862,6 +866,11 @@ public class PlayerMovement : CharacterMovement
             lastOnGroundTime = data.coyoteTime;
             lastOnGrabTime = data.grabStamina;
             dashesLeft = data.dashAmount;
+
+            if (MyLayers.LayerInLayerMask(layer, onewayPlatform) && checkOneWayPlatformBelow)
+            {
+                StartCoroutine(DownJump(m_belowHitsStorage[smallestDistanceIndex].collider));
+            }
         }
 
         Slope();
