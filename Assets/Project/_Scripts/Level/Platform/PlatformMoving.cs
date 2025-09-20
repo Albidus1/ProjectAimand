@@ -295,9 +295,9 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
             }
 
             m_playerSync = isPlayerSync;
-            m_player.isOnMovingPlatform = true;
-            m_player.platformTransform = transform;
-            m_player.lastPlatformPosition = transform.position;
+            //m_player.isOnMovingPlatform = true;
+            //m_player.platformTransform = transform;
+            //m_player.lastPlatformPosition = transform.position;
         }
     }
 
@@ -305,11 +305,11 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     {
         if (collision.gameObject.CompareTag("Player") && m_player != null)
         {
-            m_player.isOnMovingPlatform = false;
-            m_player.platformTransform = null;
-            m_player.lastPlatformPosition = Vector3.zero;
+            //m_player.isOnMovingPlatform = false;
+            //m_player.platformTransform = null;
+            //m_player.lastPlatformPosition = Vector3.zero;
 
-            m_player = null;
+            //m_player = null;
         }
     }
     #endregion

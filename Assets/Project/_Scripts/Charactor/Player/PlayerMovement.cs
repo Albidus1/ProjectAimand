@@ -279,12 +279,6 @@ public class PlayerMovement : CharacterMovement
                     CheckDirectionToFace(moveInput.x > 0);
 
                     currentDirection = (moveInput.x > 0) ? 1 : -1;
-                    
-                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                }
-                else
-                {
-                    rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
                 }
 
                 if (true == isWallGrabbing && false == isLookingOther)
@@ -871,9 +865,26 @@ public class PlayerMovement : CharacterMovement
             {
                 StartCoroutine(DownJump(m_belowHitsStorage[smallestDistanceIndex].collider));
             }
+
+            if (MyLayers.LayerInLayerMask(layer, movingPlatform))
+            {
+                if (false == isOnMovingPlatform)
+                {
+                    platformTransform = m_belowHitsStorage[smallestDistanceIndex].transform;
+                    lastPlatformPosition = platformTransform.position;
+                    isOnMovingPlatform = true;
+                }
+                m_currentPlatform = movingPlatform;
+            }
+            else
+            {
+                isOnMovingPlatform = false;
+                platformTransform = null;
+                m_currentPlatform = platform;
+            }
         }
 
-        Slope();
+        //Slope();
     }
 
     
@@ -1000,7 +1011,7 @@ public class PlayerMovement : CharacterMovement
         else
         {
             // 평지 이동
-            rb.AddForce(new Vector2(movement, 0), ForceMode2D.Force);
+            rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
         }
     }
 
