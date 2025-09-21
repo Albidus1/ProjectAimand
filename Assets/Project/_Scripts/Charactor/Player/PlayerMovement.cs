@@ -444,26 +444,20 @@ public class PlayerMovement : CharacterMovement
             isJumping = true;
             isJumpFalling = false;
 
-            Vector2 newRb = new Vector2(rb.linearVelocity.x, 0);
-            rb.linearVelocity = newRb;
+            jumpsLeft = data.jumpAmount;
+            StartCoroutine(nameof(RefillDash), 1);
+
+            lastOnJumpPadTime = data.jumpInputBufferTime;
 
             if (padDirection == Vector2.up)
             {
-                StartCoroutine(nameof(RefillDash), 1);
-
-                lastOnJumpPadTime = data.jumpInputBufferTime;
-
                 rb.linearVelocity = moveInput;
 
-                Mathf.Clamp(data.jumpForce * padForce, 20, 80);
-                Jump(data.jumpForce * padForce);
+                float force = Mathf.Clamp(data.jumpForce * padForce, 20, 80);
+                Jump(force);
             }
             else
             {
-                StartCoroutine(nameof(RefillDash), 1);
-
-                lastOnJumpPadTime = data.jumpInputBufferTime;
-
                 lastWallJumpDirection = (padDirection == Vector2.right) ? 1 : -1;
 
                 rb.linearVelocity = padDirection;
@@ -1039,6 +1033,9 @@ public class PlayerMovement : CharacterMovement
         {
             return;
         }
+
+        Vector2 newRb = new Vector2(rb.linearVelocity.x, 0);
+        rb.linearVelocity = newRb;
 
         lastPressedJumpTime = 0;
         lastOnGroundTime = 0;
