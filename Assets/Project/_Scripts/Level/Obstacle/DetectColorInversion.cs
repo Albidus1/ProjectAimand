@@ -19,8 +19,12 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private Collider2D m_collider2D;
     private DamageOnTouch m_damageOnTouch;
+    private Material m_material;
     private SpriteRenderer m_spriteRenderer;
     private Color m_color;
+
+    private static readonly int InvertAmountID = Shader.PropertyToID("_InvertAmount");
+
 
 
 
@@ -32,6 +36,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         
         if (m_spriteRenderer != null)
         {
+            m_material = m_spriteRenderer.material;
             m_color = m_spriteRenderer.color;
         }
     }
@@ -43,17 +48,19 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void Initialization()
     {
-        if (m_spriteRenderer != null && m_color != null)
+        if (m_spriteRenderer != null && m_color != null && m_material != null)
         {
             Debug.Log(m_color);
 
             if (m_color.r <= 0.1f &&  m_color.g <= 0.1f && m_color.b <= 0.1f)
             {
                 state = ColorState.Normal;
+                m_material.SetFloat(InvertAmountID, 0);
             }
             else if (m_color.r >= 0.9f && m_color.g >= 0.9f && m_color.b >= 0.9f)
             {
                 state = ColorState.Invert;
+                m_material.SetFloat(InvertAmountID, 1);
             }
             else
             {
