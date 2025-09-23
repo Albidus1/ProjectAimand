@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEvent>
 {
@@ -17,6 +18,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private Collider2D m_collider2D;
     private DamageOnTouch m_damageOnTouch;
+    private SpriteRenderer m_spriteRenderer;
+    private Color m_color;
 
 
 
@@ -24,6 +27,38 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     {
         m_collider2D = GetComponent<Collider2D>();
         m_damageOnTouch = GetComponent<DamageOnTouch>();
+        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        
+        if (m_spriteRenderer != null)
+        {
+            m_color = m_spriteRenderer.color;
+        }
+    }
+
+    private void Start()
+    {
+        Initialization();
+    }
+
+    private void Initialization()
+    {
+        if (m_spriteRenderer != null && m_color != null)
+        {
+            Debug.Log(m_color);
+
+            if (m_color.r <= 0.1f &&  m_color.g <= 0.1f && m_color.b <= 0.1f)
+            {
+                state = ColorState.Normal;
+            }
+            else if (m_color.r >= 0.9f && m_color.g >= 0.9f && m_color.b >= 0.9f)
+            {
+                state = ColorState.Invert;
+            }
+            else
+            {
+                state = ColorState.None;
+            }
+        }
     }
 
     private void SetCollider(bool _invert)
