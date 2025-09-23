@@ -11,8 +11,9 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     [MyReadOnly]
     public bool currentInvertState;
-
     public ColorState state;
+
+    public bool isSameType { get; private set; }
 
     private Collider2D m_collider2D;
     private DamageOnTouch m_damageOnTouch;
@@ -46,6 +47,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         {
             m_damageOnTouch.enabled = true;
         }
+
+        isSameType = true;
     }
 
     private void DisableDamage()
@@ -54,6 +57,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         {
             m_damageOnTouch.enabled = false;
         }
+
+        isSameType = false;
     }
 
 

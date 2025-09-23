@@ -50,7 +50,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     private PlayerMovement m_player;
     private bool m_playerSync = false;
     private TriggerEventSetting m_eventSetting;
-
+    private DetectColorInversion m_detectColorInversion;
 
 
     #region SAVELOAD
@@ -67,7 +67,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
 
     private void Awake()
     {
-
+        m_detectColorInversion = GetComponent<DetectColorInversion>();
     }
     
     protected override void Start()
@@ -241,6 +241,18 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     #region CHECK METHODES
     private bool PlatformCanMove()
     {
+        if (m_detectColorInversion != null)
+        {
+            if (m_detectColorInversion.isSameType)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         if (useTriggerEvent)
         {
             if (m_eventSetting != null && m_eventSetting.isTrigger)
