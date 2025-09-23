@@ -123,4 +123,40 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     {
         this.EventStopListening<ColorInvertEvent>();
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        switch (state)
+        {
+            case ColorState.Normal:
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(transform.position, 1f);
+                break;
+            case ColorState.Invert:
+                Gizmos.color = Color.white;
+                Gizmos.DrawWireSphere(transform.position, 1f);
+                break;
+        }
+    }
+
+    private void OnValidate()
+    {
+        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        m_color = m_spriteRenderer.color;
+
+        if (m_color.r <= 0.1f && m_color.g <= 0.1f && m_color.b <= 0.1f)
+        {
+            state = ColorState.Normal;
+        }
+        else if (m_color.r >= 0.9f && m_color.g >= 0.9f && m_color.b >= 0.9f)
+        {
+            state = ColorState.Invert;
+        }
+        else
+        {
+            state = ColorState.None;
+        }
+    }
+#endif
 }
