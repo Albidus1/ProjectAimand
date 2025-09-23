@@ -12,6 +12,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     [MyReadOnly]
     public bool currentInvertState;
+    [MyReadOnly]
     public ColorState state;
 
     public bool isSameType { get; private set; }
