@@ -765,6 +765,7 @@ public class PlayerMovement : CharacterMovement
     }
     #endregion
 
+    #region COLLISION METHODS
     private void SetRaysParameters()
     {
         //Debug.Log(boxCollider.size);
@@ -879,7 +880,6 @@ public class PlayerMovement : CharacterMovement
         //Slope();
     }
 
-    
     private float maxSlopeAngle = 46f;
     private void Slope()
     {
@@ -932,6 +932,7 @@ public class PlayerMovement : CharacterMovement
             }
         }
     }
+    #endregion
 
     #region RUN METHODS
     private void Run(float _lerpAmount)
@@ -1009,6 +1010,12 @@ public class PlayerMovement : CharacterMovement
 
     private void OnMovingPlatform()
     {
+        if (platformTransform == null)
+        {
+            return;
+        }
+
+
         Vector3 deltaPosition = (platformTransform.position - lastPlatformPosition);
         rb.position += (Vector2)(deltaPosition);
         lastPlatformPosition = platformTransform.position;

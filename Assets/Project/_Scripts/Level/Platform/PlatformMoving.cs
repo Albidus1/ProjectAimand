@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using DG.Tweening;
+
 
 
 [SelectionBase]
@@ -94,7 +92,10 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
         #region TIMERS
         jumpTime -= Time.deltaTime;
         #endregion
+    }
 
+    private void FixedUpdate()
+    {
         #region HANDLE MOVEMENT
         ExecuteUpdate();
 
@@ -110,11 +111,6 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
             }
         }
         #endregion
-    }
-
-    private void FixedUpdate()
-    {
-
     }
 
     private void ExecuteUpdate()
@@ -154,7 +150,6 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
         }
 
         Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
-
         transform.position = Vector3.MoveTowards(transform.position, position, Time.deltaTime * movementSpeed);
 
         base.m_distanceToNextPoint = (transform.position - position).magnitude;
