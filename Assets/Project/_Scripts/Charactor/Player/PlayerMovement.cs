@@ -243,7 +243,7 @@ public class PlayerMovement : CharacterMovement
             }
 
             return;
-        }    
+        }
 
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
@@ -371,7 +371,6 @@ public class PlayerMovement : CharacterMovement
         }
 
         checkOneWayPlatformBelow = false;
-
         //EdgeDetection();
 
         #endregion
@@ -868,14 +867,13 @@ public class PlayerMovement : CharacterMovement
                     lastPlatformPosition = platformTransform.position;
                     isOnMovingPlatform = true;
                 }
-                m_currentPlatform = movingPlatform;
             }
-            else
-            {
-                isOnMovingPlatform = false;
-                platformTransform = null;
-                m_currentPlatform = platform;
-            }
+
+            m_currentPlatform = 1 << layer;
+        }
+        else
+        {
+            isOnMovingPlatform = false;
         }
 
         //Slope();
