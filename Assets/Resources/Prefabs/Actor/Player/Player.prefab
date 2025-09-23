@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7047200658164286157}
   - component: {fileID: 7772496623235067025}
   - component: {fileID: 7965639506098986172}
+  - component: {fileID: 6344784352635634201}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -183,6 +184,20 @@ MonoBehaviour:
   isOnSlope: 0
   m_belowSlopeAngle: 0
   m_currentSlopeDirection: {x: 0, y: 0}
+--- !u!114 &6344784352635634201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4736339665496233200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baafee01a7c510f468cf25c627254fca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 32
+  initialInvertAmount: 0
 --- !u!1001 &3458171712690887890
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -195,6 +210,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shadow Of Storms
       objectReference: {fileID: 0}
+    - target: {fileID: 3626916397498700004, guid: 5fce6f67f00b51b449ab6deb73d24598, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 045bae4d0e8848544ab80a4a11f56ac5, type: 2}
     - target: {fileID: 7878350319992209165, guid: 5fce6f67f00b51b449ab6deb73d24598, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.12
