@@ -56,7 +56,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             if (m_color.r <= 0.1f &&  m_color.g <= 0.1f && m_color.b <= 0.1f)
             {
                 Color c = Color.white;
-                m_color = c;
+                m_spriteRenderer.color = c;
 
                 state = ColorState.Normal;
                 m_material.SetFloat(InvertAmountID, 0);
