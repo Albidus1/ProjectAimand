@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -23,11 +24,15 @@ public struct ColorInvertEvent
 
 public class PlayerSpriteColorInversion : MonoBehaviour
 {
+    [Header("VFX")]
+    public GameObject VFX;
+
     public KeyCode keyCode = KeyCode.Space;
 
     [Range(0, 1)]
-    public int initialInvertAmount = 0; 
+    public int initialInvertAmount = 0;
 
+    private List<ParticleSystem> m_particles = new List<ParticleSystem>();
     private Material m_material;
     private SpriteRenderer m_spriteRenderer;
     private int m_invertAmount;
@@ -48,6 +53,22 @@ public class PlayerSpriteColorInversion : MonoBehaviour
         m_invertAmount = initialInvertAmount;
         m_inverted = m_invertAmount == 1;
         UpdateShaderProperties();
+
+        if (VFX == null)
+        {
+            VFX = transform.Find("VFX").gameObject;
+        }
+
+        if (VFX != null)
+        {
+            for (int i = 0; i < VFX.transform.childCount; i++)
+            {
+                if (VFX.transform.GetChild(i).TryGetComponent<ParticleSystem>(out var ps))
+                {
+                    m_particles.Add(ps);
+                }
+            }
+        }
     }
 
     private void UpdateShaderProperties()
@@ -82,6 +103,14 @@ public class PlayerSpriteColorInversion : MonoBehaviour
             m_inverted = !m_inverted;
 
             SetInvertAmount(m_invertAmount);
+
+            foreach (ParticleSystem ps in m_particles)
+            {
+                if (ps != null)
+                {
+                    ps.Play();
+                }
+            }
         }
     }
 }

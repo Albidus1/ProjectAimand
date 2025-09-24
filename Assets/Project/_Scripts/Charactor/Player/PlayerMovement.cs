@@ -611,9 +611,9 @@ public class PlayerMovement : CharacterMovement
         #region STATE CHANGE
         //animator.SetBool("isAttacking", false);
         //animator.SetBool("isDashing", false);
-        //animator.SetBool("isRunning", false);
-        //animator.SetBool("isJumping", false);
-        //animator.SetBool("isFalling", false);
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isJumping", false);
+        animator.SetBool("isFalling", false);
 
         if (isDashing)
         {
@@ -623,17 +623,17 @@ public class PlayerMovement : CharacterMovement
         else if (isJumping)
         {
             movementState.StateChange(PlayerStates.MovementStates.Jumping);
-            //animator.SetBool("isJumping", true);
+            animator.SetBool("isJumping", true);
         }
         else if (isJumpFalling)
         {
             movementState.StateChange(PlayerStates.MovementStates.Falling);
-            //animator.SetBool("isFalling", true);
+            animator.SetBool("isFalling", true);
         }
         else if (moveInput.x != 0 && lastOnGroundTime > 0)
         {
             movementState.StateChange(PlayerStates.MovementStates.Running);
-            //animator.SetBool("isRunning", true);
+            animator.SetBool("isRunning", true);
         }
         else
         {
