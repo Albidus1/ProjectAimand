@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -12,8 +13,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     [MyReadOnly]
     public bool currentInvertState;
-    [MyReadOnly]
     public ColorState state;
+
+    [Header("설정")]
+    public bool disableCollider;
+    public bool disableDamageOnTouch;
 
     public bool isSameType { get; private set; }
 
@@ -35,8 +39,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         
         if (m_spriteRenderer != null)
-        {
-            m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+        {            
             m_material = m_spriteRenderer.material;
             m_color = m_spriteRenderer.color;
         }
@@ -49,19 +52,21 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void Initialization()
     {
-        if (m_spriteRenderer != null && m_color != null && m_material != null)
+        SetMaterial();
+    }
+
+    private void SetMaterial()
+    {
+        if (m_spriteRenderer != null && m_material != null)
         {
-            Debug.Log(m_color);
+            float amount = m_material.GetFloat(InvertAmountID);
 
-            if (m_color.r <= 0.1f &&  m_color.g <= 0.1f && m_color.b <= 0.1f)
+            if (amount == 0)
             {
-                Color c = Color.white;
-                m_spriteRenderer.color = c;
-
                 state = ColorState.Normal;
                 m_material.SetFloat(InvertAmountID, 0);
             }
-            else if (m_color.r >= 0.9f && m_color.g >= 0.9f && m_color.b >= 0.9f)
+            else if (amount == 1)
             {
                 state = ColorState.Invert;
                 m_material.SetFloat(InvertAmountID, 1);
@@ -80,29 +85,39 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if ((state == ColorState.Normal && false == _invert)
             || (state == ColorState.Invert && _invert))
         {
-            EnableDamage();
+            EnableSettings();
         }
         else
         {
-            DisableDamage();
+            DisableSettings();
         }
     }
 
-    private void EnableDamage()
+    private void EnableSettings()
     {
-        if (m_damageOnTouch != null)
+        if (disableDamageOnTouch && m_damageOnTouch != null)
         {
             m_damageOnTouch.enabled = true;
+        }
+
+        if (disableCollider && m_collider2D != null)
+        {
+            m_collider2D.enabled = true;
         }
 
         isSameType = true;
     }
 
-    private void DisableDamage()
+    private void DisableSettings()
     {
         if (m_damageOnTouch != null)
         {
             m_damageOnTouch.enabled = false;
+        }
+
+        if (disableCollider && m_collider2D != null)
+        {
+            m_collider2D.enabled = false;
         }
 
         isSameType = false;
@@ -127,35 +142,42 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        switch (state)
+        string text = state == ColorState.Normal ? "Normal" : "Invert";
+
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = state == ColorState.Normal ? Color.yellow : Color.black;
+        Handles.Label(transform.position + (Vector3.down * 0.4f) + (Vector3.right * 0.4f), text, style);
+    }
+
+    private void Reset()
+    {
+        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (m_spriteRenderer != null)
         {
-            case ColorState.Normal:
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(transform.position, 1f);
-                break;
-            case ColorState.Invert:
-                Gizmos.color = Color.white;
-                Gizmos.DrawWireSphere(transform.position, 1f);
-                break;
+            m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+            m_material = m_spriteRenderer.material;
+
+            SetMaterial();
         }
     }
 
     private void OnValidate()
     {
-        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        m_color = m_spriteRenderer.color;
+        if (m_spriteRenderer != null && m_material != null)
+        {
+            switch (state)
+            {
+                case ColorState.Normal:
+                    m_material.SetFloat(0, InvertAmountID);
+                    break;
 
-        if (m_color.r <= 0.1f && m_color.g <= 0.1f && m_color.b <= 0.1f)
-        {
-            state = ColorState.Normal;
-        }
-        else if (m_color.r >= 0.9f && m_color.g >= 0.9f && m_color.b >= 0.9f)
-        {
-            state = ColorState.Invert;
-        }
-        else
-        {
-            state = ColorState.None;
+                case ColorState.Invert:
+                    m_material.SetFloat(1, InvertAmountID);
+                    break;
+            }
+
+            SetMaterial();
         }
     }
 #endif
