@@ -167,7 +167,6 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if (m_spriteRenderer != null)
         {
             m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
-            m_material = m_spriteRenderer.material;
 
             SetMaterial();
         }
@@ -175,13 +174,10 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void OnValidate()
     {
-        if (Application.isPlaying)
+        if (m_spriteRenderer != null)
         {
-            return;
-        }
+            m_material = m_spriteRenderer.material;
 
-        if (m_spriteRenderer != null && m_material != null)
-        {
             switch (state)
             {
                 case ColorState.Normal:

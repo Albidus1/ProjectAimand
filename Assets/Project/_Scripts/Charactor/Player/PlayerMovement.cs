@@ -40,6 +40,7 @@ public class PlayerMovement : CharacterMovement
     public bool CanWallSliding = true;
     public bool CanWallGrabbing = true;
     public bool CanDasing = true;
+    public bool ApplyGravityOnDeath;
 
     [Header("VFX")]
     public ParticleSystem jumpStartVFX;
@@ -57,7 +58,7 @@ public class PlayerMovement : CharacterMovement
     public bool checkOneWayPlatformBelow { get; private set; }
     public bool doKnockback { get; private set; }
     public bool isControlSleep { get; private set; }
-    public bool ApplyGravityOnDeath;
+
 
     // 이동 플랫폼
     public Transform platformTransform { get; set; }
