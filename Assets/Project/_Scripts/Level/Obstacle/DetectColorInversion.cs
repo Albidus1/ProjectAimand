@@ -16,8 +16,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     public ColorState state;
 
     [Header("설정")]
-    public bool disableCollider;
-    public bool disableDamageOnTouch;
+    public bool disableCollider = true;
+    public bool disableDamageOnTouch = true;
 
     public bool isSameType { get; private set; }
 
@@ -52,6 +52,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void Initialization()
     {
+        if (m_damageOnTouch != null)
+        {
+            disableCollider = false;
+        }
+
         SetMaterial();
     }
 
@@ -95,14 +100,14 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void EnableSettings()
     {
-        if (disableDamageOnTouch && m_damageOnTouch != null)
-        {
-            m_damageOnTouch.enabled = true;
-        }
-
         if (disableCollider && m_collider2D != null)
         {
             m_collider2D.enabled = true;
+        }
+
+        if (disableDamageOnTouch && m_damageOnTouch != null)
+        {
+            m_damageOnTouch.enabled = true;
         }
 
         isSameType = true;
@@ -110,15 +115,16 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void DisableSettings()
     {
-        if (m_damageOnTouch != null)
-        {
-            m_damageOnTouch.enabled = false;
-        }
-
         if (disableCollider && m_collider2D != null)
         {
             m_collider2D.enabled = false;
         }
+
+        if (disableDamageOnTouch && m_damageOnTouch != null)
+        {
+            m_damageOnTouch.enabled = false;
+        }
+
 
         isSameType = false;
     }
@@ -151,6 +157,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void Reset()
     {
+        if (Application.isPlaying)
+        {
+            return;
+        }
+
         m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         if (m_spriteRenderer != null)
@@ -164,6 +175,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void OnValidate()
     {
+        if (Application.isPlaying)
+        {
+            return;
+        }
+
         if (m_spriteRenderer != null && m_material != null)
         {
             switch (state)
