@@ -41,6 +41,12 @@ public class PlayerMovement : CharacterMovement
     public bool CanWallGrabbing = true;
     public bool CanDasing = true;
 
+    [Header("VFX")]
+    public ParticleSystem jumpStartVFX;
+    public ParticleSystem jumpAirVFX;
+    public ParticleSystem jumpLandingVFX;
+
+
     public bool isAttacking { get; set; }
     public bool isFacingRight { get; private set; }
     public bool isJumping { get; private set; }
@@ -763,6 +769,17 @@ public class PlayerMovement : CharacterMovement
 
         Initialization();
     }
+
+    private IEnumerator PlayVFX(ParticleSystem _ps, float _delay)
+    {
+        if (_ps == null)
+        {
+            yield break;
+        }
+
+        yield return new WaitForSecondsRealtime(_delay);
+        _ps.Play();
+    }
     #endregion
 
     #region COLLISION METHODS
@@ -849,6 +866,11 @@ public class PlayerMovement : CharacterMovement
             if (false == MyLayers.LayerInLayerMask(layer, groundLayer))
             {
                 return;
+            }
+
+            if (isJumpFalling && jumpLandingVFX != null && false == jumpLandingVFX.isPlaying)
+            {
+                StartCoroutine(PlayVFX(jumpLandingVFX, 0.005f));
             }
 
             lastOnGroundTime = data.coyoteTime;
@@ -1042,16 +1064,6 @@ public class PlayerMovement : CharacterMovement
         Vector2 newRb = new Vector2(rb.linearVelocity.x, 0);
         rb.linearVelocity = newRb;
 
-        lastPressedJumpTime = 0;
-        lastOnGroundTime = 0;
-
-        isJumping = true;
-        isWallJumping = false;
-        isJumpCut = false;
-        isJumpFalling = false;
-
-        m_jumpEndIgnoreGroundUntil = Time.time + m_jumpDisableGroundCheckTime;
-
         if (rb.linearVelocity.y < 0)
         {
             _force -= rb.linearVelocity.y;
@@ -1068,7 +1080,27 @@ public class PlayerMovement : CharacterMovement
 
         rb.AddForce(_dir * _force, ForceMode2D.Impulse);
 
+
+        if (jumpStartVFX != null && lastOnGroundTime > 0)
+        {
+            jumpStartVFX.Play();
+        }
+        else if (jumpAirVFX != null && lastOnGroundTime < 0)
+        {
+            jumpAirVFX.Play();
+        }
+
         jumpsLeft -= 1;
+
+        lastPressedJumpTime = 0;
+        lastOnGroundTime = 0;
+
+        isJumping = true;
+        isWallJumping = false;
+        isJumpCut = false;
+        isJumpFalling = false;
+
+        m_jumpEndIgnoreGroundUntil = Time.time + m_jumpDisableGroundCheckTime;
     }
 
     private void WallJump(int _dir)
