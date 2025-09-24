@@ -151,7 +151,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         string text = state == ColorState.Normal ? "Normal" : "Invert";
 
         GUIStyle style = new GUIStyle();
-        style.normal.textColor = state == ColorState.Normal ? Color.yellow : Color.black;
+        style.normal.textColor = state == ColorState.Normal ? Color.yellow : Color.blue;
         Handles.Label(transform.position + (Vector3.down * 0.4f) + (Vector3.right * 0.4f), text, style);
     }
 
