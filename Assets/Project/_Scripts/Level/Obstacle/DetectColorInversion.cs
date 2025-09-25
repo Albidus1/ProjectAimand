@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+
+
 
 public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEvent>
 {
@@ -90,11 +91,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if ((state == ColorState.Normal && false == _invert)
             || (state == ColorState.Invert && _invert))
         {
-            EnableSettings();
+            DisableSettings();
         }
         else
         {
-            DisableSettings();
+            EnableSettings();
         }
     }
 
