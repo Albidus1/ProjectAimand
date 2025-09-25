@@ -24,11 +24,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private Collider2D m_collider2D;
     private DamageOnTouch m_damageOnTouch;
-    private Material m_material;
     private SpriteRenderer m_spriteRenderer;
-    private Color m_color;
 
-    private static readonly int InvertAmountID = Shader.PropertyToID("_InvertAmount");
 
 
 
@@ -38,12 +35,6 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         m_collider2D = GetComponent<Collider2D>();
         m_damageOnTouch = GetComponent<DamageOnTouch>();
         m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        
-        if (m_spriteRenderer != null)
-        {            
-            m_material = m_spriteRenderer.material;
-            m_color = m_spriteRenderer.color;
-        }
     }
 
     private void Start()
@@ -63,24 +54,40 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void SetMaterial()
     {
-        if (m_spriteRenderer != null && m_material != null)
+        if (m_spriteRenderer != null)
         {
-            float amount = m_material.GetFloat(InvertAmountID);
+            switch (state)
+            {
+                case ColorState.Normal:
+                    m_spriteRenderer.material = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Lit-Default"));
+                    break;
 
-            if (amount == 0)
-            {
-                state = ColorState.Normal;
-                m_material.SetFloat(InvertAmountID, 0);
+                case ColorState.Invert:
+                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+                    break;
             }
-            else if (amount == 1)
-            {
-                state = ColorState.Invert;
-                m_material.SetFloat(InvertAmountID, 1);
-            }
-            else
-            {
-                state = ColorState.None;
-            }
+
+            //if (false == m_spriteRenderer.material.name.Contains("ColorInversionMaterial"))
+            //{
+            //    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+            //}
+
+            //float amount = m_material.GetFloat(InvertAmountID);
+
+            //if (amount == 0)
+            //{
+            //    state = ColorState.Normal;
+            //    m_material.SetFloat(InvertAmountID, 0);
+            //}
+            //else if (amount == 1)
+            //{
+            //    state = ColorState.Invert;
+            //    m_material.SetFloat(InvertAmountID, 1);
+            //}
+            //else
+            //{
+            //    state = ColorState.None;
+            //}
         }
     }
 
@@ -91,11 +98,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if ((state == ColorState.Normal && false == _invert)
             || (state == ColorState.Invert && _invert))
         {
-            DisableSettings();
+            EnableSettings();
         }
         else
         {
-            EnableSettings();
+            DisableSettings();
         }
     }
 
@@ -108,7 +115,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         if (disableDamageOnTouch && m_damageOnTouch != null)
         {
-            m_damageOnTouch.enabled = true;
+            m_damageOnTouch.enabled = false;
         }
 
         isSameType = true;
@@ -123,7 +130,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         if (disableDamageOnTouch && m_damageOnTouch != null)
         {
-            m_damageOnTouch.enabled = false;
+            m_damageOnTouch.enabled = true;
         }
 
 
@@ -158,39 +165,25 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void Reset()
     {
-        if (Application.isPlaying)
-        {
-            return;
-        }
 
-        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
-        if (m_spriteRenderer != null)
-        {
-            m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
-
-            SetMaterial();
-        }
     }
 
     private void OnValidate()
     {
+        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
         if (m_spriteRenderer != null)
         {
-            m_material = m_spriteRenderer.material;
-
             switch (state)
             {
                 case ColorState.Normal:
-                    m_material.SetFloat(0, InvertAmountID);
+                    m_spriteRenderer.material = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Lit-Default"));
                     break;
 
                 case ColorState.Invert:
-                    m_material.SetFloat(1, InvertAmountID);
+                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
                     break;
             }
-
-            SetMaterial();
         }
     }
 #endif

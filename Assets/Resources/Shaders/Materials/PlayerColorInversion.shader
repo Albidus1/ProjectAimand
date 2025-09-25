@@ -1,9 +1,10 @@
-Shader "Sprites/DotInvert"
+Shader "Sprites/PlayerDotInvert"
 {
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
+         _InvertAmount ("Invert Amount", Range(0, 1)) = 1.0
         _PixelSize ("Pixel Size", Float) = 1.0
         [MaterialToggle] _PreserveOutline ("Preserve Outline", Float) = 1
         _OutlineThreshold ("Outline Threshold", Range(0, 1)) = 0.1
@@ -49,6 +50,7 @@ Shader "Sprites/DotInvert"
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
             fixed4 _Color;
+            int _InvertAmount;
             float _PixelSize;
             float _PreserveOutline;
             float _OutlineThreshold;
@@ -100,8 +102,11 @@ Shader "Sprites/DotInvert"
                 // 색상 반전 (알파는 유지)
                 fixed4 inverted = fixed4(1.0 - original.r, 1.0 - original.g, 1.0 - original.b, original.a);
                 
+                // 아웃라인이면 반전 강도 감소
+                float finalInvertAmount = _InvertAmount * (1.0 - outlineFactor * 0.7);
+                
                 // 반전 적용
-                fixed4 result = lerp(original, inverted, 1);
+                fixed4 result = lerp(original, inverted, finalInvertAmount);
                 
                 // 스프라이트 알파 블렌딩
                 result.rgb *= result.a;
