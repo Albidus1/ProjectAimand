@@ -8,6 +8,7 @@ public class GUIManager : MySingleton<GUIManager>
     [Header("바인딩")]
     public GameObject HUD;
     public MyProgressBar healthBar;
+    public HealthCellUI healthCell;
     public GameObject pauseScreen;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -50,6 +51,26 @@ public class GUIManager : MySingleton<GUIManager>
             return;
         }
 
+        if (false == healthBar.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         healthBar.UpdateBar(_currentHealth, _minHealth, _maxHealth);
+    }
+
+    public void UpdateHealthCell(int _currentHealth, int _maxHealth)
+    {
+        if (healthCell == null)
+        {
+            return;
+        }
+
+        if (false == healthCell.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        healthCell.UpdateHealthUI(_currentHealth, _maxHealth);
     }
 }

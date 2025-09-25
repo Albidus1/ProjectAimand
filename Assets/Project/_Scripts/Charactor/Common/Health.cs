@@ -72,6 +72,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     private PlayerMovement m_playerMovement;
     private EnemyMovementControl m_enemyMovement;
     private HealthBar m_healthBar;
+    private HealthCellUI m_healthCell;
     private AutoRespawn m_autoRespawn;
 
 
@@ -325,6 +326,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
             {
                 Debug.Log($"플레이어 체력 업데이트: {currentHP}");
                 GUIManager.Instance.UpdateHealthBar(currentHP, 0f, maxHP);
+                GUIManager.Instance.UpdateHealthCell((int)(currentHP * 0.1f), (int)(maxHP * 0.1f));
             }
         }
     }
