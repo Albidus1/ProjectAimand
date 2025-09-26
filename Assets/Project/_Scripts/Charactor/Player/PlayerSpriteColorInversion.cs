@@ -32,6 +32,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     [Range(0, 1)]
     public int initialInvertAmount = 0;
 
+
     private List<ParticleSystem> m_particles = new List<ParticleSystem>();
     private Material m_material;
     private SpriteRenderer m_spriteRenderer;
@@ -52,7 +53,6 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     {
         m_invertAmount = initialInvertAmount;
         m_inverted = m_invertAmount == 1;
-        UpdateShaderProperties();
 
         if (VFX == null)
         {
@@ -91,17 +91,10 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     {
         if (Input.GetKeyDown(keyCode))
         {
-            if (m_inverted)
-            {
-                m_invertAmount = 0;
-            }
-            else
-            {
-                m_invertAmount = 1;
-            }
-
             m_inverted = !m_inverted;
+            m_invertAmount = m_inverted ? 1 : 0;
 
+            Debug.Log(m_inverted);
             SetInvertAmount(m_invertAmount);
 
             foreach (ParticleSystem ps in m_particles)

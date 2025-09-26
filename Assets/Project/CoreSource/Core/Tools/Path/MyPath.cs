@@ -134,6 +134,8 @@ public class MyPath : MonoBehaviour
 
         while (true)
         {
+            index = Mathf.Clamp(index, 0, pathElements.Count - 1);
+
             currentIndex = index;
 
             yield return pathElements[index].pathElementPosition;
@@ -146,14 +148,31 @@ public class MyPath : MonoBehaviour
             #region CYCLE OPTIONS
             if (CycleOption == CycleOptions.Single)
             {
+                m_endReached = false;
+
                 if (index <= 0)
                 {
-                    m_direction = 1;
+                    if (m_direction == 1)
+                    {
+                        m_direction = 1;
+                    }
+                    else
+                    {
+                        index = 0;
+                        m_endReached = true;
+                    }
                 }
                 else if (index >= pathElements.Count - 1)
                 {
-                    m_direction = 0;
-                    m_endReached = true;
+                    if (m_direction == -1)
+                    {
+                        m_direction = -1;
+                    }
+                    else
+                    {
+                        index = pathElements.Count - 1;
+                        m_endReached = true;
+                    }
                 }
 
                 index += m_direction;
@@ -219,7 +238,7 @@ public class MyPath : MonoBehaviour
     #region GENERAL METHODS
     public virtual void ChangeDirection()
     {
-        m_direction = -m_direction;
+        m_direction *= -1;
         m_currentPoint.MoveNext();
     }
     #endregion

@@ -4,7 +4,7 @@ using DG.Tweening;
 
 
 [SelectionBase]
-public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>, ISaveLoadManagerMethods
+public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>, IEventListener<ColorInvertEvent>, ISaveLoadManagerMethods
 {
     public enum RotateDirection
     {
@@ -33,6 +33,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     public float speedThreshold;
 
     [Header("이벤트")]
+    public bool invertMoveOnInput = false;
     public bool useTriggerEvent = false;
     [MyConditionalHide("useTriggerEvent", true)]
     public string eventID;
@@ -79,7 +80,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     public override void Initialization()
     {
         base.Initialization();
-        base.canMove = true;
+        base.canMove = true;   
 
         m_playerSync = false;
         m_eventSetting = null;
@@ -115,6 +116,8 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
 
     private void ExecuteUpdate()
     {
+        Debug.Log(m_direction);
+
         if (base.pathElements == null 
             || base.pathElements.Count < 1
             || base.m_endReached
@@ -238,39 +241,31 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     {
         if (m_detectColorInversion != null)
         {
-            if (useTriggerEvent)
+            if (useTriggerEvent && IsTriggerEventActive())
             {
-                if (m_eventSetting != null && m_eventSetting.isTrigger && 
-                    m_detectColorInversion.isSameType)
+                if (invertMoveOnInput)
                 {
                     return true;
                 }
                 else
                 {
-                    return false;
+                    return false == m_detectColorInversion.enableSetting;
                 }
             }
 
-            if (m_detectColorInversion.isSameType)
+            if (invertMoveOnInput)
             {
                 return true;
             }
             else
             {
-                return false;
+                return false == m_detectColorInversion.enableSetting;
             }
         }
 
         if (useTriggerEvent)
         {
-            if (m_eventSetting != null && m_eventSetting.isTrigger)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return IsTriggerEventActive();
         }
 
         if (false == isPlayerSync)
@@ -278,12 +273,18 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
             return true;
         }
 
-        if (m_player != null && m_playerSync && (0 < m_player.lastOnGroundTime || m_player.isWallGrabbing))
-        {
-            return true;
-        }
+        return IsPlayerOnPlatform();
+    }
 
-        return false;
+    private bool IsTriggerEventActive()
+    {
+        return m_eventSetting != null && m_eventSetting.isTrigger;
+    }
+
+    private bool IsPlayerOnPlatform()
+    {
+        return m_player != null && m_playerSync &&
+               (m_player.lastOnGroundTime > 0 || m_player.isWallGrabbing);
     }
 
     private void CheckAccelerateAble()
@@ -360,13 +361,24 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
         }
     }
 
+    public void OnEvent(ColorInvertEvent e)
+    {
+        if (base.CycleOption == CycleOptions.Single)
+        {           
+            base.ChangeDirection();
+            base.canMove = true;
+        }
+    }
+
     protected virtual void OnEnable()
     {
         this.EventStartListening<TriggerEvent>();
+        this.EventStartListening<ColorInvertEvent>();
     }
 
     protected virtual void OnDisable()
     {
         this.EventStopListening<TriggerEvent>();
+        this.EventStartListening<ColorInvertEvent>();
     }
 }
