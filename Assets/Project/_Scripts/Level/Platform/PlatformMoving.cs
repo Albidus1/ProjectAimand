@@ -372,10 +372,17 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     {     
         if (base.CycleOption == CycleOptions.Single)
         {
-            base.ChangeDirection(e.isInvert ? -1 : 1);
-            base.canMove = true;
+            if (invertMoveOnInput)
+            {
+                base.ChangeDirection(e.isInvert ? -1 : 1);
+                base.canMove = true;
 
-            Debug.Log(m_direction);
+                Debug.Log(m_direction);
+            }
+            else
+            {
+
+            }
         }
     }
 
