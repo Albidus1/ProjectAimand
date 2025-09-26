@@ -53,6 +53,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     {
         m_invertAmount = initialInvertAmount;
         m_inverted = m_invertAmount == 1;
+        UpdateShaderProperties();
 
         if (VFX == null)
         {
@@ -76,7 +77,6 @@ public class PlayerSpriteColorInversion : MonoBehaviour
         if (m_material != null)
         {
             m_material.SetFloat(InvertAmountID, m_invertAmount);
-
             ColorInvertEvent.Trigger(m_invertAmount);
         }
     }
