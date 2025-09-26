@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2641709143647809025}
   - component: {fileID: 4431415954268051540}
   - component: {fileID: 217003003504095763}
+  - component: {fileID: 3967695033659849612}
   m_Layer: 8
   m_Name: PlatformMoving
   m_TagString: Untagged
@@ -79,7 +80,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 3, y: 1}
   m_EdgeRadius: 0
 --- !u!50 &4431415954268051540
 Rigidbody2D:
@@ -120,16 +121,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1a6698194ba5f40b50562d04af226f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startAt: 0
   CycleOption: 0
   InitialMovementDirection: 0
   pathElements:
-  - pathElementPosition: {x: -2.0013123, y: -2.52698, z: 0}
+  - pathElementPosition: {x: 0, y: 0, z: 0}
     delay: 0
-  - pathElementPosition: {x: 8.495758, y: -2.5802107, z: 0}
-    delay: 0
-  - pathElementPosition: {x: 8.518967, y: 7.9979706, z: 0}
-    delay: 0
-  - pathElementPosition: {x: -2.068924, y: 7.9196243, z: 0}
+  - pathElementPosition: {x: 32.802353, y: -0.0000052452087, z: 0}
     delay: 0
   referenceMyPath: {fileID: 0}
   absoluteReferenceMyPath: 0
@@ -144,6 +142,25 @@ MonoBehaviour:
   rotateDirection: 0
   isAccelerateAble: 0
   speedThreshold: 8
+  invertMoveOnInput: 0
+  useTriggerEvent: 0
+  eventID: 
+--- !u!114 &3967695033659849612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6315170599304305781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ec07c2df7caf5c4c85133bb29348150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentInvertState: 0
+  state: 3
+  disableCollider: 1
+  disableDamageOnTouch: 1
 --- !u!1 &6763198980449272640
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +216,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9bf2c785b3a53bf45b4f38a31433c21a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -221,7 +238,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
-  m_Color: {r: 0.10849059, g: 0.36116886, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

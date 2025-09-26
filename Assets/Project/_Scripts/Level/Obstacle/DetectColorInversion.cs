@@ -10,6 +10,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         None,
         Normal,
         Invert,
+        Half
     }
 
     [MyReadOnly]
@@ -65,6 +66,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
                 case ColorState.Invert:
                     m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
                     break;
+
+                case ColorState.Half:
+                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/HalfColorInversionMaterial");
+                    break;
+
             }
 
             //if (false == m_spriteRenderer.material.name.Contains("ColorInversionMaterial"))
@@ -154,11 +160,19 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        string text = state == ColorState.Normal ? "Normal" : "Invert";
+        if (state == ColorState.None)
+        {
+            return;
+        }
 
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = state == ColorState.Normal ? Color.yellow : Color.blue;
-        Handles.Label(transform.position + (Vector3.down * 0.4f) + (Vector3.right * 0.4f), text, style);
+        if (state != ColorState.Half)
+        {
+            string text = state == ColorState.Normal ? "Normal" : "Invert";
+
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = state == ColorState.Normal ? Color.yellow : Color.blue;
+            Handles.Label(transform.position + (Vector3.down * 0.4f) + (Vector3.right * 0.4f), text, style);
+        }
     }
 
     private void Reset()
@@ -180,6 +194,10 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
                 case ColorState.Invert:
                     m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+                    break;
+
+                case ColorState.Half:
+                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/HalfColorInversionMaterial");
                     break;
             }
         }
