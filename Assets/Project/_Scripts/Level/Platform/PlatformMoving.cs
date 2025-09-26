@@ -116,7 +116,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
 
     private void ExecuteUpdate()
     {
-        Debug.Log(m_direction);
+        //Debug.Log(m_direction);
 
         if (base.pathElements == null 
             || base.pathElements.Count < 1
@@ -369,11 +369,13 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     }
 
     public void OnEvent(ColorInvertEvent e)
-    {
+    {     
         if (base.CycleOption == CycleOptions.Single)
-        {           
-            base.ChangeDirection();
+        {
+            base.ChangeDirection(e.isInvert ? -1 : 1);
             base.canMove = true;
+
+            Debug.Log(m_direction);
         }
     }
 

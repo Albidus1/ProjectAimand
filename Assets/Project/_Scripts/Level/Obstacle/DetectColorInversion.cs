@@ -22,6 +22,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     public bool disableDamageOnTouch = true;
 
     public bool enableSetting { get; private set; }
+    public bool harfInverter { get; private set; }
 
     private Collider2D m_collider2D;
     private DamageOnTouch m_damageOnTouch;
@@ -49,6 +50,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         {
             disableCollider = false;
         }
+
+        harfInverter = state == ColorState.Half;
 
         SetMaterial();
     }

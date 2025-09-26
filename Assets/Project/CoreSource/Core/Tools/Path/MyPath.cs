@@ -241,6 +241,12 @@ public class MyPath : MonoBehaviour
         m_direction *= -1;
         m_currentPoint.MoveNext();
     }
+
+    public virtual void ChangeDirection(int _direction)
+    {
+        m_direction = _direction;
+        m_currentPoint.MoveNext();
+    }
     #endregion
 
     #region GIZMOS
