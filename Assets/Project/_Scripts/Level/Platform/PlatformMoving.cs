@@ -241,15 +241,22 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     {
         if (m_detectColorInversion != null)
         {
-            if (useTriggerEvent && IsTriggerEventActive())
+            if (useTriggerEvent)
             {
-                if (invertMoveOnInput)
+                if (IsTriggerEventActive())
                 {
-                    return true;
+                    if (invertMoveOnInput)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false == m_detectColorInversion.enableSetting;
+                    }
                 }
                 else
                 {
-                    return false == m_detectColorInversion.enableSetting;
+                    return false;
                 }
             }
 
