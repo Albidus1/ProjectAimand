@@ -147,6 +147,11 @@ public abstract class MyObjectPooler : MonoBehaviour
         return null;
     }
 
+    public virtual void DeactivateAllPooledGameObject()
+    {
+
+    }
+
     public virtual void DestroyObjectPool()
     {
         if (m_waitingPool != null)

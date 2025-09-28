@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class ProjectileSpawner : MonoBehaviour
+public class ProjectileSpawner : MonoBehaviour, Respawnable
 {
     [Header("풀링 설정")]
     public MyObjectPooler objectPooler;
@@ -49,9 +49,9 @@ public class ProjectileSpawner : MonoBehaviour
             }
 
             m_poolInitialized = true;
-
-            m_cooldownTimer = initialCooldownTime + Time.time;
         }
+
+        m_cooldownTimer = initialCooldownTime + Time.time;
     }
 
     private void Update()
@@ -108,5 +108,15 @@ public class ProjectileSpawner : MonoBehaviour
         m_offset = projecttileSpawnOffset;
 
         spawnPosition = m_spawnPositionCenter + transform.rotation * m_offset;
+    }
+
+    public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    {
+        Initialization();
+
+        if (objectPooler != null)
+        {
+            objectPooler.DeactivateAllPooledGameObject();
+        }
     }
 }

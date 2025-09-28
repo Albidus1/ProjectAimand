@@ -64,6 +64,17 @@ public class MySimpleObjectPooler : MyObjectPooler
         return null;
     }
 
+    public override void DeactivateAllPooledGameObject()
+    {
+        for (int i = 0; i < m_objectPool.pooledObjects.Count; i++)
+        {
+            if (m_objectPool.pooledObjects[i].gameObject.activeInHierarchy)
+            {
+                m_objectPool.pooledObjects[i].SetActive(false);
+            }
+        }
+    }
+
     private GameObject AddOneObjectToThePool()
     {
         if (gameObjectToPool == null)
