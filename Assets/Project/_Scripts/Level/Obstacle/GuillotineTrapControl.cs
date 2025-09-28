@@ -10,6 +10,7 @@ public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>
     [MyReadOnly]
     public BladeState currentState;
 
+    [MyReadOnly]
     public bool isActive = true;
 
     [Header("사이클 시간 설정")]

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ProjectileSpawner : MonoBehaviour, IEventListener<TriggerEvent>, Respawnable
 {
+    [MyReadOnly]
     public bool isActive;
 
     [Header("풀링 설정")]
