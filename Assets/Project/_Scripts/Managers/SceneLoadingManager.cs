@@ -75,8 +75,6 @@ public class SceneLoadingManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log($"확인용 : {m_sceneToLoad}");
-
         m_tween = m_tween.SetEase(Ease.OutCubic);
         m_loadingTextValue = loadingText.text;
 

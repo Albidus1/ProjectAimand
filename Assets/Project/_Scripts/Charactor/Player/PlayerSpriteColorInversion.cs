@@ -72,6 +72,13 @@ public class PlayerSpriteColorInversion : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        m_invertAmount = initialInvertAmount;
+        m_inverted = m_invertAmount == 1;
+        UpdateShaderProperties();
+    }
+
     private void UpdateShaderProperties()
     {
         if (m_material != null)
