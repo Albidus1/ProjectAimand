@@ -1,8 +1,10 @@
 using System;
 using UnityEngine;
 
-public class ProjectileSpawner : MonoBehaviour, Respawnable
+public class ProjectileSpawner : MonoBehaviour, IEventListener<TriggerEvent>, Respawnable
 {
+    public bool isActive;
+
     [Header("풀링 설정")]
     public MyObjectPooler objectPooler;
     [Space(10)]
@@ -22,41 +24,42 @@ public class ProjectileSpawner : MonoBehaviour, Respawnable
     public float initialCooldownTime = 0f;
     public float cooldownTime = 5f;
 
+    [Header("이벤트 설정")]
+    public bool useTriggerEvent = false;
+    [MyConditionalHide("useTriggerEvent", true)]
+    public string eventID = "default";
+
     private bool m_poolInitialized = false;
     private Vector3 m_spawnPositionCenter;
     private Vector2 m_offset;
-
     private float m_cooldownTimer = 0f;
 
 
 
     private void Awake()
     {
+        objectPooler = GetComponent<MyObjectPooler>();
+    }
+
+    private void Start()
+    {
         Initialization();
     }
+
     public void Initialization()
     {
-        if (false == m_poolInitialized)
-        {
-            if (objectPooler == null)
-            {
-                objectPooler = GetComponent<MyObjectPooler>();
-            }
-            if (objectPooler == null)
-            {
-                Debug.LogError(this.name + "오브젝트 풀러 없음");
-                return;
-            }
+        isActive = false == useTriggerEvent;
+        ResetCooldown();
+    }
 
-            m_poolInitialized = true;
-        }
-
+    private void ResetCooldown()
+    {
         m_cooldownTimer = initialCooldownTime + Time.time;
     }
 
     private void Update()
     {   
-        if (m_cooldownTimer < Time.time)
+        if (isActive && m_cooldownTimer < Time.time)
         {
             UseSpawner();
         }
@@ -118,5 +121,26 @@ public class ProjectileSpawner : MonoBehaviour, Respawnable
         {
             objectPooler.DeactivateAllPooledGameObject();
         }
+    }
+
+    public void OnEvent(TriggerEvent e)
+    {
+        if (e.eventID != this.eventID)
+        {
+            return;
+        }
+
+        isActive = true;
+        ResetCooldown();
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<TriggerEvent>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<TriggerEvent>();
     }
 }

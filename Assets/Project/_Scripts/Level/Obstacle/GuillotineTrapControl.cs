@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
-public class GuillotineTrapControl : MonoBehaviour, Respawnable
+public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>, Respawnable
 {
     public enum BladeState {Preparation, BeforeFalling, Falling, WaitAtBottom, Resetting, Cooldown }
     [MyReadOnly]
@@ -25,6 +25,12 @@ public class GuillotineTrapControl : MonoBehaviour, Respawnable
     public int numberOfVerticalRays = 4;
     public float rayDistance = 10f;
     public LayerMask groundLayer;
+
+    [Header("이벤트 설정")]
+    public bool useTriggerEvent = false;
+    [MyConditionalHide("useTriggerEvent", true)]
+    public string eventID = "default";
+
 
     private RaycastHit2D[] m_belowHitsStorage;
     private BoxCollider2D m_boxCollider;
@@ -73,6 +79,8 @@ public class GuillotineTrapControl : MonoBehaviour, Respawnable
         m_cooldownTimer = cooldownTime;
 
         currentState = BladeState.Preparation;
+
+        isActive = false == useTriggerEvent;
     }
 
     private void Update()
@@ -270,5 +278,25 @@ public class GuillotineTrapControl : MonoBehaviour, Respawnable
     public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
         Initialization();
+    }
+
+    public void OnEvent(TriggerEvent e)
+    {
+        if (e.eventID != this.eventID)
+        {
+            return;
+        }
+
+        isActive = true;
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<TriggerEvent>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<TriggerEvent>();
     }
 }
