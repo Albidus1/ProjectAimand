@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3993230795254152145}
   - component: {fileID: 27459384373503720}
   - component: {fileID: 4804412868853532475}
+  - component: {fileID: 6370659969356464239}
   m_Layer: 6
   m_Name: JumpStartParticle
   m_TagString: Untagged
@@ -670,7 +671,7 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0.8, z: 0}
+    m_Position: {x: 0, y: 1.2, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
     m_Scale: {x: 0, y: 0, z: 0}
     placementMode: 0
@@ -4891,6 +4892,21 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &6370659969356464239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376782409580570529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  soundFX: {fileID: 8300000, guid: 5a9ad3c719d68f14eae481cb50da941f, type: 3}
+  loop: 0
 --- !u!1 &3811999700480208972
 GameObject:
   m_ObjectHideFlags: 0
@@ -9793,6 +9809,7 @@ GameObject:
   - component: {fileID: 4339995209032387025}
   - component: {fileID: 1336539153016649536}
   - component: {fileID: 2968077151060682183}
+  - component: {fileID: 6782677857814245858}
   m_Layer: 6
   m_Name: JumpLandingParticle
   m_TagString: Untagged
@@ -14673,6 +14690,21 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &6782677857814245858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4141705397502929500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  soundFX: {fileID: 8300000, guid: a8f913b3b30f95c48b24b2c216a13438, type: 3}
+  loop: 0
 --- !u!1 &4358366953133977145
 GameObject:
   m_ObjectHideFlags: 0
@@ -19601,6 +19633,7 @@ Transform:
   - {fileID: 4803195682398069727}
   - {fileID: 3389832899525542988}
   - {fileID: 3036727921672928079}
+  - {fileID: 5598235702639562507}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &5895697624813481566
@@ -19724,6 +19757,9 @@ MonoBehaviour:
   jumpStartVFX: {fileID: 27459384373503720}
   jumpAirVFX: {fileID: 3141517224810394089}
   jumpLandingVFX: {fileID: 1336539153016649536}
+  walkSound: {fileID: 5615422236673303056}
+  jumpSound: {fileID: 6370659969356464239}
+  landingSound: {fileID: 6782677857814245858}
   dashDirection: 0
   numberOfVerticalRays: 5
   headCheckPoint: {fileID: 0}
@@ -19768,6 +19804,53 @@ MonoBehaviour:
   VFX: {fileID: 8589600560166569497}
   keyCode: 32
   initialInvertAmount: 0
+--- !u!1 &5169577864322001608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5598235702639562507}
+  - component: {fileID: 5615422236673303056}
+  m_Layer: 6
+  m_Name: Walk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5598235702639562507
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5169577864322001608}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8528170459494264491}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5615422236673303056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5169577864322001608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  soundFX: {fileID: 8300000, guid: 3efb16551a2616f4fabbbc3fb27f8f08, type: 3}
+  loop: 1
 --- !u!1 &7996438100338421326
 GameObject:
   m_ObjectHideFlags: 0

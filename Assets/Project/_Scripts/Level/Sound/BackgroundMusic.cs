@@ -2,14 +2,21 @@ using UnityEngine;
 
 
 
-
-public class BackgroundMusic : MonoBehaviour
+public class BackgroundMusic : MyPersistentHumbleSingleton<BackgroundMusic>
 {
     public AudioClip soundClip;
     public bool loop = true;
     public int ID = 255;
 
+    protected AudioSource m_audioSource;
 
+
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    protected static void InitializeStatics()
+    {
+        m_instance = null;
+    }
 
     private void Start()
     {
@@ -25,6 +32,6 @@ public class BackgroundMusic : MonoBehaviour
         options.location = Vector3.zero;
         options.soundManagerTrack = SoundManager.SoundManagerTracks.Music;
 
-        SoundManagerSoundPlayEvent.Trigger(soundClip, options);
+        m_audioSource = SoundManagerSoundPlayEvent.Trigger(soundClip, options);
     }
 }

@@ -46,7 +46,9 @@ public class PlayerMovement : CharacterMovement
     public ParticleSystem jumpStartVFX;
     public ParticleSystem jumpAirVFX;
     public ParticleSystem jumpLandingVFX;
-
+    public PlaySound walkSound;
+    public PlaySound jumpSound;
+    public PlaySound landingSound;
 
     public bool isAttacking { get; set; }
     public bool isFacingRight { get; private set; }
@@ -165,7 +167,7 @@ public class PlayerMovement : CharacterMovement
     public Vector2 m_currentSlopeDirection;
     private RaycastHit2D m_stickRaycast;
 
-
+    private bool m_playSFX;
 
     private void Awake()
     {
@@ -193,7 +195,7 @@ public class PlayerMovement : CharacterMovement
     private void Start()
     {   
         Initialization();
-        isFacingRight = true;   
+        isFacingRight = true;
     }
 
     private void OnEnable()
@@ -272,7 +274,7 @@ public class PlayerMovement : CharacterMovement
             if (isStunned)
             {
                 moveInput.x = 0;
-                
+
             }
             else
             {
@@ -389,7 +391,7 @@ public class PlayerMovement : CharacterMovement
             isJumpFalling = true;
         }
 
-        if (true == isWallJumping && 
+        if (true == isWallJumping &&
             Time.time - wallJumpStartTime > data.wallJumpTime)
         {
             isWallJumping = false;
@@ -400,7 +402,7 @@ public class PlayerMovement : CharacterMovement
             isJumpCut = false;
             isJumpFalling = false;
         }
-        
+
         if (false == isOnMovingPlatform)
         {
             isJumpingOnMovingPlatform = false;
@@ -416,7 +418,7 @@ public class PlayerMovement : CharacterMovement
         if (false == isDashing)
         {
             // 점프
-            if ((true == CanJump() || (true == isWallGrabbing && 0 < lastOnGrabTime && false == isLookingOther)) && 
+            if ((true == CanJump() || (true == isWallGrabbing && 0 < lastOnGrabTime && false == isLookingOther)) &&
                 lastPressedJumpTime > 0)
             {
                 if (true == isWallGrabbing)
@@ -433,10 +435,10 @@ public class PlayerMovement : CharacterMovement
                 {
                     //Debug.Log("일반 점프");
                     Jump(data.jumpForce);
-                }               
+                }
             }
             // 벽 점프
-            else if ((true == CanWallJump() || (true == isWallGrabbing && 0 < lastOnGrabTime && true == isLookingOther)) 
+            else if ((true == CanWallJump() || (true == isWallGrabbing && 0 < lastOnGrabTime && true == isLookingOther))
                 && lastPressedJumpTime > 0)
             {
                 lastWallJumpDirection = (lastOnWallRightTime > 0) ? -1 : 1;
@@ -476,7 +478,7 @@ public class PlayerMovement : CharacterMovement
         #endregion
 
         #region SLIDE CHECK
-        if (true == CanSlide() && 
+        if (true == CanSlide() &&
             ((lastOnWallLeftTime > 0 && moveInput.x < 0) || (lastOnWallRightTime > 0 && moveInput.x > 0)))
         {
             isSliding = true;
@@ -513,7 +515,7 @@ public class PlayerMovement : CharacterMovement
             {
                 isWallGrabbing = false;
             }
-        }      
+        }
         else
         {
             isWallGrabbing = false;
@@ -556,7 +558,7 @@ public class PlayerMovement : CharacterMovement
 
                     case DashDirection.EightDirections:
                         break;
-                }          
+                }
             }
             else
             {
@@ -641,10 +643,25 @@ public class PlayerMovement : CharacterMovement
         {
             movementState.StateChange(PlayerStates.MovementStates.Running);
             animator.SetBool("isRunning", true);
+
+            if (walkSound != null && false == m_playSFX)
+            {
+                walkSound.PlaySoundFX();
+                m_playSFX = true;
+            }
         }
         else
         {
             movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+
+        if (movementState.currentState != PlayerStates.MovementStates.Running)
+        {
+            if (walkSound != null && m_playSFX)
+            {
+                walkSound.StopSoundFX();
+                m_playSFX = false;
+            }        
         }
         #endregion
     }
@@ -869,9 +886,17 @@ public class PlayerMovement : CharacterMovement
                 return;
             }
 
-            if (isJumpFalling && jumpLandingVFX != null && false == jumpLandingVFX.isPlaying)
+            if (isJumpFalling)
             {
-                StartCoroutine(PlayVFX(jumpLandingVFX, 0.005f));
+                if (jumpLandingVFX != null && false == jumpLandingVFX.isPlaying)
+                {
+                    StartCoroutine(PlayVFX(jumpLandingVFX, 0.005f));
+                }
+
+                if (landingSound != null)
+                {
+                    landingSound.PlaySoundFX();
+                }
             }
 
             lastOnGroundTime = data.coyoteTime;
@@ -1089,6 +1114,11 @@ public class PlayerMovement : CharacterMovement
         else if (jumpAirVFX != null && lastOnGroundTime < 0)
         {
             jumpAirVFX.Play();
+        }
+
+        if (jumpSound != null)
+        {
+            jumpSound.PlaySoundFX();
         }
 
         jumpsLeft -= 1;

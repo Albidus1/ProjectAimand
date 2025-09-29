@@ -32,7 +32,7 @@ public struct SoundManagerSoundPlayEvent
     }
 
     static public AudioSource Trigger(AudioClip _clip, SoundManagerTracks _soundManagerTrack, Vector3 _location,
-        AudioMixerGroup _audioMixerGroup = null, int _ID = 0, bool _loop = false, float _volume = 0f, float _pitch = 0f,
+        AudioMixerGroup _audioMixerGroup = null, int _ID = 0, bool _loop = false, float _volume = 1f, float _pitch = 1f,
         bool _fade = false, float _fadeInitialVolume = 0f, float _fadeDuration = 1f, Ease _fadeTween = Ease.InCubic,
         bool _persistent = false, int _priority = 128,
         AudioSource _recycleAudioSource = null,

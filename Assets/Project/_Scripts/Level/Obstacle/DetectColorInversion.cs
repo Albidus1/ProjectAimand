@@ -51,7 +51,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             disableCollider = false;
         }
 
-        harfInverter = state == ColorState.Half;
+        if (state == ColorState.Half)
+        {
+            disableCollider = false;
+            disableDamageOnTouch = false;
+        }
 
         SetMaterial();
     }
