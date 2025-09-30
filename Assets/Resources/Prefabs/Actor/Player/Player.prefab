@@ -4906,12 +4906,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   soundFXs:
-  - {fileID: 8300000, guid: 5a9ad3c719d68f14eae481cb50da941f, type: 3}
+  - {fileID: 8300000, guid: c8549bcebe54e794d9bc4ad36ac8f701, type: 3}
   loop: 0
-  useDistanceSound: 0
-  rolloffMode: 0
-  minDistance: 8
-  maxDistance: 24
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &1503358124531436754
@@ -4923,6 +4919,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1330941880587383478}
+  - component: {fileID: 6452587781274028355}
   m_Layer: 6
   m_Name: HitVFX
   m_TagString: Untagged
@@ -4947,6 +4944,24 @@ Transform:
   - {fileID: 5487516250228848261}
   m_Father: {fileID: 8528170459494264491}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6452587781274028355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503358124531436754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  soundFXs:
+  - {fileID: 8300000, guid: 01a95f63d30464c4aaaaea11d1b1f583, type: 3}
+  loop: 0
+  attachToTransform: {fileID: 0}
+  randomSet: 0
 --- !u!1 &3811999700480208972
 GameObject:
   m_ObjectHideFlags: 0
@@ -14744,12 +14759,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   soundFXs:
-  - {fileID: 8300000, guid: a8f913b3b30f95c48b24b2c216a13438, type: 3}
+  - {fileID: 8300000, guid: 6b32fd1b8c97387408333177c9eef59f, type: 3}
   loop: 0
-  useDistanceSound: 0
-  rolloffMode: 0
-  minDistance: 8
-  maxDistance: 24
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &4358366953133977145
@@ -19782,6 +19793,7 @@ MonoBehaviour:
   CollisionsOffOnDeath: 1
   grabityOffOnDeath: 0
   respawnAtInitialLocation: 0
+  hitSound: {fileID: 6452587781274028355}
 --- !u!114 &7965639506098986172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24790,12 +24802,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   soundFXs:
-  - {fileID: 8300000, guid: 3efb16551a2616f4fabbbc3fb27f8f08, type: 3}
+  - {fileID: 8300000, guid: 8dcccb014090e034799a3e62d5361c12, type: 3}
   loop: 1
-  useDistanceSound: 0
-  rolloffMode: 0
-  minDistance: 8
-  maxDistance: 24
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &7996438100338421326
@@ -29771,13 +29779,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   soundFXs:
-  - {fileID: 8300000, guid: e48f5080f042d13428b47e00f49b39cd, type: 3}
-  - {fileID: 8300000, guid: a00240222984b9c459b57962f4c8890a, type: 3}
+  - {fileID: 8300000, guid: 11f8582e95f091746ae2f245d1f600a8, type: 3}
+  - {fileID: 8300000, guid: 6696be4298bb4864f920494f3576decd, type: 3}
   loop: 0
-  useDistanceSound: 0
-  rolloffMode: 0
-  minDistance: 8
-  maxDistance: 24
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &8944690035579265133

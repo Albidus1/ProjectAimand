@@ -51,6 +51,9 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     public bool grabityOffOnDeath = false;
     public bool respawnAtInitialLocation = false;
 
+    [Header("VFX")]
+    public PlaySound hitSound;
+
     //[Header("사망 시 힘")]
     //public bool applyDeathForce = true;
     //public Vector2 deathForce = new Vector2(0f, 10f);
@@ -154,6 +157,11 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         }
 
         OnHit?.Invoke();
+
+        if (hitSound != null)
+        {
+            hitSound.PlaySoundFX();
+        }
 
         SetHealth(currentHP - _damage, _instigator);
 
