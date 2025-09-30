@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -13,9 +14,6 @@ public class Room : MonoBehaviour
     public Collider2D confiner;
     public CinemachineConfiner2D cinemachineCameraConfiner;
     public CinemachineCameraController controller;
-
-    [Header("웨이브")]
-    public EnemyWave enemyWave;
 
     private BoxCollider2D m_roomCollider;
     private Camera m_mainCamera;
@@ -35,8 +33,6 @@ public class Room : MonoBehaviour
         }
 
         controller = GetComponentInChildren<CinemachineCameraController>();
-
-        enemyWave = GetComponentInChildren<EnemyWave>();
     }
 
     private IEnumerator ResizeConfiner()
@@ -50,7 +46,7 @@ public class Room : MonoBehaviour
         yield return null;
 
         (confiner as BoxCollider2D).offset = m_roomCollider.offset;
-        (confiner as BoxCollider2D).size = m_roomCollider.size;
+        (confiner as BoxCollider2D).size = (m_roomCollider as BoxCollider2D).size;
 
         m_cameraSize.y = 2 * m_mainCamera.orthographicSize;
         m_cameraSize.x = m_cameraSize.y * m_mainCamera.aspect;
@@ -97,10 +93,7 @@ public class Room : MonoBehaviour
             controller.SetTarget(LevelManager.Instance.player);
             controller.StartFollowing();
 
-            if (enemyWave != null && false == WaveManager.Instance.isWaveActive)
-            {
-                enemyWave.StartWave();
-            }
+
         }
     }
 
@@ -133,6 +126,12 @@ public class Room : MonoBehaviour
 
     }*/
 
+    protected virtual void OnEnable()
+    {
+
+    }
+
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (m_roomCollider == null)
@@ -145,4 +144,5 @@ public class Room : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(pos, m_roomCollider.bounds.size);
     }
+#endif
 }

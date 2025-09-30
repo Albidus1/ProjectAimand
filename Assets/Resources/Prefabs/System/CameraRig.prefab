@@ -164,9 +164,9 @@ GameObject:
   - component: {fileID: 8116634866503044814}
   - component: {fileID: 4650331229592636707}
   - component: {fileID: 3024109719609440849}
-  - component: {fileID: 3715771404375992933}
   - component: {fileID: 5385676609951049590}
   - component: {fileID: 2376242900311649195}
+  - component: {fileID: 4740636562021307001}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -183,7 +183,7 @@ Transform:
   m_GameObject: {fileID: 3802770413100600013}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -87.45938, y: -5.068559, z: 0.28538677}
+  m_LocalPosition: {x: -28.217136, y: -5.068559, z: 0.28538677}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -248,14 +248,6 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3802770413100600013}
   m_Enabled: 1
---- !u!81 &3715771404375992933
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3802770413100600013}
-  m_Enabled: 1
 --- !u!114 &5385676609951049590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,7 +264,8 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_Cameras: []
+  m_Cameras:
+  - {fileID: 0}
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
@@ -332,6 +325,14 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!81 &4740636562021307001
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3802770413100600013}
+  m_Enabled: 1
 --- !u!1 &6557351730915141839
 GameObject:
   m_ObjectHideFlags: 0

@@ -164,10 +164,19 @@ public class SoundManager : MyPersistentSingleton<SoundManager>,
         audioSource.minDistance = _minDistance;
         audioSource.maxDistance = _maxDistance;
         audioSource.time = _playbackTime;
+        audioSource.dopplerLevel = 0;
 
         if (_attachToTransform != null)
         {
-            // 따라갈 타겟이 필요할 경우
+            MyFollowTarget followTarget = audioSource.gameObject.GetComponent<MyFollowTarget>();
+            if (followTarget == null)
+            {
+                followTarget = audioSource.gameObject.AddComponent<MyFollowTarget>();
+            }
+
+            followTarget.target = _attachToTransform;
+            followTarget.interpolatePosition = false;
+            followTarget.enabled = true;
         }
 
         if (settingsSO != null)

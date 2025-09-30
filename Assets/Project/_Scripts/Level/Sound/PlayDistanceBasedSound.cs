@@ -1,0 +1,83 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayDistanceBasedSound : MonoBehaviour
+{
+    public bool active = true;
+
+    public AudioClip soundFX;
+
+    [Header("거리 설정")]
+    public AudioRolloffMode rolloffMode;
+    public float minDistance = 8f;
+    public float maxDistance = 24f;
+
+    [Header("특수 설정")]
+    public Transform attachToTransform;
+
+    protected AudioSource m_audioSource;
+    protected CircleCollider2D m_circleCollider;
+
+
+
+    private void Start()
+    {
+        m_circleCollider = GetComponent<CircleCollider2D>();
+        if (m_circleCollider != null)
+        {
+            m_circleCollider.radius = (maxDistance * 2) + 2f;
+            m_circleCollider.isTrigger = true;
+        }
+    }
+
+    [ContextMenu("사운드 출력")]
+    public void PlaySoundFX()
+    {
+        if (false == active)
+        {
+            return;
+        }
+
+        if (soundFX != null)
+        {
+            m_audioSource = SoundManagerSoundPlayEvent.Trigger
+                (soundFX,
+                SoundManager.SoundManagerTracks.SFX,
+                transform.position,
+                _loop: true,
+                _specialBlend: 1f,
+                _rolloffMode: rolloffMode,
+                _minDistance: minDistance,
+                _maxDistance: maxDistance,
+                _attachToTransform: attachToTransform);
+        }
+    }
+
+    [ContextMenu("사운드 종료")]
+    public void StopSoundFX()
+    {
+        if (m_audioSource == null)
+        {
+            return;
+        }
+
+        m_audioSource.Stop();
+        SoundManager.Instance.FreeSound(m_audioSource);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent<PlayerMovement>(out _))
+        {
+            PlaySoundFX();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent<PlayerMovement>(out _))
+        {
+            StopSoundFX();
+        }
+    }
+}

@@ -25,12 +25,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1280243835309655917}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 43.78639, y: 34.05957, z: -0.06122409}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1003228993473684123}
+  - {fileID: 1638086126845424040}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8794122458725621899
@@ -49,7 +50,9 @@ MonoBehaviour:
   CycleOption: 2
   InitialMovementDirection: 0
   pathElements:
-  - pathElementPosition: {x: 1.3541756, y: 0.8393936, z: 0}
+  - pathElementPosition: {x: 0, y: 0, z: 0}
+    delay: 0
+  - pathElementPosition: {x: 21.28537, y: -0.017882347, z: 0}
     delay: 0
   referenceMyPath: {fileID: 0}
   absoluteReferenceMyPath: 0
@@ -58,7 +61,7 @@ MonoBehaviour:
   LockHandlesOnYAxis: 0
   LockHandlesOnZAxis: 1
   isPlayerSync: 0
-  movementSpeed: 40
+  movementSpeed: 8
   isRotateAble: 0
   rotateSpeed: 20
   rotateDirection: 0
@@ -97,7 +100,7 @@ Transform:
   m_GameObject: {fileID: 3564736983729259398}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.069999695, y: -0.1800003, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -234,7 +237,7 @@ MonoBehaviour:
     m_Bits: 64
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
-  damage: 30
+  damage: 10
   damageTakenEveryTime: 0
   damageTakenDamageable: 0
   damageTakenNonDamageable: 0
@@ -258,3 +261,90 @@ MonoBehaviour:
   state: 1
   disableCollider: 1
   disableDamageOnTouch: 1
+--- !u!1 &8274091097281203314
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1638086126845424040}
+  - component: {fileID: 3456398408346229018}
+  - component: {fileID: 7527429595395514690}
+  m_Layer: 0
+  m_Name: Sound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1638086126845424040
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8274091097281203314}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2964647350347899835}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &3456398408346229018
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8274091097281203314}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.5
+--- !u!114 &7527429595395514690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8274091097281203314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f102dba39d041ce42b746f43f6f331fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  soundFX: {fileID: 8300000, guid: f7afb564ab13e3846b14f547bc41bffe, type: 3}
+  rolloffMode: 1
+  minDistance: 8
+  maxDistance: 24
+  attachToTransform: {fileID: 2964647350347899835}

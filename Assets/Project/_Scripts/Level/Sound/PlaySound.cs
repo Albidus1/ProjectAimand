@@ -12,15 +12,8 @@ public class PlaySound : MonoBehaviour
     public List<AudioClip> soundFXs = new List<AudioClip>();
     public bool loop;
 
-    [Header("거리 설정")]
-    public bool useDistanceSound;
-    [MyConditionalHide("useDistanceSound", true)]
-    public AudioRolloffMode rolloffMode;
-    [MyConditionalHide("useDistanceSound", true)]
-    public float minDistance = 0f;
-    [MyConditionalHide("useDistanceSound", true)]
-    public float maxDistance = 500f;
-    [Space(10)]
+    [Header("특수 설정")]
+    public Transform attachToTransform;
 
     public bool randomSet;
 
@@ -30,13 +23,6 @@ public class PlaySound : MonoBehaviour
 
 
 
-    private void Start()
-    {
-        if (useDistanceSound)
-        {
-            PlaySoundFX();
-        }
-    }
 
     [ContextMenu("사운드 출력")]
     public void PlaySoundFX()
@@ -54,17 +40,12 @@ public class PlaySound : MonoBehaviour
 
         if (soundFXs.Count > 0)
         {
-            m_specialBlend = useDistanceSound ? 1f : 0f;
-
             m_audioSource = SoundManagerSoundPlayEvent.Trigger
                 (soundFXs[m_index],
                 SoundManager.SoundManagerTracks.SFX,
                 transform.position,
                 _loop:loop,
-                _specialBlend:m_specialBlend,
-                _rolloffMode:rolloffMode,
-                _minDistance:minDistance,
-                _maxDistance:maxDistance);
+                _attachToTransform:attachToTransform);
 
             m_index++;
 
@@ -91,23 +72,24 @@ public class PlaySound : MonoBehaviour
         SoundManager.Instance.FreeSound(m_audioSource);
     }
 
-    private void Update()
-    {
-        if (m_audioSource == null || false == useDistanceSound)
-        {
-            return;
-        }
+    //private void Update()
+    //{
+    //    if (false == useDistanceSound)
+    //    {
+    //        return;
+    //    }
 
-        Vector3 relativePosition = Camera.main.transform.position - m_audioSource.transform.position;
-        bool isAudible = relativePosition.magnitude <= m_audioSource.maxDistance;
+    //    if (m_audioSource == null)
+    //    { 
+    //        return;
+    //    }
 
-        if (false == m_audioSource.isPlaying && isAudible)
-        {
-            PlaySoundFX();
-        }
-        if (m_audioSource.isPlaying && false == isAudible)
-        {
-            StopSoundFX();
-        }
-    }
+    //    Vector3 relativePosition = Camera.main.transform.position - m_audioSource.transform.position;
+    //    bool outOfRange = relativePosition.magnitude > m_audioSource.maxDistance;
+
+    //    if (m_audioSource.isPlaying && outOfRange)
+    //    {
+    //        StopSoundFX();
+    //    }
+    //}
 }
