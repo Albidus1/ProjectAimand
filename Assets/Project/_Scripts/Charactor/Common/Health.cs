@@ -382,5 +382,16 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     {
         //currentHP = m_HP;
     }
+
+    private void Update()
+    {
+        if (m_playerMovement != null)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Kill();
+            }
+        }
+    }
 #endif
 }
