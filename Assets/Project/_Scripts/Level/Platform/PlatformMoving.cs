@@ -71,7 +71,6 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     
     protected override void Start()
     {
-        m_lastPosition = transform.position;
         m_initialRotation = transform.rotation;
 
         Initialization();
@@ -79,24 +78,31 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
 
     public override void Initialization()
     {
-        base.Initialization();
+        if (false == base.Initialized)
+        {
+            base.Initialization();
+        }
+
         base.canMove = true;   
 
         m_playerSync = false;
         m_eventSetting = null;
         isMoving = false;
-        transform.rotation = m_initialRotation;
+
+        transform.SetPositionAndRotation(base.m_initialPosition, m_initialRotation);
     }
 
     protected override void Update()
     {
-        #region TIMERS
-        jumpTime -= Time.deltaTime;
-        #endregion
+
     }
 
     private void FixedUpdate()
     {
+        #region TIMERS
+        jumpTime -= Time.deltaTime;
+        #endregion
+
         #region HANDLE MOVEMENT
         ExecuteUpdate();
 
@@ -151,6 +157,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
         {
             return;
         }
+
 
         Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
         transform.position = Vector3.MoveTowards(transform.position, position, Time.deltaTime * movementSpeed);
@@ -377,7 +384,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
                 base.ChangeDirection(e.isInvert ? -1 : 1);
                 base.canMove = true;
 
-                Debug.Log(m_direction);
+                //Debug.Log(m_direction);
             }
             else
             {

@@ -9,14 +9,14 @@ public struct ColorInvertEvent
 
     public bool isInvert;
 
-    public ColorInvertEvent(int _invertAmount)
+    public ColorInvertEvent(bool _inverted)
     {
-        isInvert = _invertAmount == 1;
+        isInvert = _inverted;
     }
 
-    public static void Trigger(int  _invertAmount)
+    public static void Trigger(bool _inverted)
     {
-        e.isInvert = _invertAmount == 1;
+        e.isInvert = _inverted;
         EventManager.TriggerEvent(e);
     }
 }
@@ -84,7 +84,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
         if (m_material != null)
         {
             m_material.SetFloat(InvertAmountID, m_invertAmount);
-            ColorInvertEvent.Trigger(m_invertAmount);
+            ColorInvertEvent.Trigger(m_inverted);
         }
     }
 

@@ -58,6 +58,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         }
 
         SetMaterial();
+        SetCollider(currentInvertState);
     }
 
     private void SetMaterial()
@@ -68,14 +69,17 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             {
                 case ColorState.Normal:
                     m_spriteRenderer.material = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Lit-Default"));
+                    currentInvertState = false;
                     break;
 
                 case ColorState.Invert:
                     m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+                    currentInvertState = true;
                     break;
 
                 case ColorState.Half:
                     m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/HalfColorInversionMaterial");
+                    currentInvertState = false;
                     break;
 
             }

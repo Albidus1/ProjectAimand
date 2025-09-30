@@ -162,7 +162,7 @@ public class MyPath : MonoBehaviour
                         m_endReached = true;
                     }
                 }
-                else if (index >= pathElements.Count - 1)
+                else if (index > pathElements.Count - 1)
                 {
                     if (m_direction == -1)
                     {
