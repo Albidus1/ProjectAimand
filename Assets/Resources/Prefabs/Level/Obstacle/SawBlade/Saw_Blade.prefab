@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2964647350347899835}
   - component: {fileID: 8794122458725621899}
+  - component: {fileID: 5509568631348187562}
   m_Layer: 0
   m_Name: Saw_Blade
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 43.78639, y: 34.05957, z: -0.06122409}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1003228993473684123}
@@ -47,29 +48,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startAt: 0
-  CycleOption: 2
+  CycleOption: 0
   InitialMovementDirection: 0
   pathElements:
   - pathElementPosition: {x: 0, y: 0, z: 0}
     delay: 0
-  - pathElementPosition: {x: 21.28537, y: -0.017882347, z: 0}
+  - pathElementPosition: {x: 19, y: 0, z: 0}
     delay: 0
   referenceMyPath: {fileID: 0}
   absoluteReferenceMyPath: 0
   minDistanceToGoal: 0.1
   LockHandlesOnXAxis: 0
-  LockHandlesOnYAxis: 0
+  LockHandlesOnYAxis: 1
   LockHandlesOnZAxis: 1
   isPlayerSync: 0
-  movementSpeed: 8
+  movementSpeed: 4
   isRotateAble: 0
   rotateSpeed: 20
   rotateDirection: 0
   isAccelerateAble: 0
   speedThreshold: 0
   invertMoveOnInput: 0
-  useTriggerEvent: 0
-  eventID: 1
+  useTriggerEvent: 1
+  eventID: Room3_01
+--- !u!114 &5509568631348187562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280243835309655917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021ac884df72c3d4da1f972d0fc67155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnOnPlayerRespawn: 1
+  repositionToInitOnPlayerRespawn: 1
+  autoRespawnDuration: 0
+  autoRespawnAmount: 0
+  autoRespawnRemainingAmount: 0
+  ignoreCheckPointsAlwaysRespawn: 1
+  associatedCheckpoints: []
 --- !u!1 &3564736983729259398
 GameObject:
   m_ObjectHideFlags: 0
@@ -81,9 +101,10 @@ GameObject:
   - component: {fileID: 1003228993473684123}
   - component: {fileID: 4233090884627430425}
   - component: {fileID: 2952282478556359848}
-  - component: {fileID: 4681200645462852252}
-  - component: {fileID: 4382687328169678876}
-  - component: {fileID: 1014933184335556853}
+  - component: {fileID: 1406152167904936929}
+  - component: {fileID: 651421190085554067}
+  - component: {fileID: 8360012489267953658}
+  - component: {fileID: 6918817901070776782}
   m_Layer: 0
   m_Name: Gear_512px_0001
   m_TagString: Untagged
@@ -183,7 +204,34 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!58 &4681200645462852252
+--- !u!50 &1406152167904936929
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564736983729259398}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
+--- !u!58 &651421190085554067
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -218,8 +266,8 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 2
---- !u!114 &4382687328169678876
+  m_Radius: 1.7
+--- !u!114 &8360012489267953658
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,7 +293,7 @@ MonoBehaviour:
   damageCausedKnockbackForce: {x: 10, y: 2}
   stunTime: 0
   owner: {fileID: 0}
---- !u!114 &1014933184335556853
+--- !u!114 &6918817901070776782
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -343,7 +391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 1
-  soundFX: {fileID: 8300000, guid: f7afb564ab13e3846b14f547bc41bffe, type: 3}
+  soundFX: {fileID: 8300000, guid: 307b9fc6f889ec845830f8beae872455, type: 3}
   rolloffMode: 1
   minDistance: 8
   maxDistance: 24

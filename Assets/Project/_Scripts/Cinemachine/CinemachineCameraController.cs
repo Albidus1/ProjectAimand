@@ -81,14 +81,8 @@ public class CinemachineCameraController : MonoBehaviour
 
         float playerSpeed = Mathf.Abs(playerMovement.rb.linearVelocity.x);
         float currentVelocity = Mathf.Max(playerSpeed, 0);
-        float targetZoom = Remap(playerSpeed, 0, 16, orthographicZoom.x, orthographicZoom.y);
+        float targetZoom = MyMaths.Remap(currentVelocity, 0, 16, orthographicZoom.x, orthographicZoom.y);
         m_currentZoom = Mathf.Lerp(m_currentZoom, targetZoom, Time.deltaTime * orthographicZoomSpeed);
         m_virtualCamera.Lens.OrthographicSize = m_currentZoom;
-    }
-
-    public float Remap(float x, float A, float B, float C, float D)
-    {
-        float remappedValue = C + (x - A) / (B - A) * (D - C);
-        return remappedValue;
     }
 }

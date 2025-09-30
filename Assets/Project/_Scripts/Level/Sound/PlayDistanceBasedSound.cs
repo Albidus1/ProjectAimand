@@ -25,7 +25,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
         m_circleCollider = GetComponent<CircleCollider2D>();
         if (m_circleCollider != null)
         {
-            m_circleCollider.radius = (maxDistance * 2) + 2f;
+            m_circleCollider.radius = maxDistance + 2f;
             m_circleCollider.isTrigger = true;
         }
     }

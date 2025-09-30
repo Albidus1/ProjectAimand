@@ -132,7 +132,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         if (disableDamageOnTouch && m_damageOnTouch != null)
         {
-            m_damageOnTouch.enabled = true;
+            m_damageOnTouch.enabled = false;
         }
 
         enableSetting = true;
@@ -147,7 +147,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         if (disableDamageOnTouch && m_damageOnTouch != null)
         {
-            m_damageOnTouch.enabled = false;
+            m_damageOnTouch.enabled = true;
         }
 
         enableSetting = false;

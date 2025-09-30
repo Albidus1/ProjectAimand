@@ -105,7 +105,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
             m_inverted = !m_inverted;
             m_invertAmount = m_inverted ? 1 : 0;
 
-            Debug.Log(m_inverted);
+            //Debug.Log(m_inverted);
             SetInvertAmount(m_invertAmount);
 
             foreach (ParticleSystem ps in m_particles)

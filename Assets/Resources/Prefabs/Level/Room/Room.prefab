@@ -62,7 +62,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 40
-    OrthographicSize: 10
+    OrthographicSize: 5
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
@@ -111,11 +111,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoundingShape2D: {fileID: 8108446539152071738}
+  BoundingShape2D: {fileID: 4850987384510252601}
   Damping: 0
   SlowingDistance: 5
   OversizeWindow:
-    Enabled: 1
+    Enabled: 0
     MaxWindowSize: 0
     Padding: 0
   m_LegacyMaxWindowSize: -2
@@ -134,8 +134,8 @@ MonoBehaviour:
   followsAPlayer: 1
   targetPlayer: {fileID: 0}
   playerMovement: {fileID: 0}
-  orthographicZoom: {x: 5, y: 9}
-  initialOrthographicZoom: 5
+  orthographicZoom: {x: 5, y: 16}
+  initialOrthographicZoom: 6
   orthographicZoomSpeed: 0.4
 --- !u!114 &1614373951965777871
 MonoBehaviour:
@@ -320,20 +320,20 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 8108446539152071738}
     m_ColliderPaths:
-    - - X: 5000000
+    - - X: 5250000
         Y: 5000000
-      - X: -5000000
+      - X: -5250000
         Y: 5000000
-      - X: -5000000
+      - X: -5250000
         Y: -5000000
-      - X: 5000000
+      - X: 5250000
         Y: -5000000
   m_CompositePaths:
     m_Paths:
-    - - {x: 0.4999707, y: -0.5}
-      - {x: 0.4999707, y: 0.5}
-      - {x: -0.5, y: 0.4999707}
-      - {x: -0.4999707, y: -0.5}
+    - - {x: 0.5249707, y: -0.5}
+      - {x: 0.5249707, y: 0.5}
+      - {x: -0.52500004, y: 0.4999707}
+      - {x: -0.5249707, y: -0.5}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -407,7 +407,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 7.1592827, y: 6.583395}
+  m_Offset: {x: 7.8819103, y: 1.5198822}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -417,7 +417,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 58.414375, y: 37.721928}
+  m_Size: {x: 27.81466, y: 18.277725}
   m_EdgeRadius: 0
 --- !u!114 &1303830531911658652
 MonoBehaviour:
