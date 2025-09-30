@@ -27,6 +27,9 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     [Header("VFX")]
     public GameObject VFX;
 
+    [Header("SFX")]
+    public PlaySound abilitySound;
+
     public KeyCode keyCode = KeyCode.Space;
 
     [Range(0, 1)]
@@ -47,6 +50,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     {
         m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         m_material = m_spriteRenderer.material;
+
     }
 
     private void Start()
@@ -110,6 +114,11 @@ public class PlayerSpriteColorInversion : MonoBehaviour
                 {
                     ps.Play();
                 }
+            }
+
+            if (abilitySound != null)
+            {
+                abilitySound.PlaySoundFX();
             }
         }
     }

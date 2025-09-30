@@ -324,7 +324,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         {
             if (GUIManager.HasInstance)
             {
-                Debug.Log($"플레이어 체력 업데이트: {currentHP}");
+                //Debug.Log($"플레이어 체력 업데이트: {currentHP}");
                 GUIManager.Instance.UpdateHealthBar(currentHP, 0f, maxHP);
                 GUIManager.Instance.UpdateHealthCell((int)(currentHP * 0.1f), (int)(maxHP * 0.1f));
             }

@@ -4905,8 +4905,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 1
-  soundFX: {fileID: 8300000, guid: deea63a63c96fd64f9096e0a8f81a3a1, type: 3}
+  soundFXs:
+  - {fileID: 8300000, guid: 5a9ad3c719d68f14eae481cb50da941f, type: 3}
   loop: 0
+  randomSet: 0
 --- !u!1 &1503358124531436754
 GameObject:
   m_ObjectHideFlags: 0
@@ -14736,8 +14738,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 1
-  soundFX: {fileID: 8300000, guid: a8f913b3b30f95c48b24b2c216a13438, type: 3}
+  soundFXs:
+  - {fileID: 8300000, guid: a8f913b3b30f95c48b24b2c216a13438, type: 3}
   loop: 0
+  randomSet: 0
 --- !u!1 &4358366953133977145
 GameObject:
   m_ObjectHideFlags: 0
@@ -19836,6 +19840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VFX: {fileID: 8589600560166569497}
+  abilitySound: {fileID: 3734220585627903057}
   keyCode: 32
   initialInvertAmount: 0
 --- !u!1 &5024259417875089259
@@ -24774,8 +24779,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 1
-  soundFX: {fileID: 8300000, guid: 3efb16551a2616f4fabbbc3fb27f8f08, type: 3}
+  soundFXs:
+  - {fileID: 8300000, guid: 3efb16551a2616f4fabbbc3fb27f8f08, type: 3}
   loop: 1
+  randomSet: 0
 --- !u!1 &7996438100338421326
 GameObject:
   m_ObjectHideFlags: 0
@@ -29710,6 +29717,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3389832899525542988}
+  - component: {fileID: 3734220585627903057}
   m_Layer: 0
   m_Name: AbilityVFX
   m_TagString: Untagged
@@ -29734,6 +29742,24 @@ Transform:
   - {fileID: 8402018979362639411}
   m_Father: {fileID: 8528170459494264491}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3734220585627903057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8589600560166569497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  soundFXs:
+  - {fileID: 8300000, guid: e48f5080f042d13428b47e00f49b39cd, type: 3}
+  - {fileID: 8300000, guid: a00240222984b9c459b57962f4c8890a, type: 3}
+  loop: 0
+  randomSet: 0
 --- !u!1 &8944690035579265133
 GameObject:
   m_ObjectHideFlags: 0

@@ -44,8 +44,17 @@ public struct SoundManagerPlayOptions
     public float playbackDuration;
 
     [Header("특수 설정")]
+    [Range(0f, 1f)]
+    public float specialBlend;
     public Transform attachToTransform;
-    
+
+    [Header("3D 사운드 세팅")]
+    public AudioRolloffMode rolloffMode;
+    public float minDistance;
+    public float maxDistance;
+
+
+
 
 
     public static SoundManagerPlayOptions DefaultOption
@@ -68,6 +77,10 @@ public struct SoundManagerPlayOptions
             defaultOption.persistent = false;
             defaultOption.recycleAudioSource = null;
             defaultOption.priority = 128;
+            defaultOption.specialBlend = 0f;
+            defaultOption.rolloffMode = AudioRolloffMode.Logarithmic;
+            defaultOption.minDistance = 0f;
+            defaultOption.maxDistance = 500f;
 
             return defaultOption;
         }

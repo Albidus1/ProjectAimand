@@ -37,7 +37,8 @@ public struct SoundManagerSoundPlayEvent
         bool _persistent = false, int _priority = 128,
         AudioSource _recycleAudioSource = null,
         float _playbackTime = 0f, float _playbackDuration = 0f,
-        Transform _attachToTransform = null, bool _doNotAutoRecycleIfNotDonePlaying = false)
+        Transform _attachToTransform = null, bool _doNotAutoRecycleIfNotDonePlaying = false, float _specialBlend = 0f,
+        AudioRolloffMode _rolloffMode = AudioRolloffMode.Logarithmic, float _minDistance = 0f, float _maxDistance = 500f)
     {
         SoundManagerPlayOptions options = SoundManagerPlayOptions.DefaultOption;
 
@@ -59,6 +60,10 @@ public struct SoundManagerSoundPlayEvent
         options.playbackDuration = _playbackDuration;
         options.attachToTransform = _attachToTransform;
         options.doNotAutoRecycleIfNotDonePlaying = _doNotAutoRecycleIfNotDonePlaying;
+        options.specialBlend = _specialBlend;
+        options.rolloffMode = _rolloffMode;
+        options.minDistance = _minDistance;
+        options.maxDistance = _maxDistance;
 
         return OnEvent?.Invoke(_clip, options);
     }
