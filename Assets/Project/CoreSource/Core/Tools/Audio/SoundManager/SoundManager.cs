@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 
 
 
@@ -267,6 +268,156 @@ public class SoundManager : MyPersistentSingleton<SoundManager>,
         if (false == m_pool.FreeSound(_source))
         {
             Destroy(_source.gameObject);
+        }
+    }
+    #endregion
+
+    #region TRACK CONTROLS
+    public virtual void MuteTrack(SoundManagerTracks _track)
+    {
+        ControlTrack(_track, ControlTrackModes.Mute, 0f);
+    }
+
+    public virtual void UnmuteTrack(SoundManagerTracks _track)
+    {
+        ControlTrack(_track, ControlTrackModes.Unmute, 0f);
+    }
+
+    public virtual void SetTrackVolume(SoundManagerTracks _track, float _volume)
+    {
+        ControlTrack(_track, ControlTrackModes.SetVolume, _volume);
+    }
+
+    public virtual void PauseTrack(SoundManagerTracks _track)
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (sound.track == _track)
+            {
+                sound.audioSource.Pause();
+            }
+        }
+    }
+
+    public virtual void PlayTrack(SoundManagerTracks _track)
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (sound.track == _track)
+            {
+                sound.audioSource.Play();
+            }
+        }
+    }
+
+    public virtual void StopTrack(SoundManagerTracks _track)
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (sound.track == _track)
+            {
+                sound.audioSource.Stop();
+            }
+        }
+    }
+
+    public virtual void FreeTrack(SoundManagerTracks _track)
+    {
+        foreach (SoundManagerSound sound in m_sounds)
+        {
+            if (sound.track == _track)
+            {
+                sound.audioSource.Stop();
+                sound.audioSource.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public enum ControlTrackModes { Mute, Unmute, SetVolume }
+    protected virtual void ControlTrack(SoundManagerTracks _track, ControlTrackModes _trackMode,float _volume = 0.5f)
+    {
+        string target = "";
+        float savedVolume = 0f;
+
+        switch (_track)
+        {
+            case SoundManagerTracks.Master:
+                target = settingsSO.settings.masterVolumeParameter;
+                if (_trackMode == ControlTrackModes.Mute)
+                {
+                    settingsSO.targetAudioMixer.GetFloat(target, out settingsSO.settings.mutedMasterVolume);
+                    settingsSO.settings.mastarOn = false;
+                }
+                else if (_trackMode == ControlTrackModes.Unmute)
+                {
+                    savedVolume = settingsSO.settings.mutedMasterVolume;
+                    settingsSO.settings.mastarOn = true;
+                }
+                break;
+
+            case SoundManagerTracks.Music:
+                target = settingsSO.settings.musicVolumeParameter;
+                if (_trackMode == ControlTrackModes.Mute)
+                {
+                    settingsSO.targetAudioMixer.GetFloat(target, out settingsSO.settings.mutedMusicVolume);
+                    settingsSO.settings.musicOn = false;
+                }
+                else if (_trackMode == ControlTrackModes.Unmute)
+                {
+                    savedVolume = settingsSO.settings.mutedMusicVolume;
+                    settingsSO.settings.musicOn = true;
+                }
+                break;
+
+            case SoundManagerTracks.SFX:
+                target = settingsSO.settings.sfxVolumeParameter;
+                if (_trackMode == ControlTrackModes.Mute)
+                {
+                    settingsSO.targetAudioMixer.GetFloat(target, out settingsSO.settings.mutedSFXVolume);
+                    settingsSO.settings.sfxOn = false;
+                }
+                else if (_trackMode == ControlTrackModes.Unmute)
+                {
+                    savedVolume = settingsSO.settings.mutedSFXVolume;
+                    settingsSO.settings.sfxOn = true;
+                }
+                break;
+
+            case SoundManagerTracks.UI:
+                target = settingsSO.settings.uiVolumeParameter;
+                if (_trackMode == ControlTrackModes.Mute)
+                {
+                    settingsSO.targetAudioMixer.GetFloat(target, out settingsSO.settings.mutedUIVolume);
+                    settingsSO.settings.uiOn = false;
+                }
+                else if (_trackMode == ControlTrackModes.Unmute)
+                {
+                    savedVolume = settingsSO.settings.mutedUIVolume;
+                    settingsSO.settings.uiOn = true;
+                }
+                break;
+        }
+
+
+        switch (_trackMode)
+        {
+            case ControlTrackModes.Mute:
+                settingsSO.SetTrackVolume(_track, 0f);
+                break;
+            case ControlTrackModes.Unmute:
+                settingsSO.SetTrackVolume(_track, settingsSO.MixerVolumeToNormalized(savedVolume));
+                break;
+            case ControlTrackModes.SetVolume:
+                settingsSO.SetTrackVolume(_track, _volume);
+                break;
+        }
+
+
+        settingsSO.GetTrackVolumes();
+
+        if (settingsSO.settings.autoSave)
+        {
+            settingsSO.SaveSoundSettings();
         }
     }
     #endregion

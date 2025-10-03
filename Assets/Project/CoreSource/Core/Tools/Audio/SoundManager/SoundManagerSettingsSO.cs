@@ -27,11 +27,20 @@ public class SoundManagerSettingsSO : ScriptableObject
     #region SAVE & LOAD
     public void SaveSoundSettings()
     {
-
+        MySaveLoadManager.Save(settings, m_saveFileName, m_saveForderName);
     }
 
     public void LoadSoundSettings()
     {
+        SoundManagerSettings settings =
+            (SoundManagerSettings)MySaveLoadManager.Load(typeof(SoundManagerSettings), m_saveFileName, m_saveForderName);
+
+
+        if (settings != null)
+        {
+            this.settings = settings;
+            ApplyTrackVolumes();
+        }
 
     }
 
@@ -77,6 +86,14 @@ public class SoundManagerSettingsSO : ScriptableObject
         }
     }
 
+    public virtual void GetTrackVolumes()
+    {
+        settings.masterVolume = GetTrackVolume(SoundManager.SoundManagerTracks.Master);
+        settings.musicVolume = GetTrackVolume(SoundManager.SoundManagerTracks.Music);
+        settings.sfxVolume = GetTrackVolume(SoundManager.SoundManagerTracks.SFX);
+        settings.uiVolume = GetTrackVolume(SoundManager.SoundManagerTracks.UI);
+    }
+
     public virtual float GetTrackVolume(SoundManager.SoundManagerTracks _track)
     {
         float volume = 1f;
@@ -98,6 +115,36 @@ public class SoundManagerSettingsSO : ScriptableObject
         }
 
         return MixerVolumeToNormalized(volume);
+    }
+
+    protected virtual void ApplyTrackVolumes()
+    {
+        targetAudioMixer.SetFloat(settings.masterVolumeParameter, NormalizedToMixerVolume(settings.masterVolume));
+        targetAudioMixer.SetFloat(settings.musicVolumeParameter, NormalizedToMixerVolume(settings.musicVolume));
+        targetAudioMixer.SetFloat(settings.sfxVolumeParameter, NormalizedToMixerVolume(settings.sfxVolume));
+        targetAudioMixer.SetFloat(settings.uiVolumeParameter, NormalizedToMixerVolume(settings.uiVolume));
+
+        if (!settings.mastarOn) 
+        { 
+            targetAudioMixer.SetFloat(settings.masterVolumeParameter, -80f); 
+        }
+        if (!settings.musicOn) 
+        { 
+            targetAudioMixer.SetFloat(settings.musicVolumeParameter, -80f);
+        }
+        if (!settings.sfxOn) 
+        { 
+            targetAudioMixer.SetFloat(settings.sfxVolumeParameter, -80f);
+        }
+        if (!settings.uiOn) 
+        { 
+            targetAudioMixer.SetFloat(settings.uiVolumeParameter, -80f); 
+        }
+
+        if (settings.autoSave)
+        {
+            SaveSoundSettings();
+        }
     }
 
     public virtual float NormalizedToMixerVolume(float _normalizedVolume)
