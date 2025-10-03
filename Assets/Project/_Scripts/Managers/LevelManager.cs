@@ -301,14 +301,14 @@ public class LevelManager : MySingleton<LevelManager>
 
     private void LoadScene(string _destinationScene)
     {
-        SceneManager.LoadScene(_destinationScene);
+        SceneLoadingManager.LoadScene(_destinationScene);
     }
 
     public void RestartScene()
     {
         if (SceneManager.GetActiveScene().isLoaded)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            SceneLoadingManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
