@@ -31,6 +31,8 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     [Header("VFX")]
     public GameObject VFX;
     public SpriteRenderer shockWaveRenderer;
+    [Range(1f, 15f)]
+    public float shockWaveSpeed = 2.0f;
 
     [Header("SFX")]
     public PlaySound abilitySound;
@@ -159,7 +161,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
 
         while (m_waveDistance <= 1.0f)
         {
-            m_waveDistance += Time.deltaTime * 2.0f;
+            m_waveDistance += Time.deltaTime * shockWaveSpeed;
             m_shockWaveMaterial.SetFloat(WaveDistanceFromCenterID, m_waveDistance);
             yield return null;
         }
