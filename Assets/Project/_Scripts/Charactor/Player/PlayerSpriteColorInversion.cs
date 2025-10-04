@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,9 +27,11 @@ public class PlayerSpriteColorInversion : MonoBehaviour
 {
     [Header("VFX")]
     public GameObject VFX;
+    public SpriteRenderer shockWaveRenderer;
 
     [Header("SFX")]
     public PlaySound abilitySound;
+
 
     public KeyCode keyCode = KeyCode.Space;
 
@@ -42,8 +45,11 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     private int m_invertAmount;
     private bool m_inverted;
 
-    private static readonly int InvertAmountID = Shader.PropertyToID("_InvertAmount");
+    private Material m_shockWaveMaterial;
+    private float m_waveDistance;
 
+    private static readonly int InvertAmountID = Shader.PropertyToID("_InvertAmount");
+    private static readonly int WaveDistanceFromCenterID = Shader.PropertyToID("_WaveDistanceFromCenter");
 
 
     private void Awake()
@@ -73,6 +79,12 @@ public class PlayerSpriteColorInversion : MonoBehaviour
                     m_particles.Add(ps);
                 }
             }
+        }
+
+        if (shockWaveRenderer != null)
+        {
+            m_shockWaveMaterial = shockWaveRenderer.material;
+            m_waveDistance = -0.1f;
         }
     }
 
@@ -120,6 +132,31 @@ public class PlayerSpriteColorInversion : MonoBehaviour
             {
                 abilitySound.PlaySoundFX();
             }
+
+            if (m_shockWaveMaterial != null)
+            {
+                StartCoroutine(ShockWave());
+            }
         }
+    }
+
+    private IEnumerator ShockWave()
+    {
+        if (m_shockWaveMaterial == null)
+        {
+            yield break;
+        }
+
+        m_waveDistance = -0.1f;
+        m_shockWaveMaterial.SetFloat(WaveDistanceFromCenterID, m_waveDistance);
+
+        while (m_waveDistance <= 1.0f)
+        {
+            m_waveDistance += Time.deltaTime * 2.0f;
+            m_shockWaveMaterial.SetFloat(WaveDistanceFromCenterID, m_waveDistance);
+            yield return null;
+        }
+
+        m_shockWaveMaterial.SetFloat(WaveDistanceFromCenterID, -0.1f);
     }
 }

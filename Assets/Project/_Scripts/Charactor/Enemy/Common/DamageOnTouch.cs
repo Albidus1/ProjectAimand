@@ -205,7 +205,7 @@ public class DamageOnTouch : MonoBehaviour
 
         OnHitDamageable?.Invoke();
 
-        Debug.Log(gameObject.name);
+        //Debug.Log(gameObject.name);
         m_colliderHealth.Damage(damage, this.gameObject, invincibilityDuration, m_damageDirection);
 
         if (stunTime > 0)
