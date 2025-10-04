@@ -25,6 +25,9 @@ public struct ColorInvertEvent
 
 public class PlayerSpriteColorInversion : MonoBehaviour
 {
+    [Header("쿨타임")]
+    public float coolTime = 0.5f;
+
     [Header("VFX")]
     public GameObject VFX;
     public SpriteRenderer shockWaveRenderer;
@@ -44,6 +47,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     private SpriteRenderer m_spriteRenderer;
     private int m_invertAmount;
     private bool m_inverted;
+    private float m_coolTimer;
 
     private Material m_shockWaveMaterial;
     private float m_waveDistance;
@@ -112,7 +116,8 @@ public class PlayerSpriteColorInversion : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(keyCode))
+        if (Input.GetKeyDown(keyCode) &&
+            Time.time >= m_coolTimer)
         {
             m_inverted = !m_inverted;
             m_invertAmount = m_inverted ? 1 : 0;
@@ -137,6 +142,8 @@ public class PlayerSpriteColorInversion : MonoBehaviour
             {
                 StartCoroutine(ShockWave());
             }
+
+            m_coolTimer = Time.time + coolTime;
         }
     }
 
@@ -157,6 +164,6 @@ public class PlayerSpriteColorInversion : MonoBehaviour
             yield return null;
         }
 
-        m_shockWaveMaterial.SetFloat(WaveDistanceFromCenterID, -0.1f);
+        m_shockWaveMaterial.SetFloat(WaveDistanceFromCenterID, -10f);
     }
 }

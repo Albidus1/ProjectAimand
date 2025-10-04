@@ -18,9 +18,9 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     public ColorState state;
 
     [Header("설정")]
+    public bool disableSpriteRenderer = false;
     public bool disableCollider = true;
     public bool disableDamageOnTouch = true;
-    public bool inversion = false;
 
     public bool enableSetting { get; private set; }
     public bool harfInverter { get; private set; }
@@ -113,23 +113,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     {
         currentInvertState = _invert;
 
-        if (inversion)
-        {
-            if (currentInvertState)
-            {
-                state = ColorState.Invert;
-            }
-            else
-            {
-                state = ColorState.Normal;
-            }
-
-            SetMaterial();
-        }
-
-
-        if ((state == ColorState.Normal && _invert)
-            || (state == ColorState.Invert && false == _invert))
+        if ((state == ColorState.Normal && false == _invert)
+            || (state == ColorState.Invert && _invert))
         {
             EnableSettings();
         }
@@ -141,14 +126,20 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void EnableSettings()
     {
+        if (disableSpriteRenderer && m_spriteRenderer != null)
+        {
+            m_spriteRenderer.enabled = true;
+        }
+
         if (disableCollider && m_collider2D != null)
         {
             m_collider2D.enabled = true;
         }
 
-        if (disableDamageOnTouch && m_damageOnTouch != null)
+        if (false == disableSpriteRenderer &&
+            disableDamageOnTouch && m_damageOnTouch != null)
         {
-            m_damageOnTouch.enabled = false;
+            m_damageOnTouch.enabled = true;
         }
 
         enableSetting = true;
@@ -156,14 +147,20 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void DisableSettings()
     {
+        if (disableSpriteRenderer && m_spriteRenderer != null)
+        {
+            m_spriteRenderer.enabled = false;
+        }
+
         if (disableCollider && m_collider2D != null)
         {
             m_collider2D.enabled = false;
         }
 
-        if (disableDamageOnTouch && m_damageOnTouch != null)
+        if (false == disableSpriteRenderer &&
+            disableDamageOnTouch && m_damageOnTouch != null)
         {
-            m_damageOnTouch.enabled = true;
+            m_damageOnTouch.enabled = false;
         }
 
         enableSetting = false;
