@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlatformDisappearing : MonoBehaviour
+public class PlatformDisappearing : MonoBehaviour, IEventListener<ColorInvertEvent>
 {
     public bool isLeftChecking = true;
     public bool isRightChecking = true;
@@ -25,7 +25,7 @@ public class PlatformDisappearing : MonoBehaviour
     [SerializeField] private PlatformDisappearing left;
     private RaycastHit2D rightHit;
     [SerializeField] private PlatformDisappearing right;
-
+    private DetectColorInversion m_colorInversion;
 
 
     private void Awake()
@@ -36,6 +36,7 @@ public class PlatformDisappearing : MonoBehaviour
 
         point[0] = transform.position + directions[0] * Mathf.Abs(transform.localScale.x * 0.51f);
         point[1] = transform.position + directions[1] * Mathf.Abs(transform.localScale.x * 0.51f);
+        m_colorInversion = GetComponent<DetectColorInversion>();
     }
 
     private void Start()
@@ -144,10 +145,42 @@ public class PlatformDisappearing : MonoBehaviour
         col.enabled = false;
     }
 
+    public virtual void OnEvent(ColorInvertEvent e)
+    {
+        if (m_colorInversion == null)
+        {
+            return;
+        }
+
+        if (m_colorInversion.state == DetectColorInversion.ColorState.Invert && e.isInvert == false)
+        {
+            this.gameObject.SetActive(false);
+        }
+        else if (m_colorInversion.state == DetectColorInversion.ColorState.Normal && e.isInvert == true)
+        {
+            this.gameObject.SetActive(false);
+        }
+        else
+        {
+            this.gameObject.SetActive(true);
+        }
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<ColorInvertEvent>();
+    }
+    
+    protected virtual void OnDisable()
+    {
+        this.EventStartListening<ColorInvertEvent>();
+    }
+
+#if UNITY_EDITOR
     #region EDITOR METHODS
     private void OnDrawGizmos()
     {
-#if UNITY_EDITOR
+
         point[0] = transform.position + directions[0] * Mathf.Abs(transform.localScale.x * 0.51f);
         point[1] = transform.position + directions[1] * Mathf.Abs(transform.localScale.x * 0.51f);
 
@@ -172,7 +205,7 @@ public class PlatformDisappearing : MonoBehaviour
             Gizmos.color= Color.red;
         }
         Gizmos.DrawRay(transform.position, directions[1] * Mathf.Abs(transform.localScale.x * 0.51f));
-#endif
+
     }
 
     private void OnValidate()
@@ -182,5 +215,6 @@ public class PlatformDisappearing : MonoBehaviour
             CheckFriends();
         }
     }
-    #endregion
+#endregion
+#endif
 }
