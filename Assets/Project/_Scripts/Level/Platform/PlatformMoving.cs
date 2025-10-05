@@ -258,7 +258,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
                     }
                     else
                     {
-                        return false == m_detectColorInversion.enableSetting;
+                        return m_detectColorInversion.enableSetting;
                     }
                 }
                 else
@@ -273,7 +273,7 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
             }
             else
             {
-                return false == m_detectColorInversion.enableSetting;
+                return m_detectColorInversion.enableSetting;
             }
         }
 
