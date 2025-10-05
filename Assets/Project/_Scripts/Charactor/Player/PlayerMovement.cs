@@ -34,6 +34,8 @@ public class PlayerMovement : CharacterMovement
     public BoxCollider2D boxCollider { get; private set; }
 
     public Animator animator;
+    public Transform CameraTarget;
+
 
     [Header("움직임 제어")]
     public bool CanWallJumping = true;
@@ -205,8 +207,8 @@ public class PlayerMovement : CharacterMovement
 
     private void Initialization()
     {
-        var cam = FindFirstObjectByType<CinemachineCamera>();
-        cam.Target.TrackingTarget = transform;
+        //var cam = FindFirstObjectByType<CinemachineCamera>();
+        //cam.Target.TrackingTarget = transform;
 
         moveInput = Vector2.zero;
 

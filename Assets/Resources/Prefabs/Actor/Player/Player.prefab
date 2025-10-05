@@ -19688,6 +19688,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6759310250610532764}
   - {fileID: 4803195682398069727}
   - {fileID: 500945326894702264}
   m_Father: {fileID: 0}
@@ -19803,9 +19804,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ea49ce1d867ef84999713433a30b26a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 2137100852153650230}
   data: {fileID: 11400000, guid: 7a3d2f3674e8fc840a82bb84c9695a2e, type: 2}
-  animator: {fileID: 0}
+  animator: {fileID: 4604804203575234842}
+  CameraTarget: {fileID: 6759310250610532764}
   CanWallJumping: 0
   CanWallSliding: 0
   CanWallGrabbing: 0
@@ -24839,6 +24841,37 @@ Transform:
   - {fileID: 3036727921672928079}
   - {fileID: 5598235702639562507}
   - {fileID: 1330941880587383478}
+  m_Father: {fileID: 8528170459494264491}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6378753197041350147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6759310250610532764}
+  m_Layer: 6
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6759310250610532764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6378753197041350147}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 8528170459494264491}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7996438100338421326
@@ -34847,6 +34880,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: -8435245712485981826, guid: 5fce6f67f00b51b449ab6deb73d24598, type: 3}
+--- !u!212 &2137100852153650230 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3626916397498700004, guid: 5fce6f67f00b51b449ab6deb73d24598, type: 3}
+  m_PrefabInstance: {fileID: 3458171712690887890}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4604804203575234842 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1160356261127867848, guid: 5fce6f67f00b51b449ab6deb73d24598, type: 3}
+  m_PrefabInstance: {fileID: 3458171712690887890}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4803195682398069727 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7878350319992209165, guid: 5fce6f67f00b51b449ab6deb73d24598, type: 3}

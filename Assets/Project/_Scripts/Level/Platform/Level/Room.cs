@@ -7,37 +7,76 @@ using UnityEngine;
 public class Room : MonoBehaviour
 {
     public Collider2D roomCollider => m_roomCollider;
-    public bool isEntered { get; private set; } = false;
 
     [Header("카메라")]
     public CinemachineCamera virtualCamera;
     public Collider2D confiner;
     public CinemachineConfiner2D cinemachineCameraConfiner;
     public CinemachineCameraController controller;
+    [Space(10)]
+
+    public bool resizeConfinerAutomatically = true;
+    public bool autoDetectFirstRoomOnStart = true;
+
+    [Header("상태")]
+    public bool currentRoom = false;
+    public bool roomVisited = false;
 
     private BoxCollider2D m_roomCollider;
     private Camera m_mainCamera;
     private Vector2 m_cameraSize;
-
+    private bool m_initialized = false;
 
 
     private void Start()
     {
+        Initialization();
+    }
+
+    private void Initialization()
+    {
+        if (m_initialized)
+        {
+            return;
+        }
+
+        if (controller == null)
+        {
+            controller = GetComponentInChildren<CinemachineCameraController>();
+        }
+
         m_roomCollider = GetComponent<BoxCollider2D>();
         m_mainCamera = Camera.main;
         StartCoroutine(ResizeConfiner());
+        m_initialized = true;
 
         if (virtualCamera != null)
         {
             virtualCamera.enabled = false;
         }
 
-        controller = GetComponentInChildren<CinemachineCameraController>();
+        StartCoroutine(CameraInitialization());
+    }
+
+    private IEnumerator CameraInitialization()
+    {
+        yield return null;
+        yield return null;
+
+        if (currentRoom)
+        {
+            yield break;
+        }
+
+        if (virtualCamera != null)
+        {
+            virtualCamera.enabled = false;
+        }
     }
 
     private IEnumerator ResizeConfiner()
     {
-        if (virtualCamera == null || confiner == null)
+        if (virtualCamera == null || confiner == null || false == resizeConfinerAutomatically)
         {
             yield break;
         }
@@ -64,14 +103,41 @@ public class Room : MonoBehaviour
 
         (confiner as BoxCollider2D).size = newSize;
         cinemachineCameraConfiner.InvalidateBoundingShapeCache();
+
+        HandleLevelStartDetection();
+    }
+
+    private void HandleLevelStartDetection()
+    {
+        if (false == m_initialized)
+        {
+            Initialization();
+        }
+
+        if (autoDetectFirstRoomOnStart && LevelManager.HasInstance)
+        {
+            if (m_roomCollider.bounds.Contains(LevelManager.Instance.player.transform.position.MySetZ(transform.position.z)))
+            {
+                CameraEvent2D.Trigger(CameraEventType.ResetPriorities);
+                CinemachineBrainEvent.Trigger(0.3f);
+
+                if (virtualCamera != null)
+                {
+                    virtualCamera.Priority = 10;
+                }
+
+                PlayerEnterRoom();
+            }
+        }
     }
 
     public void PlayerEnterRoom()
     {
+        currentRoom = true;
+
         if (virtualCamera != null)
         {
             virtualCamera.enabled = true;
-            isEntered = true;
         }
     }
 
@@ -80,8 +146,9 @@ public class Room : MonoBehaviour
         if (virtualCamera != null)
         {
             virtualCamera.enabled = false;
-            isEntered = false;
         }
+
+        currentRoom = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -92,8 +159,6 @@ public class Room : MonoBehaviour
 
             controller.SetTarget(LevelManager.Instance.player);
             controller.StartFollowing();
-
-
         }
     }
 
@@ -106,6 +171,7 @@ public class Room : MonoBehaviour
             controller.StopFollowing();
         }
     }
+
     /*private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))

@@ -1,13 +1,13 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class CinemachineCameraController : MonoBehaviour
+public class CinemachineCameraController : MonoBehaviour, IEventListener<CameraEvent2D>
 {
     public bool followsPlayer { get; set; }
 
     [Header("기본 세팅")]
     public bool followsAPlayer = true;
-    public GameObject targetPlayer;
+    public Transform targetPlayer;
     public PlayerMovement playerMovement;
     [Space(10)]
 
@@ -39,7 +39,7 @@ public class CinemachineCameraController : MonoBehaviour
     public void SetTarget(PlayerMovement _character)
     {
         //Debug.Log("타겟 설정");
-        targetPlayer = _character.gameObject;
+        targetPlayer = _character.transform;
         playerMovement = _character;
     }
 
@@ -49,7 +49,16 @@ public class CinemachineCameraController : MonoBehaviour
             return;
 
         followsPlayer = true;
-        m_virtualCamera.Target.TrackingTarget = targetPlayer.transform;
+
+        if (playerMovement != null && playerMovement.CameraTarget != null)
+        {
+            m_virtualCamera.Target.TrackingTarget = playerMovement.CameraTarget;
+        }
+        else
+        {
+            m_virtualCamera.Target.TrackingTarget = targetPlayer.transform;
+        }
+
         m_virtualCamera.enabled = true;
     }
 
@@ -59,7 +68,6 @@ public class CinemachineCameraController : MonoBehaviour
             return;
 
         followsPlayer = false;
-        m_virtualCamera.Target.TrackingTarget = null;
         m_virtualCamera.enabled = false;
     }
 
@@ -84,5 +92,54 @@ public class CinemachineCameraController : MonoBehaviour
         float targetZoom = MyMaths.Remap(currentVelocity, 0, 16, orthographicZoom.x, orthographicZoom.y);
         m_currentZoom = Mathf.Lerp(m_currentZoom, targetZoom, Time.deltaTime * orthographicZoomSpeed);
         m_virtualCamera.Lens.OrthographicSize = m_currentZoom;
+    }
+
+    public void OnEvent(CameraEvent2D e)
+    {
+        switch (e.eventType)
+        {
+            case CameraEventType.SetTargetCharacter:
+                SetTarget(e.targetCharacter);
+                break;
+
+            case CameraEventType.SetConfiner:
+                if (m_confiner != null && e.bounds2D != null)
+                {
+                    m_confiner.BoundingShape2D = e.bounds2D;
+                }
+                break;
+
+            case CameraEventType.StartFollowing:
+                if (e.targetCharacter != null && e.targetCharacter != targetPlayer)
+                {
+                    return;
+                }
+
+                StartFollowing();
+                break;
+
+            case CameraEventType.StopFollowing:
+                if (e.targetCharacter != null && e.targetCharacter != targetPlayer)
+                {
+                    return;
+                }
+
+                StopFollowing();
+                break;
+
+            case CameraEventType.ResetPriorities:
+                m_virtualCamera.Priority = 0;
+                break;
+        }
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<CameraEvent2D>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<CameraEvent2D>();
     }
 }

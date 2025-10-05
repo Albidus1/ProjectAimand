@@ -72,6 +72,10 @@ public class LevelManager : MySingleton<LevelManager>
         SpawnPlayer();
 
         CheckpointAssignment();
+
+        CameraEvent2D.Trigger(CameraEventType.SetConfiner, null, boundsCollider2D);
+        CameraEvent2D.Trigger(CameraEventType.SetTargetCharacter, player);
+        CameraEvent2D.Trigger(CameraEventType.StartFollowing);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -165,7 +169,6 @@ public class LevelManager : MySingleton<LevelManager>
 
         player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity).GetComponent<PlayerMovement>();
         player.name = playerPrefab.name;
-        player.movementState.StateChange(PlayerStates.MovementStates.Idle);
     }
 
     private void CheckpointAssignment()
@@ -227,7 +230,7 @@ public class LevelManager : MySingleton<LevelManager>
     private void SpawnPlayer()
     {
 #if UNITY_EDITOR
-        if (debugSpawn != null)
+        if (debugSpawn != null && debugSpawn.gameObject.activeInHierarchy)
         {
             debugSpawn.SpawnPlayer(player);
         }
@@ -282,7 +285,11 @@ public class LevelManager : MySingleton<LevelManager>
     {
         player.movementState.StateChange(PlayerStates.MovementStates.Die);
 
+        CameraEvent2D.Trigger(CameraEventType.StopFollowing);
+
         yield return new WaitForSeconds(respawnDelay);
+
+        CameraEvent2D.Trigger(CameraEventType.StartFollowing);
 
         WaveManager.Instance.ResetWave();
 
