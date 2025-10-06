@@ -1246,23 +1246,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd7ce66575538e49a537d83b9437351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
+  spriteRenderer: {fileID: 0}
+  initialFacingRight: 1
   minSpeed: 0
   maxSpeed: 0
   chaseSpeed: 0
   currentSpeed: 0
   chaseWaitTime: 0
-  facingDirection: 1
-  attackCollider2D: {fileID: 0}
-  raysCount: 5
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 2944
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 2432
+  attackCollider2D: {fileID: 0}
+  raysCount: 5
 --- !u!212 &4518334774707102795
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1305,7 +1306,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 719086249
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1360,7 +1361,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 719086249
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -1432,7 +1433,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 719086249
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0.11414205, g: 0.12336574, b: 0.1792453, a: 1}
@@ -1457,13 +1458,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0e0d992acc2d6f47a4cbae6e946371e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 100
-  healthSlider: {fileID: 0}
-  invincible: 0
   currentHP: 0
-  OnDamageEvent:
-    m_PersistentCalls:
-      m_Calls: []
+  temporarilyInvulnerable: 0
+  postDamageInvulnerable: 0
+  initialHP: 100
+  maxHP: 100
+  invulnerable: 0
+  immuneToDamage: 0
+  immuneToKnockback: 0
+  destroyOnDeath: 1
+  delayBeforeDestroy: 0
+  CollisionsOffOnDeath: 1
+  grabityOffOnDeath: 0
+  respawnAtInitialLocation: 0
+  hitSound: {fileID: 0}
 --- !u!1 &5537987586775741819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1523,7 +1531,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 719086249
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0.11414205, g: 0.12336574, b: 0.1792453, a: 1}
@@ -1760,7 +1768,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 719086249
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -1815,7 +1823,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 719086249
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: aa944e9c136a43d4383a07bc350d2e70, type: 3}
   m_Color: {r: 0.3679245, g: 0.10239409, b: 0.2952712, a: 1}
