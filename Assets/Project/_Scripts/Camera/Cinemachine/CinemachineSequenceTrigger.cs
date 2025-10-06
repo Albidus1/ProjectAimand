@@ -9,20 +9,33 @@ using UnityEngine;
 
 public class CinemachineSequenceTrigger : MonoBehaviour
 {
+    public enum EasingType
+    {
+        Linear,
+        SmoothStep,
+        EaseInOutCubic,
+        EaseInOutQuad
+    }
+
     public CinemachineCamera CM_Camera;
     public BoxCollider2D bounds2D;
 
     [Header("이동")]
+    public EasingType easingType = EasingType.EaseInOutQuad;
     public float pathDuration = 2f;
     public float startDelay = 0f;
     public float endDelay = 1f;
 
     [MyReadOnly]
     public bool isSequencePlaying = false;
+    [MyReadOnly]
+    public bool cameraMoveStart = true;
 
+    private bool m_isInitialized = false;
     private CinemachineBrain m_cinemachineBrain;
     private CinemachineCamera m_currentCamera;
     private CinemachineSplineDolly m_splineDolly;
+
 
 
 
@@ -33,27 +46,46 @@ public class CinemachineSequenceTrigger : MonoBehaviour
 
     private void Start()
     {
-        m_cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
+        Initialization();
+    }
 
-        if (CM_Camera == null)
+    private void Initialization()
+    {
+        if (false == m_isInitialized)
         {
-            CM_Camera = GetComponentInChildren<CinemachineCamera>();
+            m_cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
+
+            if (CM_Camera == null)
+            {
+                CM_Camera = GetComponentInChildren<CinemachineCamera>();
+            }
+
+            CM_Camera.Priority = 0;
+            CM_Camera.enabled = false;
+            m_splineDolly = CM_Camera.GetComponent<CinemachineSplineDolly>();
+
+            if (m_splineDolly != null)
+            {
+                for (int i = 0; i < m_splineDolly.Spline.Splines[0].Knots.Count(); i++)
+                {
+                    var knot = m_splineDolly.Spline.Splines[0].Knots.ElementAt(i);
+                    knot.Position = new Vector3(knot.Position.x, knot.Position.y, -10f);
+                    m_splineDolly.Spline.Splines[0].SetKnot(i, knot);
+                }
+            }
+
+            m_isInitialized = true;
         }
 
-        CM_Camera.Priority = 0;
-        CM_Camera.enabled = false;
-        m_splineDolly = CM_Camera.GetComponent<CinemachineSplineDolly>();
+        isSequencePlaying = false;
 
-        if (m_splineDolly != null)
+        if (CM_Camera != null)
         {
-            for (int i = 0; i < m_splineDolly.Spline.Splines[0].Knots.Count(); i++)
-            {
-                var knot = m_splineDolly.Spline.Splines[0].Knots.ElementAt(i);
-                knot.Position = new Vector3(knot.Position.x, knot.Position.y, -10f);
-                m_splineDolly.Spline.Splines[0].SetKnot(i, knot);
-            }
+            CM_Camera.Priority = 0;
+            CM_Camera.enabled = false;
         }
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -69,9 +101,10 @@ public class CinemachineSequenceTrigger : MonoBehaviour
     private IEnumerator PlayCinemachineSequence()
     {
         isSequencePlaying = true;
+        cameraMoveStart = true;
 
-        //m_currentCamera = m_cinemachineBrain.ActiveVirtualCamera as CinemachineCamera;
-
+        GUIManager.Instance.SetHUDActive(false);
+        LevelManager.Instance.player.isStunned = true;
 
         if (CM_Camera != null)
         {
@@ -84,27 +117,83 @@ public class CinemachineSequenceTrigger : MonoBehaviour
             m_splineDolly.CameraPosition = 0f;
         }
 
-        yield return new WaitForSeconds(startDelay);
+        if (startDelay > 0f)
+        {
+            yield return new WaitForSeconds(startDelay);
+        }
 
         float timer = 0f;
         while (timer < pathDuration)
         {
-            timer += Time.deltaTime;
+            if (Time.timeScale > 0f)
+            {
+                timer += Time.deltaTime;
+            }
 
             float normalizedTime = Mathf.Clamp01(timer / pathDuration);
+            float smoothedTime = ApplySmoothingCurve(normalizedTime);
 
-            m_splineDolly.CameraPosition = normalizedTime;
+            m_splineDolly.CameraPosition = Mathf.Lerp(m_splineDolly.CameraPosition, smoothedTime, 5f * Time.deltaTime);
 
             yield return null;
         }
 
-        yield return new WaitForSeconds(endDelay);
+        cameraMoveStart = false;
+
+        if (endDelay > 0f)
+        {
+            yield return new WaitForSeconds(endDelay);
+        }
+
+        GUIManager.Instance.SetHUDActive(true);
+        LevelManager.Instance.player.isStunned = false;
+
 
         if (CM_Camera != null)
         {
             CM_Camera.Priority = 0;
             CM_Camera.enabled = false;
         }
+    }
+
+    private float ApplySmoothingCurve(float t)
+    {
+        switch (easingType)
+        {
+            case EasingType.SmoothStep:
+                return SmoothStep(t);
+            case EasingType.EaseInOutCubic:
+                return EaseInOutCubic(t);
+            case EasingType.EaseInOutQuad:
+                return EaseInOutQuad(t);
+        }
+
+        return t;
+    }
+
+    private float SmoothStep(float t)
+    {
+        return t * t * (3f - 2f * t);
+    }
+
+    private float EaseInOutCubic(float t)
+    {
+        return t < 0.5f ? 4f * t * t * t : 1f - Mathf.Pow(-2f * t + 2f, 3f) / 2f;
+    }
+
+    private float EaseInOutQuad(float t)
+    {
+        return t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
+    }
+
+    protected virtual void OnEnable()
+    {
+        isSequencePlaying = false;
+    }
+
+    protected virtual void OnDisable()
+    {
+        
     }
 
 #if UNITY_EDITOR
