@@ -69,6 +69,7 @@ public class CinemachineCameraController : MonoBehaviour, IEventListener<CameraE
 
         followsPlayer = false;
         m_virtualCamera.enabled = false;
+        m_virtualCamera.Target.TrackingTarget = null;
     }
 
     private void LateUpdate()
@@ -87,7 +88,9 @@ public class CinemachineCameraController : MonoBehaviour, IEventListener<CameraE
             return;
 
 
-        float playerSpeed = Mathf.Abs(playerMovement.rb.linearVelocity.x);
+        Vector2 speed = playerMovement.speed;
+
+        float playerSpeed = Mathf.Abs(speed.x);
         float currentVelocity = Mathf.Max(playerSpeed, 0);
         float targetZoom = MyMaths.Remap(currentVelocity, 0, 16, orthographicZoom.x, orthographicZoom.y);
         m_currentZoom = Mathf.Lerp(m_currentZoom, targetZoom, Time.deltaTime * orthographicZoomSpeed);

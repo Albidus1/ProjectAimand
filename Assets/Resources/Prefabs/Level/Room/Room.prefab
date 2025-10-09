@@ -135,7 +135,7 @@ MonoBehaviour:
   targetPlayer: {fileID: 0}
   playerMovement: {fileID: 0}
   orthographicZoom: {x: 5, y: 16}
-  initialOrthographicZoom: 6
+  initialOrthographicZoom: 10
   orthographicZoomSpeed: 0.4
 --- !u!114 &1614373951965777871
 MonoBehaviour:
@@ -154,6 +154,7 @@ MonoBehaviour:
   Gain: 1
   Use2DDistance: 1
   UseCameraSpace: 1
+  SignalCombinationMode: 0
   ReactionSettings:
     m_SecondaryNoise: {fileID: 0}
     AmplitudeGain: 1
@@ -320,20 +321,20 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 8108446539152071738}
     m_ColliderPaths:
-    - - X: 5250000
+    - - X: 5000000
         Y: 5000000
-      - X: -5250000
+      - X: -5000000
         Y: 5000000
-      - X: -5250000
+      - X: -5000000
         Y: -5000000
-      - X: 5250000
+      - X: 5000000
         Y: -5000000
   m_CompositePaths:
     m_Paths:
-    - - {x: 0.5249707, y: -0.5}
-      - {x: 0.5249707, y: 0.5}
-      - {x: -0.52500004, y: 0.4999707}
-      - {x: -0.5249707, y: -0.5}
+    - - {x: 0.4999707, y: -0.5}
+      - {x: 0.4999707, y: 0.5}
+      - {x: -0.5, y: 0.4999707}
+      - {x: -0.4999707, y: -0.5}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -407,7 +408,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 7.8819103, y: 1.5198822}
+  m_Offset: {x: -22.98101, y: 18.03585}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -417,7 +418,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 27.81466, y: 18.277725}
+  m_Size: {x: 90.057846, y: 60.62684}
   m_EdgeRadius: 0
 --- !u!114 &1303830531911658652
 MonoBehaviour:
@@ -435,3 +436,7 @@ MonoBehaviour:
   confiner: {fileID: 8108446539152071738}
   cinemachineCameraConfiner: {fileID: 3510125184448749964}
   controller: {fileID: 0}
+  resizeConfinerAutomatically: 1
+  autoDetectFirstRoomOnStart: 1
+  currentRoom: 0
+  roomVisited: 0

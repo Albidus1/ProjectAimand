@@ -1,8 +1,6 @@
-using System;
-using System.ComponentModel;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using UnityEngine.UIElements;
+
+
 
 public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>, Respawnable
 {
@@ -14,6 +12,7 @@ public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>
     public bool isActive = true;
 
     [Header("사이클 시간 설정")]
+    public float initialCooldownTime;
     public float preparationTime;
     public float waitAtBottomTime;
     public float cooldownTime;
@@ -45,6 +44,7 @@ public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>
     private Vector2 m_virticalRaycastFromLeft;
     private Vector2 m_virticalRaycastToRight;
 
+    private float m_initialCooldownTimer;
     private float m_preparationTimer;
     private float m_waitAtBottomTimer;
     private float m_cooldownTimer;
@@ -75,6 +75,7 @@ public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>
 
         transform.position = m_initialPosition;
         m_targetPosition = m_initialPosition;
+        m_initialCooldownTimer = initialCooldownTime;
         m_preparationTimer = preparationTime;
         m_waitAtBottomTimer = waitAtBottomTime;
         m_cooldownTimer = cooldownTime;
@@ -86,6 +87,12 @@ public class GuillotineTrapControl : MonoBehaviour, IEventListener<TriggerEvent>
 
     private void Update()
     {
+        m_initialCooldownTimer -= Time.deltaTime;
+        if (m_initialCooldownTimer > 0)
+        {
+            return;
+        }
+
         BladeMovement();
     }
 

@@ -24,6 +24,8 @@ public class LevelManager : MySingleton<LevelManager>
     [Header("플레이어")]
     public GameObject playerPrefab;
 
+    [Header("빛")]
+    public MyFollowTarget light2D;
 
     [Header("체크 포인트")]
     public CheckPoint debugSpawn;
@@ -169,6 +171,11 @@ public class LevelManager : MySingleton<LevelManager>
 
         player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity).GetComponent<PlayerMovement>();
         player.name = playerPrefab.name;
+
+        if (light2D != null)
+        {
+            light2D.target = player.transform;
+        }
     }
 
     private void CheckpointAssignment()
@@ -275,10 +282,12 @@ public class LevelManager : MySingleton<LevelManager>
 
     public void PlayerDead(PlayerMovement _player)
     {
-        if (_player != null)
+        if (_player == null)
         {        
-            StartCoroutine(Restart());
+            return;
         }
+
+        StartCoroutine(Restart());
     }
 
     private IEnumerator Restart()

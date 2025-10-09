@@ -152,6 +152,11 @@ public class PlayerMovement : CharacterMovement
     [Header("이벤트")]
     public bool SendStateChangeEvents = true;
 
+
+    public Vector2 speed { get; private set; }
+    private Vector2 m_currentPosition;
+    private Vector2 m_previousPosition;
+
     private Health m_health;
     private Vector2 m_bounds;
     private Vector2 m_boundsCenter;
@@ -228,6 +233,8 @@ public class PlayerMovement : CharacterMovement
         isDashing = false;
         isStunned = false;
         doKnockback = false;
+
+        m_currentPosition = transform.position;
     }
 
     private void Update()
@@ -258,6 +265,8 @@ public class PlayerMovement : CharacterMovement
 
             return;
         }
+
+        m_previousPosition = m_currentPosition;
 
         #region TIMERS
         lastOnGroundTime -= Time.deltaTime;
@@ -713,6 +722,9 @@ public class PlayerMovement : CharacterMovement
         {
             Slide();
         }
+
+        m_currentPosition = transform.position;
+        speed = m_currentPosition - m_previousPosition;
     }
 
     #region INPUT CALLBACKS
