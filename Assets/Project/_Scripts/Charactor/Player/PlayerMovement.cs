@@ -170,6 +170,9 @@ public class PlayerMovement : CharacterMovement
     private RaycastHit2D m_stickRaycast;
 
     private bool m_playSFX;
+    private float m_playWalkSFXTimer;
+
+
 
     private void Awake()
     {
@@ -646,10 +649,15 @@ public class PlayerMovement : CharacterMovement
             movementState.StateChange(PlayerStates.MovementStates.Running);
             animator.SetBool("isRunning", true);
 
-            if (walkSound != null && false == m_playSFX)
+            m_playWalkSFXTimer -= Time.deltaTime;
+
+            if (m_playWalkSFXTimer < 0f)
             {
-                walkSound.PlaySoundFX();
-                m_playSFX = true;
+                if (walkSound != null && false == m_playSFX)
+                {
+                    walkSound.PlaySoundFX();
+                    m_playSFX = true;
+                }
             }
         }
         else
@@ -663,6 +671,7 @@ public class PlayerMovement : CharacterMovement
             {
                 walkSound.StopSoundFX();
                 m_playSFX = false;
+                m_playWalkSFXTimer = 0.5f;
             }        
         }
         #endregion
