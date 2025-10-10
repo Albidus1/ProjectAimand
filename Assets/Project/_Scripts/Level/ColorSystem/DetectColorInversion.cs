@@ -74,12 +74,12 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
                     break;
 
                 case ColorState.Invert:
-                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+                    m_spriteRenderer.material = new Material(Shader.Find("Sprites/DotInvert"));
                     currentInvertState = true;
                     break;
 
                 case ColorState.Half:
-                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/HalfColorInversionMaterial");
+                    m_spriteRenderer.material = new Material(Shader.Find("Sprites/HalfDotInvert"));
                     currentInvertState = false;
                     break;
 
@@ -217,11 +217,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
                     break;
 
                 case ColorState.Invert:
-                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/ColorInversionMaterial");
+                    m_spriteRenderer.material = new Material(Shader.Find("Sprites/DotInvert"));
                     break;
 
                 case ColorState.Half:
-                    m_spriteRenderer.material = Resources.Load<Material>("Shaders/Materials/HalfColorInversionMaterial");
+                    m_spriteRenderer.material = new Material(Shader.Find("Sprites/HalfDotInvert"));
                     break;
             }
         }
