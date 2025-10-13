@@ -192,11 +192,11 @@ public class MyFollowTarget : MonoBehaviour
 
         if (interpolatePosition)
         {
-            float rate = Mathf.Clamp01(followPositionSpeed);
-            float invRate = -Mathf.Log(1f - rate, 2f) * 60f;
-            float LerpRate = Mathf.Pow(2f, -invRate * Time.deltaTime);
+            //float rate = Mathf.Clamp01(followPositionSpeed);
+            //float invRate = -Mathf.Log(1f - rate, 2f) * 60f;
+            //float LerpRate = Mathf.Pow(2f, -invRate * Time.deltaTime);
 
-            interpolatedDistance = Mathf.Lerp(distance, 0f, LerpRate);
+            interpolatedDistance = Mathf.Lerp(0f, distance, Time.deltaTime * followPositionSpeed);
             interpolatedDistance = ApplyMinMaxDistancing(distance, interpolatedDistance);
             transform.Translate(m_direction * interpolatedDistance, Space.World);
         }
