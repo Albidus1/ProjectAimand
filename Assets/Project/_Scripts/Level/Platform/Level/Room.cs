@@ -70,7 +70,8 @@ public class Room : MonoBehaviour
 
         if (virtualCamera != null)
         {
-            virtualCamera.enabled = false;
+            virtualCamera.Priority = 0;
+            //virtualCamera.enabled = false;
         }
     }
 
@@ -119,12 +120,11 @@ public class Room : MonoBehaviour
             if (m_roomCollider.bounds.Contains(LevelManager.Instance.player.transform.position.MySetZ(transform.position.z)))
             {
                 CameraEvent2D.Trigger(CameraEventType.ResetPriorities);
-                CinemachineBrainEvent.Trigger(0.3f);
+                CinemachineBrainEvent.Trigger(0f);
 
                 if (virtualCamera != null)
                 {
                     virtualCamera.Priority = 10;
-                    PlayerEnterRoom();
                 }
             }
         }
@@ -136,7 +136,8 @@ public class Room : MonoBehaviour
 
         if (virtualCamera != null)
         {
-            virtualCamera.enabled = true;
+            virtualCamera.Priority = 10;
+            //virtualCamera.enabled = true;
         }
     }
 
@@ -144,19 +145,18 @@ public class Room : MonoBehaviour
     {
         if (virtualCamera != null)
         {
-            virtualCamera.enabled = false;
+            virtualCamera.Priority = 0;
+            //virtualCamera.enabled = false;
         }
 
         currentRoom = false;
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
+            CinemachineBrainEvent.Trigger(0.3f);
             PlayerEnterRoom();
-
-            HandleLevelStartDetection();
         }
     }
 
@@ -165,8 +165,6 @@ public class Room : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             PlayerExitRoom();
-
-            CameraEvent2D.Trigger(CameraEventType.StopFollowing);
         }
     }
 
