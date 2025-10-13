@@ -30,7 +30,7 @@ public class ProjectileSpawner : MonoBehaviour, IEventListener<TriggerEvent>, Re
     [MyConditionalHide("useTriggerEvent", true)]
     public string eventID = "default";
 
-    private bool m_poolInitialized = false;
+    //private bool m_poolInitialized = false;
     private Vector3 m_spawnPositionCenter;
     private Vector2 m_offset;
     private float m_cooldownTimer = 0f;

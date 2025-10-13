@@ -16,7 +16,7 @@ public class MyFollowTarget : MonoBehaviour
     [MyConditionalHide("followPosition", true)]
     public bool followPositionY = true;
     [MyConditionalHide("followPosition", true)]
-    public bool followPositionZ = false;
+    public bool followPositionZ = true;
     [MyConditionalHide("followPosition", true)]
     public PositionSpaces positionSpace = PositionSpaces.World;
 
