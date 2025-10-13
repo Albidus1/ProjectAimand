@@ -124,9 +124,8 @@ public class Room : MonoBehaviour
                 if (virtualCamera != null)
                 {
                     virtualCamera.Priority = 10;
+                    PlayerEnterRoom();
                 }
-
-                PlayerEnterRoom();
             }
         }
     }
@@ -157,8 +156,7 @@ public class Room : MonoBehaviour
         {
             PlayerEnterRoom();
 
-            controller.SetTarget(LevelManager.Instance.player);
-            controller.StartFollowing();
+            HandleLevelStartDetection();
         }
     }
 
@@ -168,7 +166,7 @@ public class Room : MonoBehaviour
         {
             PlayerExitRoom();
 
-            controller.StopFollowing();
+            CameraEvent2D.Trigger(CameraEventType.StopFollowing);
         }
     }
 

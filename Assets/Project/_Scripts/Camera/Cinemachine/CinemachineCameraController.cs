@@ -69,7 +69,7 @@ public class CinemachineCameraController : MonoBehaviour, IEventListener<CameraE
 
         followsPlayer = false;
         m_virtualCamera.enabled = false;
-        m_virtualCamera.Target.TrackingTarget = null;
+        //m_virtualCamera.Target.TrackingTarget = null;
     }
 
     private void LateUpdate()
