@@ -11,6 +11,8 @@ public class GUIManager : MySingleton<GUIManager>
     public HealthCellUI healthCell;
     public GameObject pauseScreen;
 
+
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void InitializeStatics()
     {
@@ -41,6 +43,7 @@ public class GUIManager : MySingleton<GUIManager>
         {
             pauseScreen.SetActive(_flag);
             EventSystem.current.sendNavigationEvents = _flag;
+            Time.timeScale = _flag ? 0f : 1f;
         }
     }
 

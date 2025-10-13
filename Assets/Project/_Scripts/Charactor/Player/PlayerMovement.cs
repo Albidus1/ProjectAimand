@@ -174,6 +174,7 @@ public class PlayerMovement : CharacterMovement
     public Vector2 m_currentSlopeDirection;
     private RaycastHit2D m_stickRaycast;
 
+    private PlayerSpriteColorInversion m_spriteColorInversion;
     private bool m_playSFX;
     private float m_playWalkSFXTimer;
 
@@ -186,6 +187,7 @@ public class PlayerMovement : CharacterMovement
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         m_health = GetComponent<Health>();
+        m_spriteColorInversion = GetComponent<PlayerSpriteColorInversion>();
 
         movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
@@ -239,6 +241,30 @@ public class PlayerMovement : CharacterMovement
 
     private void Update()
     {
+        if (GameManager.HasInstance)
+        {
+            if (GameManager.Instance.paused)
+            {
+                m_health.immuneToDamage = true;
+
+                if (m_spriteColorInversion != null)
+                {
+                    m_spriteColorInversion.enabled = false;
+                }
+
+                return;
+            }
+            else
+            {
+                m_health.immuneToDamage = false;
+
+                if (m_spriteColorInversion != null)
+                {
+                    m_spriteColorInversion.enabled = true;
+                }
+            }
+        }
+
         if (doKnockback)
         {
             //StartCoroutine(nameof(PerformControllSleep), 0.25f);
