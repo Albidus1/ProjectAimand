@@ -245,7 +245,7 @@ public class PlayerMovement : CharacterMovement
         {
             if (GameManager.Instance.paused)
             {
-                m_health.immuneToDamage = true;
+                m_health.DamageDisabled();
 
                 if (m_spriteColorInversion != null)
                 {
@@ -256,7 +256,7 @@ public class PlayerMovement : CharacterMovement
             }
             else
             {
-                m_health.immuneToDamage = false;
+                m_health.DamageEnabled();
 
                 if (m_spriteColorInversion != null)
                 {

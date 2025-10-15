@@ -30,7 +30,7 @@ public class InputManager : MySingleton<InputManager>
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("키 입력");
+            //Debug.Log("키 입력");
             MainEvent.Trigger(MainEventTypes.TogglePause);
         }
     }

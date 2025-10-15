@@ -194,11 +194,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         if (m_playerMovement != null)
         {
             Debug.Log("플레이어 사망");
-            LevelManager.Instance.PlayerDead(m_playerMovement);
-        }
-        else if (m_enemyMovement != null)
-        {
-            WaveManager.Instance.RegisterEnemyDeath(this.gameObject);
+            LevelManager.Instance.PlayerDead();
         }
 
         SetHealth(0f, this.gameObject);

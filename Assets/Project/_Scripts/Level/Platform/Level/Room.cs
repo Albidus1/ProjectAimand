@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class Room : MonoBehaviour
+public class Room : MonoBehaviour, IEventListener<MainEvent>
 {
     public Collider2D roomCollider => m_roomCollider;
 
@@ -189,9 +189,24 @@ public class Room : MonoBehaviour
 
     }*/
 
+    public virtual void OnEvent(MainEvent e)
+    {
+        if (e.eventType == MainEventTypes.LevelStart || 
+            e.eventType == MainEventTypes.PlayerRespawn)
+        {
+            PlayerExitRoom();
+            HandleLevelStartDetection();
+        }
+    }
+
     protected virtual void OnEnable()
     {
+        this.EventStartListening<MainEvent>();
+    }
 
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<MainEvent>();
     }
 
 #if UNITY_EDITOR

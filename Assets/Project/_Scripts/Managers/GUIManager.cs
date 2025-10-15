@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 
 
@@ -10,6 +11,10 @@ public class GUIManager : MySingleton<GUIManager>
     public MyProgressBar healthBar;
     public HealthCellUI healthCell;
     public GameObject pauseScreen;
+
+    [Header("버튼")]
+    public Button resumeButton;
+    public Button restartButton;
 
 
 
@@ -26,7 +31,28 @@ public class GUIManager : MySingleton<GUIManager>
 
     private void Start()
     {
+        if (resumeButton != null)
+        {
+            resumeButton.onClick.AddListener(GameManager.Instance.UnPause);
+        }
+        if (restartButton != null)
+        {
+            restartButton.onClick.AddListener(GameManager.Instance.UnPause);
+            restartButton.onClick.AddListener(LevelManager.Instance.KillPlayer);
+        }
+    }
 
+    private void OnDisable()
+    {
+        if (resumeButton != null)
+        {
+            restartButton.onClick.RemoveAllListeners();
+        }
+
+        if (restartButton != null)
+        {
+            restartButton.onClick.RemoveAllListeners();
+        }
     }
 
     public void SetHUDActive(bool _flag)

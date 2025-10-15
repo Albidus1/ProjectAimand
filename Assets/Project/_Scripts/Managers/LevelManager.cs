@@ -91,8 +91,6 @@ public class LevelManager : MySingleton<LevelManager>
     {
         levelCameraController = FindFirstObjectByType<CameraController>();
 
-        GenerateColliderBounds();
-
         switch (checkpointAttributeAxis)
         {
             case CheckpointsAxis.x:
@@ -133,32 +131,6 @@ public class LevelManager : MySingleton<LevelManager>
         }
 
         currentCheckPoint = checkPoints.Count > 0 ? checkPoints[0] : null;
-    }
-
-    //[ExecuteAlways]
-    private void GenerateColliderBounds()
-    {
-        //boundsCollider2D = GetComponent<CompositeCollider2D>();
-
-        //if (boundsCollider2D == null)
-        //{
-        //    if (GetComponent<BoxCollider2D>() != null)
-        //    {
-        //        DestroyImmediate(GetComponent<BoxCollider2D>());
-        //    }
-
-        //    Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
-        //    rb.bodyType = RigidbodyType2D.Kinematic;
-        //    rb.simulated = false;
-
-        //    m_collider2D = gameObject.AddComponent<BoxCollider2D>();
-        //    m_collider2D.size = levelBounds.extents * 2f;
-
-        //    CompositeCollider2D composits = this.gameObject.AddComponent<CompositeCollider2D>();
-        //    composits.geometryType = CompositeCollider2D.GeometryType.Polygons;
-        //}
-
-        //boundsCollider2D = gameObject.GetComponent<CompositeCollider2D>();
     }
 
     private void InstantiatePlayableCharacters()
@@ -280,13 +252,16 @@ public class LevelManager : MySingleton<LevelManager>
         }
     }
 
-    public void PlayerDead(PlayerMovement _player)
+    public void KillPlayer()
     {
-        if (_player == null)
-        {        
-            return;
+        if (player.TryGetComponent<Health>(out var health))
+        {   
+            health.Kill();
         }
+    }
 
+    public void PlayerDead()
+    {
         StartCoroutine(Restart());
     }
 
@@ -294,19 +269,19 @@ public class LevelManager : MySingleton<LevelManager>
     {
         player.movementState.StateChange(PlayerStates.MovementStates.Die);
 
+        MainEvent.Trigger(MainEventTypes.PlayerDeath, player);
         CameraEvent2D.Trigger(CameraEventType.StopFollowing);
 
         yield return new WaitForSeconds(respawnDelay);
-
-        CameraEvent2D.Trigger(CameraEventType.StartFollowing);
-
-        WaveManager.Instance.ResetWave();
 
         if (currentCheckPoint != null)
         {
             player.gameObject.SetActive(true);
             player.movementState.StateChange(PlayerStates.MovementStates.Idle);
             currentCheckPoint.SpawnPlayer(player);
+
+            MainEvent.Trigger(MainEventTypes.PlayerRespawn, player);
+            CameraEvent2D.Trigger(CameraEventType.StartFollowing);
         }
     }
 

@@ -5,7 +5,7 @@ public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>, 
 {
     [SerializeField] protected string objectID = "default";
 
-    protected Button button = null;
+    protected ButtonObject button = null;
 
 
 
@@ -29,7 +29,7 @@ public class ButtonObjectActivate : MonoBehaviour, IEventListener<ButtonEvent>, 
         ObjectActivate(_buttonEvent.buttonPressed);
     }
 
-    public virtual void ObjectActivate(Button _button)
+    public virtual void ObjectActivate(ButtonObject _button)
     {
         button = _button;
 

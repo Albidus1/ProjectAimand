@@ -9,15 +9,15 @@ public struct ButtonEvent
     static ButtonEvent e;
 
     public string buttonID;
-    public Button buttonPressed;
+    public ButtonObject buttonPressed;
 
-    public ButtonEvent(string _id, Button _buttonPressed)
+    public ButtonEvent(string _id, ButtonObject _buttonPressed)
     {
         buttonID = _id;
         buttonPressed = _buttonPressed;
     }
 
-    public static void Trigger(string _id, Button _buttonPressed)
+    public static void Trigger(string _id, ButtonObject _buttonPressed)
     {
         e.buttonID = _id;
         e.buttonPressed = _buttonPressed;
@@ -25,7 +25,7 @@ public struct ButtonEvent
     }
 }
 
-public class Button : MonoBehaviour, ISaveLoadManagerMethods
+public class ButtonObject : MonoBehaviour, ISaveLoadManagerMethods
 {
     public enum ButtonState { UnPressed, Pressed };
 
@@ -37,6 +37,7 @@ public class Button : MonoBehaviour, ISaveLoadManagerMethods
 
     protected const string playerTag = "Player";
     public LayerMask checkLayer;
+
 
 
     #region SAVELOAD

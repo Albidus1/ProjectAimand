@@ -125,7 +125,7 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
         }
     }
 
-    public override void ObjectActivate(Button _button)
+    public override void ObjectActivate(ButtonObject _button)
     {
         base.ObjectActivate(_button);
 
