@@ -1,6 +1,7 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 
 
@@ -52,7 +53,10 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     public bool respawnAtInitialLocation = false;
 
     [Header("VFX")]
-    public PlaySound hitSound;
+    public GameObject hitVFX;
+    private PlaySound m_hitSound;
+    private List<ParticleSystem> m_hitParticle = new List<ParticleSystem>();
+
 
     //[Header("사망 시 힘")]
     //public bool applyDeathForce = true;
@@ -84,6 +88,17 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     {
         Initialization();
         InitializeCurrentHealth();
+
+        if (hitVFX != null)
+        {
+            m_hitSound = hitVFX.GetComponent<PlaySound>();
+
+            for (int i = 0; i < hitVFX.transform.childCount; i++)
+            {
+                ParticleSystem ps = hitVFX.transform.GetChild(i).GetComponent<ParticleSystem>();
+                m_hitParticle.Add(ps);
+            }
+        }
     }
 
     private void Initialization()
@@ -158,10 +173,7 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
         OnHit?.Invoke();
 
-        if (hitSound != null)
-        {
-            hitSound.PlaySoundFX();
-        }
+        PlayVFX();
 
         SetHealth(currentHP - _damage, _instigator);
 
@@ -359,6 +371,22 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     {
         yield return new WaitForSeconds(_delay);
         postDamageInvulnerable = false;
+    }
+
+    private void PlayVFX()
+    {
+        if (m_hitSound != null)
+        {
+            m_hitSound.PlaySoundFX();
+        }
+
+        foreach (ParticleSystem ps in m_hitParticle)
+        {
+            if (ps != null && !ps.isPlaying)
+            {
+                ps.Play();
+            }
+        }
     }
 
     protected virtual void OnEnable()
