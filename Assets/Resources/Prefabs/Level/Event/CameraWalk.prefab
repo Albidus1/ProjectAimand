@@ -275,6 +275,7 @@ GameObject:
   - component: {fileID: 7552327657280797630}
   - component: {fileID: 2522135810366657580}
   - component: {fileID: 1035897177790868743}
+  - component: {fileID: 3560217884198550531}
   m_Layer: 0
   m_Name: CameraWalk
   m_TagString: Untagged
@@ -365,3 +366,22 @@ MonoBehaviour:
   endDelay: 1.5
   isSequencePlaying: 0
   cameraMoveStart: 1
+--- !u!114 &3560217884198550531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3531567930062901332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021ac884df72c3d4da1f972d0fc67155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnOnPlayerRespawn: 1
+  repositionToInitOnPlayerRespawn: 1
+  autoRespawnDuration: 0
+  autoRespawnAmount: 0
+  autoRespawnRemainingAmount: 0
+  ignoreCheckPointsAlwaysRespawn: 1
+  associatedCheckpoints: []

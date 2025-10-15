@@ -6,7 +6,8 @@ using UnityEngine.Rendering.Universal;
 
 
 
-public class BlurController : MonoBehaviour
+
+public class BlurCameraController : MonoBehaviour
 {
     [Range(1, 12)]
     public int iterations = 4;
@@ -14,7 +15,10 @@ public class BlurController : MonoBehaviour
     public float downsample = 2.0f;
 
     [SerializeField] private Renderer2DData rendererData;
+
     private UniversalBlurFeature m_blurFeature;
+    private Camera m_camera;
+
 
     private void Start()
     {
@@ -25,9 +29,19 @@ public class BlurController : MonoBehaviour
                 .FirstOrDefault();
         }
 
+        m_camera = GetComponent<Camera>();
+
         MyFollowTarget follow = transform.AddComponent<MyFollowTarget>();
         follow.interpolatePosition = false;
-        follow.target = LevelManager.Instance.player.transform;
+        follow.target = Camera.main.transform;
+    }
+
+    private void Update()
+    {
+        if (Camera.main.orthographicSize != m_camera.orthographicSize)
+        {
+            m_camera.orthographicSize = Camera.main.orthographicSize;
+        }
     }
 
     public void SetCustomBlur(int _iterations, float _downsample)

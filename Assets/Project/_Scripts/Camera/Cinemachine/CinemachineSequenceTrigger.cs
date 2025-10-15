@@ -7,7 +7,7 @@ using UnityEngine;
 
 
 
-public class CinemachineSequenceTrigger : MonoBehaviour
+public class CinemachineSequenceTrigger : MonoBehaviour, Respawnable
 {
     public enum EasingType
     {
@@ -186,9 +186,14 @@ public class CinemachineSequenceTrigger : MonoBehaviour
         return t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
     }
 
+    public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    {
+        Initialization();
+    }
+
     protected virtual void OnEnable()
     {
-        isSequencePlaying = false;
+        Initialization();
     }
 
     protected virtual void OnDisable()
