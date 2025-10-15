@@ -65,7 +65,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
     public virtual void Pause()
     {
-        Debug.Log("퍼즈");
+        //Debug.Log("퍼즈");
 
         Instance.paused = true;
 
@@ -78,7 +78,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
     public virtual void UnPause()
     {
-        Debug.Log("퍼즈 해제");
+        //Debug.Log("퍼즈 해제");
 
         Instance.paused = false;
 

@@ -26,7 +26,7 @@ public class PlayerStates
 public class PlayerMovement : CharacterMovement
 {
     public PlayerStates playerState { get; protected set; }
-    public MyStateManager<PlayerStates.MovementStates> movementState;
+    public MyStateMachine<PlayerStates.MovementStates> movementState;
 
     public PlayerData data;
 
@@ -189,7 +189,7 @@ public class PlayerMovement : CharacterMovement
         m_health = GetComponent<Health>();
         m_spriteColorInversion = GetComponent<PlayerSpriteColorInversion>();
 
-        movementState = new MyStateManager<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
+        movementState = new MyStateMachine<PlayerStates.MovementStates>(this.gameObject, SendStateChangeEvents);
         movementState.StateChange(PlayerStates.MovementStates.Idle);
 
         playerState = new PlayerStates();
@@ -789,7 +789,7 @@ public class PlayerMovement : CharacterMovement
         StartCoroutine(nameof(PerformSleep), _duration);
     }
 
-    private IEnumerator PerformSleep(float _duration)
+    public IEnumerator PerformSleep(float _duration)
     {
         Time.timeScale = 0;
 

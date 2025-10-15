@@ -190,6 +190,11 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
         UpdateHealthBar();
 
+        if (m_playerMovement != null)
+        {
+            m_playerMovement.StartCoroutine(m_playerMovement.PerformSleep(0.1f));
+        }
+
         if (currentHP <= 0)
         {
             Kill();

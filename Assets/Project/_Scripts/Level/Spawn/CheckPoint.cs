@@ -64,7 +64,7 @@ public class CheckPoint : MonoBehaviour
 
     public void AssignObjectToCheckPoint(Respawnable _listener)
     {
-        Debug.Log(_listener.ToString());
+        //Debug.Log(_listener.ToString());
         m_listeners.Add(_listener);
     }
 

@@ -13,11 +13,11 @@ public interface IStateMachine
 public struct StateChangeEvent<T> where T : struct, IComparable, IConvertible, IFormattable
 {
     public GameObject target;
-    public MyStateManager<T> targetStateMachine;
+    public MyStateMachine<T> targetStateMachine;
     public T newState;
     public T previousState;
 
-    public StateChangeEvent(MyStateManager<T> _stateMachine)
+    public StateChangeEvent(MyStateMachine<T> _stateMachine)
     {
         target = _stateMachine.target;
         targetStateMachine = _stateMachine;
@@ -27,7 +27,7 @@ public struct StateChangeEvent<T> where T : struct, IComparable, IConvertible, I
 }
 
 
-public class MyStateManager<T> : IStateMachine where T : struct, IComparable, IConvertible, IFormattable
+public class MyStateMachine<T> : IStateMachine where T : struct, IComparable, IConvertible, IFormattable
 {
     public virtual bool TriggerEvents { get; set; }
     public GameObject target;
@@ -37,7 +37,7 @@ public class MyStateManager<T> : IStateMachine where T : struct, IComparable, IC
     public delegate void OnStateChangeDelegate();
     public OnStateChangeDelegate OnStateChange;
 
-    public MyStateManager(GameObject _target, bool _triggerEvents)
+    public MyStateMachine(GameObject _target, bool _triggerEvents)
     {
         target = _target;
         TriggerEvents = _triggerEvents;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,11 +12,38 @@ public class GUIManager : MySingleton<GUIManager>
     public MyProgressBar healthBar;
     public HealthCellUI healthCell;
     public GameObject pauseScreen;
+    public GameObject quitPopUp;
 
     [Header("버튼")]
     public Button resumeButton;
     public Button restartButton;
 
+    public bool enableQuitPopUp
+    {
+        get => m_quitPopUpEnabled;
+
+        set
+        {
+            if (m_quitPopUpEnabled == value)
+            {
+                return;
+            }
+
+            if (value)
+            {
+                EnableQuitPopUp();
+            }
+            else
+            {
+                DisableQuitPopUp();
+            }
+
+            m_quitPopUpEnabled = value;
+        }
+    }
+
+    private List<Button> m_buttons = new List<Button>();
+    private bool m_quitPopUpEnabled;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -34,11 +62,13 @@ public class GUIManager : MySingleton<GUIManager>
         if (resumeButton != null)
         {
             resumeButton.onClick.AddListener(GameManager.Instance.UnPause);
+            m_buttons.Add(resumeButton);
         }
         if (restartButton != null)
         {
             restartButton.onClick.AddListener(GameManager.Instance.UnPause);
             restartButton.onClick.AddListener(LevelManager.Instance.KillPlayer);
+            m_buttons.Add(restartButton);
         }
     }
 
@@ -101,5 +131,27 @@ public class GUIManager : MySingleton<GUIManager>
         }
 
         healthCell.UpdateHealthUI(_currentHealth, _maxHealth);
+    }
+
+    public void EnableQuitPopUp()
+    {
+        m_quitPopUpEnabled = true;
+        quitPopUp.SetActive(true);
+
+        for (int i = 0; i < m_buttons.Count; i++)
+        {
+            m_buttons[i].enabled = false;
+        }
+    }
+
+    public void DisableQuitPopUp()
+    {
+        m_quitPopUpEnabled = false;
+        quitPopUp.SetActive(false);
+
+        for (int i = 0; i < m_buttons.Count; i++)
+        {
+            m_buttons[i].enabled = true;
+        }
     }
 }
