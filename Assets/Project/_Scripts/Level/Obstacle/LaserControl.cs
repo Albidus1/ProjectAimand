@@ -50,7 +50,6 @@ public class LaserControl : MonoBehaviour
     {
         m_damageOnTouch = GetComponent<DamageOnTouch>();
         m_boxCollider2D = GetComponent<BoxCollider2D>();
-
         m_lineRenderer = GetComponent<LineRenderer>();
 
         if (startVFX == null)
@@ -61,17 +60,31 @@ public class LaserControl : MonoBehaviour
         {
             endVFX = transform.Find("EndVFX").gameObject;
         }
+
+        if (m_lineRenderer != null)
+        {
+            m_lineRenderer.useWorldSpace = true;
+            m_lineRenderer.startWidth = laserThickness;
+            m_lineRenderer.positionCount = 2;
+        }
+
+        Quaternion rotation = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z);
+        m_direction = rotation * Vector2.right;
+
+        FillVFXList();
     }
 
     private void Start()
     {
-        //LaserOnoff(false);
-        m_lineRenderer.useWorldSpace = true;
-        m_lineRenderer.startWidth = laserThickness; 
-
-        FillVFXList();
-
-        isFiringLaser = laserOn;
+        if (laserOn)
+        {
+            UpdateLaser();
+            LaserEnable();
+        }
+        else
+        {
+            LaserDisable();
+        }
 
         if (laserCooldown > 0)
         {
@@ -166,6 +179,8 @@ public class LaserControl : MonoBehaviour
                 ps.Play();
             }
         }
+
+        UpdateLaser();
     }
 
     private void LaserDisable()
