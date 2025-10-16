@@ -72,15 +72,18 @@ public class LaserControl : MonoBehaviour
         FillVFXList();
 
         isFiringLaser = laserOn;
-        Invoke(nameof(LaserReactivate), laserCooldown);
+
+        if (laserCooldown > 0)
+        {
+            Invoke(nameof(LaserReactivate), laserCooldown);
+        }
     }
 
     private void FillVFXList()
     {
         for (int i = 0; i < startVFX.transform.childCount; i++)
         {
-            ParticleSystem ps = startVFX.transform.GetChild(i).GetComponent<ParticleSystem>();
-            if (ps != null)
+            if (startVFX.transform.GetChild(i).TryGetComponent<ParticleSystem>(out var ps))
             {
                 m_particles.Add(ps);
             }
@@ -88,8 +91,7 @@ public class LaserControl : MonoBehaviour
 
         for (int i = 0; i < endVFX.transform.childCount; i++)
         {
-            ParticleSystem ps = endVFX.transform.GetChild(i).GetComponent<ParticleSystem>();
-            if (ps != null)
+            if (endVFX.transform.GetChild(i).TryGetComponent<ParticleSystem>(out var ps))
             {
                 m_particles.Add(ps);
             }
