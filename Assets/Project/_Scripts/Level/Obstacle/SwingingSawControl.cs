@@ -81,7 +81,7 @@ public class SwingingSawControl : MonoBehaviour, IEventListener<TriggerEvent>,Re
     private void SetRotation()
     {
         float angle = Mathf.Sin(m_timeCounter) * swingAngle;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        transform.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
 
         if (pivotPoint != null)
         {

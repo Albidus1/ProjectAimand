@@ -131,7 +131,7 @@ public class InputManager : MySingleton<InputManager>
                 button.TriggerButtonUp();
             }
 
-            Debug.Log(button.state.currentState);
+            //Debug.Log(button.state.currentState);
         }
     }
 
