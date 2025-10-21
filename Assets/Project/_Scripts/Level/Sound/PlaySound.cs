@@ -9,8 +9,13 @@ public class PlaySound : MonoBehaviour
 {
     public bool active = true;
 
-    public List<AudioClip> soundFXs = new List<AudioClip>();
-    public bool loop;
+    public List<AudioClip> SFXs = new List<AudioClip>();
+    public bool loop = false;
+    [Range(0f, 2f)]
+    public float volume;
+    [Range(0f, 1f)]
+    public float pitch;
+
 
     [Header("특수 설정")]
     public Transform attachToTransform;
@@ -35,21 +40,23 @@ public class PlaySound : MonoBehaviour
 
         if (randomSet)
         {
-            m_index = Random.Range(0, soundFXs.Count);
+            m_index = Random.Range(0, SFXs.Count);
         }
 
-        if (soundFXs.Count > 0)
+        if (SFXs.Count > 0)
         {
             m_audioSource = SoundManagerSoundPlayEvent.Trigger
-                (soundFXs[m_index],
+                (SFXs[m_index],
                 SoundManager.SoundManagerTracks.SFX,
                 transform.position,
+                _volume:volume,
+                _pitch:pitch,
                 _loop:loop,
                 _attachToTransform:attachToTransform);
 
             m_index++;
 
-            if (m_index >= soundFXs.Count)
+            if (m_index >= SFXs.Count)
             {
                 m_index = 0;
             }

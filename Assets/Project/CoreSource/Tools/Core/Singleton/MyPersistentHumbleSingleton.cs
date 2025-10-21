@@ -47,7 +47,7 @@ public class MyPersistentHumbleSingleton<T> : MonoBehaviour where T : Component
             return;
         }
 
-        initializationTime = Time.time;
+        initializationTime = Time.realtimeSinceStartup;
 
         DontDestroyOnLoad(this.gameObject);
 
@@ -56,8 +56,9 @@ public class MyPersistentHumbleSingleton<T> : MonoBehaviour where T : Component
         {
             if (searched != this)
             {
-                if (searched.GetComponent<MyPersistentHumbleSingleton<T>>().initializationTime < initializationTime)
-                {
+                float time = searched.GetComponent<MyPersistentHumbleSingleton<T>>().initializationTime;
+                if (time != 0f && time < initializationTime)
+                {                    
                     Destroy(searched.gameObject);
                 }
             }
