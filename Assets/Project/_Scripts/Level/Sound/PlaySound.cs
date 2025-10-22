@@ -7,14 +7,14 @@ using UnityEngine.Audio;
 
 public class PlaySound : MonoBehaviour
 {
-    public bool active = true;
+    public bool isActive = true;
 
-    public List<AudioClip> SFXs = new List<AudioClip>();
+    public List<AudioClip> sfxList = new List<AudioClip>();
     public bool loop = false;
-    [Range(0f, 2f)]
-    public float volume;
     [Range(0f, 1f)]
-    public float pitch;
+    public float volume = 1f;
+    [Range(0f, 1f)]
+    public float pitch = 1f;
 
 
     [Header("특수 설정")]
@@ -32,7 +32,7 @@ public class PlaySound : MonoBehaviour
     [ContextMenu("사운드 출력")]
     public void PlaySoundFX()
     {
-        if (false == active)
+        if (false == isActive)
         {
             return;
         }
@@ -40,13 +40,13 @@ public class PlaySound : MonoBehaviour
 
         if (randomSet)
         {
-            m_index = Random.Range(0, SFXs.Count);
+            m_index = Random.Range(0, sfxList.Count);
         }
 
-        if (SFXs.Count > 0)
+        if (sfxList.Count > 0)
         {
             m_audioSource = SoundManagerSoundPlayEvent.Trigger
-                (SFXs[m_index],
+                (sfxList[m_index],
                 SoundManager.SoundManagerTracks.SFX,
                 transform.position,
                 _volume:volume,
@@ -56,7 +56,7 @@ public class PlaySound : MonoBehaviour
 
             m_index++;
 
-            if (m_index >= SFXs.Count)
+            if (m_index >= sfxList.Count)
             {
                 m_index = 0;
             }

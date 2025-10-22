@@ -171,9 +171,7 @@ MonoBehaviour:
   CollisionsOffOnDeath: 1
   grabityOffOnDeath: 0
   respawnAtInitialLocation: 0
-  OnDamageEvent:
-    m_PersistentCalls:
-      m_Calls: []
+  hitVFX: {fileID: 0}
 --- !u!114 &6085268664096682645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,7 +219,7 @@ MonoBehaviour:
   killPlayer: 0
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2147514368
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
   damage: 1
@@ -230,6 +228,7 @@ MonoBehaviour:
   damageTakenNonDamageable: 0
   invincibilityDuration: 0.1
   damageCausedKnockbackForce: {x: 0, y: 0}
+  stunTime: 0
   owner: {fileID: 0}
 --- !u!114 &8673912585461625038
 MonoBehaviour:
@@ -245,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2147483648
   detectionRadius: 30
   trackingStartTime: 0
   trackingTime: 20

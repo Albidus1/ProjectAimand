@@ -7,10 +7,10 @@ public class BackgroundMusic : MyPersistentHumbleSingleton<BackgroundMusic>
     public AudioClip soundClip;
     public bool loop = true;
     public int ID = 255;
-    [Range(0f, 2f)]
-    public float volume;
     [Range(0f, 1f)]
-    public float pitch;
+    public float volume = 1f;
+    [Range(0f, 1f)]
+    public float pitch = 1f;
 
     protected AudioSource m_audioSource;
 

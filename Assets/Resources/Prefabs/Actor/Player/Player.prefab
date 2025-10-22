@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 27459384373503720}
   - component: {fileID: 4804412868853532475}
   - component: {fileID: 6370659969356464239}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: JumpStartParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4904,11 +4904,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 1
-  SFXs: []
+  isActive: 1
+  sfxList:
+  - {fileID: 8300000, guid: 5447d0f398c8b8345980ecba8ce1b841, type: 3}
   loop: 0
-  volume: 0
-  pitch: 0
+  volume: 1
+  pitch: 1
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &1503358124531436754
@@ -4921,7 +4922,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1330941880587383478}
   - component: {fileID: 6452587781274028355}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: HitVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4958,11 +4959,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 1
-  SFXs: []
+  isActive: 1
+  sfxList:
+  - {fileID: 8300000, guid: f34c68ba72eaa86469cbac5d7e8d5f9c, type: 3}
   loop: 0
-  volume: 0
-  pitch: 0
+  volume: 1
+  pitch: 1
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &3811999700480208972
@@ -9868,7 +9870,7 @@ GameObject:
   - component: {fileID: 1336539153016649536}
   - component: {fileID: 2968077151060682183}
   - component: {fileID: 6782677857814245858}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: JumpLandingParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14760,11 +14762,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 1
-  SFXs: []
+  isActive: 1
+  sfxList:
+  - {fileID: 8300000, guid: 74dfbbce500799c4a9c31f7f7f7a0d97, type: 3}
   loop: 0
-  volume: 0
-  pitch: 0
+  volume: 1
+  pitch: 1
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &4358366953133977145
@@ -14778,7 +14781,7 @@ GameObject:
   - component: {fileID: 8399166824767652132}
   - component: {fileID: 3141517224810394089}
   - component: {fileID: 734120131850351261}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: JumpAirParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19672,7 +19675,7 @@ GameObject:
   - component: {fileID: 7772496623235067025}
   - component: {fileID: 7965639506098986172}
   - component: {fileID: 6344784352635634201}
-  m_Layer: 6
+  m_Layer: 31
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -19835,13 +19838,13 @@ MonoBehaviour:
   rayDistance: 0.55
   platform:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 2048
   movingPlatform:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 4096
   onewayPlatform:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 8192
   groundLayer:
     serializedVersion: 2
     m_Bits: 2944
@@ -19882,7 +19885,7 @@ GameObject:
   - component: {fileID: 8382918001601338364}
   - component: {fileID: 654211252277053372}
   - component: {fileID: 3478776399954728571}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: HitParticleFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24772,7 +24775,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5598235702639562507}
   - component: {fileID: 5615422236673303056}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Walk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24806,11 +24809,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 1
-  SFXs: []
+  isActive: 1
+  sfxList:
+  - {fileID: 8300000, guid: 674631e5b330d7a459d4fcc4d912ff1d, type: 3}
+  - {fileID: 8300000, guid: 3cf5e51b25968fa478d7a86f63590588, type: 3}
+  - {fileID: 8300000, guid: 98876f8f08ad856409a0d8314fe9731c, type: 3}
+  - {fileID: 8300000, guid: 06b2bfa809539734abdff88077a62bf1, type: 3}
+  - {fileID: 8300000, guid: e886abe38b132ad4485e095ddf85e2a6, type: 3}
+  - {fileID: 8300000, guid: 044877c1720f51c46914835a8fccdb22, type: 3}
+  - {fileID: 8300000, guid: 4a54ebddc407fbd42b7fa0ee9233ad12, type: 3}
+  - {fileID: 8300000, guid: 73d7a1ac46c1cde44aa8150129ee2e8c, type: 3}
+  - {fileID: 8300000, guid: 9aac9e0fbbac8704db42dd0328115b55, type: 3}
+  - {fileID: 8300000, guid: 4bdbe673167938d4ab0d47a460e6a155, type: 3}
   loop: 1
-  volume: 0
-  pitch: 0
+  volume: 1
+  pitch: 1
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &5811636985477774542
@@ -24857,7 +24870,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6759310250610532764}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: CameraTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24890,7 +24903,7 @@ GameObject:
   - component: {fileID: 2592109175117407157}
   - component: {fileID: 2955794304985430039}
   - component: {fileID: 7095915844711083244}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: HitParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29779,7 +29792,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3036727921672928079}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: JumpVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34797,11 +34810,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b85b6043cf2b004a9968e7815369dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 1
-  SFXs: []
+  isActive: 1
+  sfxList:
+  - {fileID: 8300000, guid: 6696be4298bb4864f920494f3576decd, type: 3}
+  - {fileID: 8300000, guid: 11f8582e95f091746ae2f245d1f600a8, type: 3}
   loop: 0
-  volume: 0
-  pitch: 0
+  volume: 1
+  pitch: 1
   attachToTransform: {fileID: 0}
   randomSet: 0
 --- !u!1 &8944690035579265133
@@ -34815,7 +34830,7 @@ GameObject:
   - component: {fileID: 5487516250228848261}
   - component: {fileID: 7611604028742873624}
   - component: {fileID: 3523566268446492317}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: HitParticleBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
