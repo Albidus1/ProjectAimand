@@ -148,6 +148,12 @@ public class LevelManager : MySingleton<LevelManager>
         {
             light2D.target = player.transform;
         }
+
+        AttatchToPlayer[] attatchToPlayers = FindObjectsByType<AttatchToPlayer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        foreach (var obj in attatchToPlayers)
+        {
+            obj.Attatch(player.transform);
+        }
     }
 
     private void CheckpointAssignment()

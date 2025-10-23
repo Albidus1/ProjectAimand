@@ -138,7 +138,7 @@ public class MyFollowTarget : MonoBehaviour
             return;
         }
 
-        if (updateMode != UpdateModes.LateUpdate)
+        if (updateMode == UpdateModes.LateUpdate)
         {
             FollowTargetRotation();
             FollowTargetPositioin();
