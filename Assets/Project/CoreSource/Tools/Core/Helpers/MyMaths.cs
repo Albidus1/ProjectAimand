@@ -4,6 +4,49 @@ using UnityEngine;
 
 public static class MyMaths
 {
+    public static float SpringVelocity(float _currentValue, float _targetValue, float _velocity, 
+        float _damping, float _frequency, float _speed, float _deltaTime)
+    {
+        float _maxDeltaTime = Mathf.Min(1f / (_frequency * 10f), _deltaTime);
+        _frequency = _frequency * 2f * Mathf.PI;
+        _deltaTime = Mathf.Min(_deltaTime, _maxDeltaTime);
+
+        return 
+            _velocity + 
+            (_deltaTime * _frequency * _frequency * (_targetValue - _currentValue) + 
+            (-2f * _deltaTime * _frequency * _damping * _velocity));
+    }
+
+    public static void Spring(ref Vector3 _currentValue, Vector3 _targetValue, ref Vector3 _velocity, float _damping, float _frequency, float _speed, float _deltaTime)
+    {
+        Vector3 initialVelocity = _velocity;
+        _velocity.x = SpringVelocity(_currentValue.x, _targetValue.x, _velocity.x, _damping, _frequency, _speed, _deltaTime);
+        _velocity.y = SpringVelocity(_currentValue.y, _targetValue.y, _velocity.y, _damping, _frequency, _speed, _deltaTime);
+        _velocity.z = SpringVelocity(_currentValue.z, _targetValue.z, _velocity.z, _damping, _frequency, _speed, _deltaTime);
+        _velocity.x = MyMaths.Lerp(initialVelocity.x, _velocity.x, _speed, Time.deltaTime);
+        _velocity.y = MyMaths.Lerp(initialVelocity.y, _velocity.y, _speed, Time.deltaTime);
+        _velocity.z = MyMaths.Lerp(initialVelocity.z, _velocity.z, _speed, Time.deltaTime);
+        _currentValue += _deltaTime * _velocity;
+    }
+
+    private static float LerpRate(float _rate, float _deltaTime)
+    {
+        _rate = Mathf.Clamp01(_rate);
+        float invRate = -Mathf.Log(1.0f - _rate, 2.0f) * 60f;
+
+        return Mathf.Pow(2.0f, -invRate * _deltaTime);
+    }
+
+    public static float Lerp(float _value, float _target, float _rate, float _deltaTime)
+    {
+        if (_deltaTime == 0f) 
+        { 
+            return _value; 
+        }
+
+        return Mathf.Lerp(_target, _value, LerpRate(_rate, _deltaTime));
+    }
+
     public static Quaternion LookAt2D(Vector2 _direction)
     {
         float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;

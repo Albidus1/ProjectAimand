@@ -7,6 +7,7 @@ using UnityEngine.PlayerLoop;
 public class MyFollowTarget : MonoBehaviour
 {
     public enum UpdateModes { Update, FixedUpdate, LateUpdate }
+    public enum FollowModes { Lerp, Spring }
     public enum PositionSpaces { World, Local }
 
     [Header("위치 추적")]
@@ -22,6 +23,7 @@ public class MyFollowTarget : MonoBehaviour
 
     [Header("위치 보간")]
     public bool interpolatePosition = true;
+    public FollowModes followPositionMode = FollowModes.Lerp;
     [MyConditionalHide("interpolatePosition", true)]
     public float followPositionSpeed = 10f;
 
@@ -196,9 +198,36 @@ public class MyFollowTarget : MonoBehaviour
             //float invRate = -Mathf.Log(1f - rate, 2f) * 60f;
             //float LerpRate = Mathf.Pow(2f, -invRate * Time.deltaTime);
 
-            interpolatedDistance = Mathf.Lerp(0f, distance, Time.deltaTime * followPositionSpeed);
-            interpolatedDistance = ApplyMinMaxDistancing(distance, interpolatedDistance);
-            transform.Translate(m_direction * interpolatedDistance, Space.World);
+            switch (followPositionMode)
+            {
+                case FollowModes.Lerp:
+                    interpolatedDistance = Mathf.Lerp(0f, distance, Time.deltaTime * followPositionSpeed);
+                    interpolatedDistance = ApplyMinMaxDistancing(distance, interpolatedDistance);
+                    transform.Translate(m_direction * interpolatedDistance, Space.World);
+                    break;
+
+                case FollowModes.Spring:
+                    m_newPosition = transform.position;
+                    MyMaths.Spring(
+                        ref m_newPosition, 
+                        m_newTargetPosition,
+                        ref m_velocity, 
+                        0.3f, 
+                        0.3f, 
+                        followPositionSpeed, 
+                        Time.deltaTime);
+
+                    if (m_localSpace)
+                    {
+                        transform.localPosition = m_newPosition;
+                    }
+                    else
+                    {
+                        transform.position = m_newPosition;
+                    }
+
+                        break;
+            }
         }
         else
         {
