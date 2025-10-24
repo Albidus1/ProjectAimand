@@ -26,6 +26,11 @@ public class MyFollowTarget : MonoBehaviour
     public FollowModes followPositionMode = FollowModes.Lerp;
     [MyConditionalHide("interpolatePosition", true)]
     public float followPositionSpeed = 10f;
+    [MyEnumCondition("followPositionMode", (int)FollowModes.Spring)]
+    [Range(0.01f, 1.0f)]
+    public float positionSpringDamping = 0.3f;
+    [MyEnumCondition("followPositionMode", (int)FollowModes.Spring)]
+    public float positionSpringFrequency = 3f;
 
     [Header("회전 추적")]
     public bool followRotation = false;
@@ -46,8 +51,10 @@ public class MyFollowTarget : MonoBehaviour
 
     [Header("거리 설정")]
     public bool useMinimumDistanceBeforeFollow = false;
+    [Tooltip("타겟과의 최소 거리")]
     public float minDistanceBeforeFollow = 1f;
     public bool useMaximumDistanceBeforeFollow = false;
+    [Tooltip("타겟과의 최대 거리")]
     public float maxDistance = 1f;
 
 
@@ -211,9 +218,9 @@ public class MyFollowTarget : MonoBehaviour
                     MyMaths.Spring(
                         ref m_newPosition, 
                         m_newTargetPosition,
-                        ref m_velocity, 
-                        0.3f, 
-                        0.3f, 
+                        ref m_velocity,
+                        positionSpringDamping, 
+                        positionSpringFrequency, 
                         followPositionSpeed, 
                         Time.deltaTime);
 
@@ -226,7 +233,7 @@ public class MyFollowTarget : MonoBehaviour
                         transform.position = m_newPosition;
                     }
 
-                        break;
+                    break;
             }
         }
         else
