@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 
 
@@ -32,13 +33,31 @@ public struct CameraShakeEvent
     }
 }
 
+public struct CameraShakeStopEvent
+{
+    static CameraShakeStopEvent e;
+    public string cameraID;
+    public CameraShakeStopEvent(string _id)
+    {
+        cameraID = _id;
+    }
+    public static void Trigger(string _id)
+    {
+        e.cameraID = _id;
+        EventManager.TriggerEvent(e);
+    }
+}
+
+
+
 [RequireComponent(typeof(CinemachineCamera))]
 [RequireComponent(typeof(CinemachineBasicMultiChannelPerlin))]
-public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeEvent>
+public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeEvent>, IEventListener<CameraShakeStopEvent>
 {
     protected CinemachineCamera m_cmCamera;
     protected CinemachineBasicMultiChannelPerlin m_perlin;
 
+    protected bool isShaking = true;
     protected string m_cameraID = "MainCamera";
     protected float m_duration;
     protected float m_amplitude;
@@ -59,7 +78,24 @@ public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeE
         m_perlin.AmplitudeGain = m_amplitude;
         m_perlin.FrequencyGain = m_frequency;
 
-        yield return new WaitForSeconds(m_duration);
+        if (m_duration <= 0f)
+        {
+            while (true)
+            {
+                if (isShaking)
+                {
+                    yield return null;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(m_duration);
+        }
 
         m_perlin.AmplitudeGain = 0f;
         m_perlin.FrequencyGain = 0f;
@@ -77,6 +113,7 @@ public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeE
             return;
         }
 
+        isShaking = true;
         m_duration = _e.duration;
         m_amplitude = _e.amplitude;
         m_frequency = _e.frequency;
@@ -84,13 +121,32 @@ public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeE
         StartCoroutine(StartShack());
     }
 
+    public void OnEvent(CameraShakeStopEvent _e)
+    {
+        if (_e.cameraID != m_cameraID)
+        {
+            //return;
+        }
+
+        isShaking = false;
+        if (m_perlin != null)
+        {
+            m_perlin.AmplitudeGain = 0f;
+            m_perlin.FrequencyGain = 0f;
+        }
+
+        StopCoroutine(StartShack());
+    }
+
     protected virtual void OnEnable()
     {
         this.EventStartListening<CameraShakeEvent>();
+        this.EventStartListening<CameraShakeStopEvent>();
     }
 
     protected virtual void OnDisable()
     {
         this.EventStopListening<CameraShakeEvent>();
+        this.EventStopListening<CameraShakeStopEvent>();
     }
 }
