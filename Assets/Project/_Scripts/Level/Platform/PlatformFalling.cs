@@ -124,6 +124,7 @@ public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<Trigge
         if (m_endPosition.y >= transform.position.y)
         {
             isFalling = false;
+            CameraShakeEvent.Trigger("MainCamera", 0.2f, 1f, 30f);
         }
     }
 

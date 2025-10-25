@@ -32,6 +32,8 @@ public struct CameraShakeEvent
     }
 }
 
+[RequireComponent(typeof(CinemachineCamera))]
+[RequireComponent(typeof(CinemachineBasicMultiChannelPerlin))]
 public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeEvent>
 {
     protected CinemachineCamera m_cmCamera;
@@ -67,7 +69,7 @@ public class CinemachineCameraShake : MonoBehaviour, IEventListener<CameraShakeE
     {
         if (_e.cameraID != m_cameraID)
         {
-            return;
+            //return;
         }
 
         if (m_perlin == null)
