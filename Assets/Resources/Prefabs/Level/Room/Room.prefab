@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7511416077533869590}
   - component: {fileID: 1614373951965777871}
   - component: {fileID: 5972855801723040824}
+  - component: {fileID: 1535629516222107192}
   m_Layer: 2
   m_Name: CM_Camera
   m_TagString: Untagged
@@ -135,7 +136,7 @@ MonoBehaviour:
   targetPlayer: {fileID: 0}
   playerMovement: {fileID: 0}
   orthographicZoom: {x: 5, y: 16}
-  initialOrthographicZoom: 10
+  initialOrthographicZoom: 5
   orthographicZoomSpeed: 0.4
 --- !u!114 &1614373951965777871
 MonoBehaviour:
@@ -173,6 +174,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a8a05de0ac134f4f9d01bef6b9da077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1535629516222107192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854260344696827791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+  PivotOffset: {x: 0, y: 0, z: 0}
+  AmplitudeGain: 0
+  FrequencyGain: 1
+  m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &2863596398558658624
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +426,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -22.98101, y: 18.03585}
+  m_Offset: {x: -51.71959, y: 0.9235592}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -418,7 +436,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 90.057846, y: 60.62684}
+  m_Size: {x: 32.580692, y: 26.402264}
   m_EdgeRadius: 0
 --- !u!114 &1303830531911658652
 MonoBehaviour:
