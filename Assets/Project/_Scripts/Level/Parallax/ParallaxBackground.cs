@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class ParallaxBackground : MonoBehaviour
 {
     public ParallaxCamera parallaxCamera;
@@ -22,7 +22,7 @@ public class ParallaxBackground : MonoBehaviour
 
         if (parallaxCamera != null)
         {
-            parallaxCamera.onCameraTranslate += Move;
+            parallaxCamera.onCameraTranslate += MoveLayers;
         }
 
         SetLayers();
@@ -44,7 +44,7 @@ public class ParallaxBackground : MonoBehaviour
         }
     }
 
-    private void Move(float _delta)
+    private void MoveLayers(float _delta)
     {
         foreach (var layer in parallaxLayers)
         {

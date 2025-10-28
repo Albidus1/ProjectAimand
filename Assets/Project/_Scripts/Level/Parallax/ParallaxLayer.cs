@@ -2,12 +2,20 @@ using UnityEngine;
 
 
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class ParallaxLayer : MonoBehaviour
 {
     public float parallaxFactor;
 
-    
+
+    private Vector2 m_initialPosition;
+
+
+
+    private void Start()
+    {
+        m_initialPosition = transform.position;
+    }
 
     public void MoveLayer(float _deltaPosition)
     {

@@ -45,16 +45,17 @@ public class LevelManager : MySingleton<LevelManager>
     [Space(10)]
     [Header("레벨 바운드")] 
     public Bounds levelBounds = new Bounds(Vector3.zero, Vector3.one * 10);
-    public Collider2D boundsCollider2D { get; private set; }
+
 
     public virtual CameraController levelCameraController { get; set; }
-
     public virtual PlayerMovement player { get; private set; }
+    public Collider2D boundsCollider2D { get; private set; }
     public virtual List<CheckPoint> checkPoints { get; private set; }
+
     private int m_savedPoints;
     private BoxCollider2D m_collider2D;
     private Bounds m_bounds;
-
+    
 
 
     protected override void Awake()

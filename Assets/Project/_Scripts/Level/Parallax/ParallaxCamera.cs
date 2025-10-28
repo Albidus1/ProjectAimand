@@ -1,19 +1,21 @@
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
 
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class ParallaxCamera : MonoBehaviour
 {
     public delegate void ParallaxCameraDelegate(float _deltaMovement);
     public ParallaxCameraDelegate onCameraTranslate;
 
 
-    private CinemachineBrain m_brain; 
+    private CinemachineBrain m_brain;
 
-    private float m_currentPosition;
-    private float m_previousPosition;
+    private bool m_initialized;
+    private float m_currentPositionX;
+    private float m_previousPositionX;
 
 
 
@@ -24,35 +26,53 @@ public class ParallaxCamera : MonoBehaviour
 
     private void Start()
     {
-        m_currentPosition = transform.position.x;
-        m_previousPosition = m_currentPosition;
+        m_initialized = false;
+        m_previousPositionX = transform.position.x;
+
+        StartCoroutine(SetPositionAfter2Frams());
     }
 
-    private void Update()
+    private IEnumerator SetPositionAfter2Frams()
     {
-        m_currentPosition = transform.position.x;
+        yield return null;
+        yield return null;
 
-        if (m_brain != null && m_brain.IsBlending)
+        m_initialized = true;
+        //m_previousPositionX = transform.position.x;
+    }
+
+    private void LateUpdate()
+    {
+        if (false == m_initialized)
         {
-            m_previousPosition = m_currentPosition;
             return;
         }
 
+        m_currentPositionX = transform.position.x;
+
         HandleCameraTranslation();
-        m_previousPosition = m_currentPosition;
+
+        m_previousPositionX = m_currentPositionX;
     }
 
     private void HandleCameraTranslation()
     {
-        if (m_currentPosition == m_previousPosition)
+        if (m_brain != null && m_brain.IsBlending)
+        {
+            return;
+        }
+
+        float deltaPositionX = m_previousPositionX - m_currentPositionX;
+
+        if (Mathf.Abs(deltaPositionX) < 0.1f)
         {
             return;
         }
 
         if (onCameraTranslate != null)
         {
-            float delta = m_previousPosition - m_currentPosition;
-            onCameraTranslate(delta);
+            Debug.Log(m_currentPositionX + " " + m_previousPositionX);
+            onCameraTranslate(deltaPositionX);
         }
     }
 }
