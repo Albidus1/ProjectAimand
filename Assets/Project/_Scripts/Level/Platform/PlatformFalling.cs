@@ -81,7 +81,6 @@ public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<Trigge
         {
             m_initialPosition = transform.position;
             m_endPosition = new Vector2(0, int.MinValue);
-            groundLayer = LayerManager.obstacleLayerMask;
 
             m_initialized = true;
         }

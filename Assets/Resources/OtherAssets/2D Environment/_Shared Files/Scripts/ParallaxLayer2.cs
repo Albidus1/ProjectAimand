@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ParallaxLayer : MonoBehaviour
+public class ParallaxLayer2 : MonoBehaviour
 {
     [SerializeField] float multiplier = 0.0f;
     [SerializeField] bool horizontalOnly = true;
