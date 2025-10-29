@@ -94,6 +94,7 @@ public class SceneLoadingManager : MonoBehaviour
     {
         LoadingSetup();
 
+        MyFadeOutEvent.Trigger(startFadeDuration, Ease.Linear);
         yield return new WaitForSeconds(startFadeDuration);
 
         m_asyncOperation = SceneManager.LoadSceneAsync(m_sceneToLoad, LoadSceneMode.Single);
@@ -108,6 +109,7 @@ public class SceneLoadingManager : MonoBehaviour
         LoadingComplete();
         yield return new WaitForSeconds(loadCompleteDelay);
 
+        MyFadeInEvent.Trigger(1f, Ease.Linear);
         yield return new WaitForSeconds(exitFadeDuration);
 
         m_asyncOperation.allowSceneActivation = true;

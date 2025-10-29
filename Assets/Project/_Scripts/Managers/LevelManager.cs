@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -279,6 +280,10 @@ public class LevelManager : MySingleton<LevelManager>
         MainEvent.Trigger(MainEventTypes.PlayerDeath, player);
         CameraEvent2D.Trigger(CameraEventType.StopFollowing);
 
+        yield return new WaitForSeconds(0.2f);
+
+        MyFadeInEvent.Trigger(0.5f, Ease.Linear, true, Vector2.zero);
+        yield return new WaitForSeconds(0.5f);
         yield return new WaitForSeconds(respawnDelay);
 
         if (currentCheckPoint != null)
@@ -290,10 +295,41 @@ public class LevelManager : MySingleton<LevelManager>
             MainEvent.Trigger(MainEventTypes.PlayerRespawn, player);
             CameraEvent2D.Trigger(CameraEventType.StartFollowing);
         }
+
+        MyFadeOutEvent.Trigger(0.5f, Ease.Linear);
+        yield return new WaitForSeconds(0.5f);
     }
 
-    public void GoToLevel(string _levelName)
+    public void GoToLevel(string _levelName, bool _fadeOut = true)
     { 
+        if (_fadeOut)
+        {
+            if (player != null)
+            {
+                MyFadeInEvent.Trigger(1f, DG.Tweening.Ease.Linear, true, player.transform.position);
+            }
+            else
+            {
+                MyFadeInEvent.Trigger(1f, DG.Tweening.Ease.Linear, true, Vector3.zero);
+            }
+        }
+
+        StartCoroutine(GotoLevelCoroutine(_levelName, _fadeOut));
+    }
+
+    private IEnumerator GotoLevelCoroutine(string _levelName, bool _fadeOut = true)
+    {
+        if (player != null)
+        {
+            player.enabled = false;
+        }
+
+        if (_fadeOut)
+        {
+            yield return new WaitForSeconds(1f);
+        }
+
+        string destinationScene = (string.IsNullOrEmpty(_levelName)) ? "StartScreen" : _levelName;
         LoadScene(_levelName);
     }
 
