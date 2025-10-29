@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
 {
+    [Header("레이캐스트 설정")]
+    public Vector2 detectBoxSize = new Vector2(20, 20);
+
     [Header("이동 설정")]
     [Range(0f, 1f)]
     public float speedReductionRatio = 0.6f;
@@ -14,8 +17,9 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
     public string eventID;
 
 
-    private bool m_triggered = false;
     private float m_waitTimer;
+
+
 
 
     protected override void Start()
@@ -43,15 +47,38 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
             return;
         }
 
+        m_waitTimer -= Time.deltaTime;
+        if (m_waitTimer > 0 )
+        {
+            return;
+        }
 
-        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(transform.position);
-        isObstacleICamera = IsViewportPointInOrthographicCamera(viewportPoint);
+        //Vector3 viewportPoint = Camera.main.WorldToViewportPoint(transform.position);
+        //isObstacleICamera = IsViewportPointInOrthographicCamera(viewportPoint);
+        RaycastHit2D hit = MyDebug.BoxCast(
+            transform.position,
+            detectBoxSize,
+            0f,
+            Vector2.zero,
+            0f,
+            LayerManager.playerLayerMask,
+            MyColors.BestRed,
+            true);
+
+        isObstacleICamera = hit;
 
         float maxSpeed = base.pathElements[base.m_previousIndex].speed;
         float minSpeed = maxSpeed * speedReductionRatio;
         float targetSpeed = isObstacleICamera ? minSpeed : maxSpeed;
 
-        base.m_currentSpeed = Mathf.Lerp(base.m_currentSpeed, targetSpeed, speedTransitionTime * Time.deltaTime);
+        if (speedTransitionTime > 0f)
+        {
+            base.m_currentSpeed = Mathf.Lerp(base.m_currentSpeed, targetSpeed, speedTransitionTime * Time.deltaTime);
+        }
+        else
+        {
+            base.m_currentSpeed = targetSpeed;
+        }
 
         Vector3 position = base.originalTransformPosition + base.m_currentPoint.Current;
         transform.position = Vector3.MoveTowards(transform.position, position, Time.deltaTime * base.m_currentSpeed);
@@ -76,6 +103,12 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
     {
         return _point.x >= 0f && _point.x <= 1f &&
                _point.y >= 0f && _point.y <= 1f;
+    }
+
+    public override void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    {
+        Initialization();
+        base.canMove = false;
     }
 
     public void OnEvent(TriggerEvent e)

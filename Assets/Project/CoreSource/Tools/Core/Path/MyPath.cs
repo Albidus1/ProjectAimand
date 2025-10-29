@@ -12,7 +12,7 @@ public class MyPathMovementElement
     public float speed;
 }
 
-public class MyPath : MonoBehaviour
+public class MyPath : MonoBehaviour, Respawnable
 {
     public enum CycleOptions { Single, Loop, PingPong }
     public enum MovementDirection { Ascending, Descending }
@@ -248,6 +248,12 @@ public class MyPath : MonoBehaviour
         m_currentPoint.MoveNext();
     }
     #endregion
+
+
+    public virtual void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    {
+        throw new System.NotImplementedException();
+    }
 
     #region GIZMOS
     protected virtual void OnDrawGizmos()

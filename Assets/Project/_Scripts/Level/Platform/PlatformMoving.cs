@@ -4,7 +4,7 @@ using DG.Tweening;
 
 
 [SelectionBase]
-public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>, IEventListener<ColorInvertEvent>, ISaveLoadManagerMethods
+public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListener<ColorInvertEvent>, ISaveLoadManagerMethods
 {
     public enum RotateDirection
     {
@@ -349,10 +349,8 @@ public class PlatformMoving : MyPath, Respawnable, IEventListener<TriggerEvent>,
     }
     #endregion
 
-    public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
+    public override void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
-        Debug.Log("확인용");
-
         Initialization();
         base.canMove = true;
     }
