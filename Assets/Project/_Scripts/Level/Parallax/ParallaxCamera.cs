@@ -71,7 +71,7 @@ public class ParallaxCamera : MonoBehaviour
 
         if (onCameraTranslate != null)
         {
-            Debug.Log(m_currentPositionX + " " + m_previousPositionX);
+            //Debug.Log(m_currentPositionX + " " + m_previousPositionX);
             onCameraTranslate(deltaPositionX);
         }
     }

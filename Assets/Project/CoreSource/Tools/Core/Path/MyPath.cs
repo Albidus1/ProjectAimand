@@ -1,5 +1,3 @@
-using DG.Tweening;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,15 +9,13 @@ public class MyPathMovementElement
 {
     public Vector3 pathElementPosition;
     public float delay;
+    public float speed;
 }
 
 public class MyPath : MonoBehaviour
 {
     public enum CycleOptions { Single, Loop, PingPong }
     public enum MovementDirection { Ascending, Descending }
-
-
-    public int startAt = 0;
 
     [Header("경로")]
     public CycleOptions CycleOption = CycleOptions.Single;
@@ -50,6 +46,8 @@ public class MyPath : MonoBehaviour
     protected Vector3 m_initialPosition;
     protected Vector3 m_previousPoint;
     protected float m_distanceToNextPoint;
+    protected int m_previousIndex;
+    protected float m_currentSpeed;
 
     public bool m_initialEditorPosition { get; set; }
 
@@ -109,6 +107,7 @@ public class MyPath : MonoBehaviour
 
         m_initialPosition = transform.position;
 
+        m_previousIndex = 0;
         m_currentPoint = GetPathEnumerator();
         m_previousPoint = m_currentPoint.Current;
         m_currentPoint.MoveNext();
@@ -229,6 +228,7 @@ public class MyPath : MonoBehaviour
 
         if (m_distanceToNextPoint < minDistanceToGoal)
         {
+            m_previousIndex = currentIndex;
             m_previousPoint = m_currentPoint.Current;
             m_currentPoint.MoveNext();
         }

@@ -206,7 +206,7 @@ public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<Trigge
         if (hitConnected)
         {
             m_endPosition.y = m_belowHitsStorage[smallestDistanceIndex].point.y + m_boundsHeight * 0.5f;
-            Debug.Log(m_belowHitsStorage[smallestDistanceIndex].collider.name);
+            //Debug.Log(m_belowHitsStorage[smallestDistanceIndex].collider.name);
         }
     }
 
