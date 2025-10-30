@@ -154,6 +154,7 @@ public class PlayerMovement : CharacterMovement
 
 
     public Vector2 speed { get; private set; }
+    private int m_direction;
     private Vector2 m_currentPosition;
     private Vector2 m_previousPosition;
 
@@ -318,8 +319,6 @@ public class PlayerMovement : CharacterMovement
             }
             else
             {
-                int currentDirection = 0;
-
                 moveInput.x = Input.GetAxisRaw("Horizontal");
                 moveInput.y = Input.GetAxisRaw("Vertical");
 
@@ -327,7 +326,7 @@ public class PlayerMovement : CharacterMovement
                 {
                     CheckDirectionToFace(moveInput.x > 0);
 
-                    currentDirection = (moveInput.x > 0) ? 1 : -1;
+                    m_direction = (moveInput.x > 0) ? 1 : -1;
                 }
 
                 if (true == isWallGrabbing && false == isLookingOther)
@@ -353,7 +352,7 @@ public class PlayerMovement : CharacterMovement
                 if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) &&
                     false == isDashing && data.doDoubleTap)
                 {
-                    bool sameDirection = (currentDirection == lastMoveDirection) ? true : false;
+                    bool sameDirection = (m_direction == lastMoveDirection) ? true : false;
 
                     if (Time.time - lastPressedMoveInputTime <= data.doubleTapThreshold && sameDirection)
                     {
@@ -364,7 +363,7 @@ public class PlayerMovement : CharacterMovement
                     else
                     {
                         lastPressedMoveInputTime = Time.time;
-                        lastMoveDirection = currentDirection;
+                        lastMoveDirection = m_direction;
                     }
                 }
 
@@ -388,6 +387,20 @@ public class PlayerMovement : CharacterMovement
             if (Time.time > m_jumpEndIgnoreGroundUntil)
             {
                 CastRaysBelow();
+
+                Vector3 position = m_boundsBottomRightCorner;
+                Vector3 gap = position;
+                gap.y -= 0.01f;
+                RaycastHit2D hit = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+
+                gap = position;
+                gap.y += 0.01f;
+                RaycastHit2D hit2 = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+
+                if (hit && false == hit2)
+                {
+                    transform.position = new Vector2(transform.position.x + (float)(0.05f * m_direction), transform.position.y + 0.02f);
+                }
 
                 if (checkOneWayPlatformBelow)
                 {
