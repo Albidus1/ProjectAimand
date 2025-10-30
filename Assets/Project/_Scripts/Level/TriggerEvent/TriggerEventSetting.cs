@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 
 
@@ -27,6 +29,9 @@ public class TriggerEventSetting : MonoBehaviour, Respawnable
 {
     [Header("이벤트")]
     public string eventID = "default";
+    [Space(5)]
+
+    public UnityEvent OnTrigger;
 
     [Header("기본 설정")]
     public bool triggerOnce;
