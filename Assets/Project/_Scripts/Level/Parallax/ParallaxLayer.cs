@@ -8,20 +8,20 @@ public class ParallaxLayer : MonoBehaviour
     public float parallaxFactor;
 
 
-    private Vector2 m_initialPosition;
-
-
 
     private void Start()
     {
-        m_initialPosition = transform.position;
+
     }
 
     public void MoveLayer(float _deltaPosition)
     {
-        Vector3 newPosition = transform.localPosition;
-        newPosition.x -= _deltaPosition * parallaxFactor;
+        Vector3 newPosition = transform.position;
+        Vector3 targetPosition = new Vector3(_deltaPosition, 0);
+        Vector3 speed = new Vector3(parallaxFactor, 0);
 
-        transform.localPosition = newPosition;
+        newPosition += Vector3.Scale(targetPosition, speed) * -1;
+
+        transform.position = newPosition;
     }
 }
