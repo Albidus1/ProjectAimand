@@ -384,17 +384,13 @@ public class PlayerMovement : CharacterMovement
         SetRaysParameters();
 
         Vector3 position = m_boundsBottomRightCorner;
-        Vector3 gap = position;
-        gap.y -= 0.01f;
-        RaycastHit2D hit = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
-
-        gap = position;
-        gap.y += 0.01f;
-        RaycastHit2D hit2 = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+        float gap = 0.02f;
+        RaycastHit2D hit = MyDebug.Raycast(new Vector2(position.x, position.y - (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+        RaycastHit2D hit2 = MyDebug.Raycast(new Vector2(position.x, position.y + (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
 
         if (hit && false == hit2)
         {
-            transform.position = new Vector2(transform.position.x + (float)(0.05f * m_direction), transform.position.y + 0.02f);
+            transform.position = new Vector2(transform.position.x + (float)(0.1f * m_direction), transform.position.y + 0.05f);
         }
 
         if (false == isDashing)
