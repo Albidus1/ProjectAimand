@@ -382,25 +382,26 @@ public class PlayerMovement : CharacterMovement
 
         #region COLLISION CHECKS
         SetRaysParameters();
+
+        Vector3 position = m_boundsBottomRightCorner;
+        Vector3 gap = position;
+        gap.y -= 0.01f;
+        RaycastHit2D hit = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+
+        gap = position;
+        gap.y += 0.01f;
+        RaycastHit2D hit2 = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+
+        if (hit && false == hit2)
+        {
+            transform.position = new Vector2(transform.position.x + (float)(0.05f * m_direction), transform.position.y + 0.02f);
+        }
+
         if (false == isDashing)
         {
             if (Time.time > m_jumpEndIgnoreGroundUntil)
             {
                 CastRaysBelow();
-
-                Vector3 position = m_boundsBottomRightCorner;
-                Vector3 gap = position;
-                gap.y -= 0.01f;
-                RaycastHit2D hit = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
-
-                gap = position;
-                gap.y += 0.01f;
-                RaycastHit2D hit2 = MyDebug.Raycast(gap, -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
-
-                if (hit && false == hit2)
-                {
-                    transform.position = new Vector2(transform.position.x + (float)(0.05f * m_direction), transform.position.y + 0.02f);
-                }
 
                 if (checkOneWayPlatformBelow)
                 {
