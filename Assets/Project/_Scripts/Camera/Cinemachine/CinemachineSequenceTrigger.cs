@@ -106,6 +106,8 @@ public class CinemachineSequenceTrigger : MonoBehaviour, Respawnable
         GUIManager.Instance.SetHUDActive(false);
         LevelManager.Instance.player.isStunned = true;
 
+        MainEvent.Trigger(MainEventTypes.CameraEventEnabled);
+
         if (CM_Camera != null)
         {
             CM_Camera.Priority = 100;
@@ -147,7 +149,7 @@ public class CinemachineSequenceTrigger : MonoBehaviour, Respawnable
 
         GUIManager.Instance.SetHUDActive(true);
         LevelManager.Instance.player.isStunned = false;
-
+        MainEvent.Trigger(MainEventTypes.CameraEventDisabled);
 
         if (CM_Camera != null)
         {

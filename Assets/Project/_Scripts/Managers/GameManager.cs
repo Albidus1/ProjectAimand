@@ -14,6 +14,8 @@ public enum MainEventTypes
     TogglePause,
     PlayerDeath,
     PlayerRespawn,
+    CameraEventEnabled,
+    CameraEventDisabled,
 }
 
 public struct MainEvent
@@ -42,6 +44,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
     IEventListener<MainEvent>
 {
     public bool paused { get; set; }
+    public bool cameraEventActive { get; private set; }
 
     protected bool m_pauseMenuOpen = false;
 
@@ -108,11 +111,21 @@ public class GameManager : MyPersistentSingleton<GameManager>,
                     Pause();
                 }
                 break;
+
             case MainEventTypes.Pause:
                 Pause();
                 break;
+
             case MainEventTypes.UnPause:
                 UnPause();
+                break;
+
+            case MainEventTypes.CameraEventEnabled:
+                cameraEventActive = true;
+                break;
+
+            case MainEventTypes.CameraEventDisabled:
+                cameraEventActive = false;
                 break;
         }
     }

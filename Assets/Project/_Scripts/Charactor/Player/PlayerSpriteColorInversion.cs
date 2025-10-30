@@ -45,7 +45,8 @@ public class PlayerSpriteColorInversion : MonoBehaviour
 
     
 
-    private InputManager inputManager;
+    private InputManager m_inputManager;
+    private PlayerMovement m_playerMovement;
     private List<ParticleSystem> m_particles = new List<ParticleSystem>();
     private Material m_material;
     private SpriteRenderer m_spriteRenderer;
@@ -62,14 +63,14 @@ public class PlayerSpriteColorInversion : MonoBehaviour
 
     private void Awake()
     {
+        m_playerMovement = GetComponent<PlayerMovement>();
         m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         m_material = m_spriteRenderer.material;
-
     }
 
     private void Start()
     {
-        inputManager = FindFirstObjectByType<InputManager>();
+        m_inputManager = FindFirstObjectByType<InputManager>();
 
         m_invertAmount = initialInvertAmount;
         m_inverted = m_invertAmount == 1;
@@ -122,7 +123,19 @@ public class PlayerSpriteColorInversion : MonoBehaviour
 
     private void Update()
     {
-        if (inputManager.ColorInvertButton.state.currentState == MyInput.ButtonStates.ButtonDown &&
+        if (GameManager.Instance.paused || GameManager.Instance.cameraEventActive)
+        {
+            return;
+        }
+
+        if (m_playerMovement != null && 
+            (m_playerMovement.movementState.currentState == PlayerStates.MovementStates.Die))
+        {
+            return;
+        }
+
+
+        if (m_inputManager.ColorInvertButton.state.currentState == MyInput.ButtonStates.ButtonDown &&
             Time.time >= m_coolTimer)
         {
             Debug.Log("확인용");
