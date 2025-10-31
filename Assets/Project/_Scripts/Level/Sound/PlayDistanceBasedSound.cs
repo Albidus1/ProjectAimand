@@ -4,8 +4,12 @@ using UnityEngine;
 public class PlayDistanceBasedSound : MonoBehaviour
 {
     public bool active = true;
+    public bool autoPlay = false;
 
     public AudioClip soundFX;
+
+    public int id;
+    public bool loop;
 
     [Header("거리 설정")]
     public AudioRolloffMode rolloffMode;
@@ -40,11 +44,16 @@ public class PlayDistanceBasedSound : MonoBehaviour
 
         if (soundFX != null)
         {
+            if (autoPlay && MyDebug.CircleCast(transform.position, maxDistance, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
+            {
+                return;
+            }
+
             m_audioSource = SoundManagerSoundPlayEvent.Trigger
                 (soundFX,
                 SoundManager.SoundManagerTracks.SFX,
                 transform.position,
-                _loop: true,
+                _loop: loop,
                 _specialBlend: 1f,
                 _rolloffMode: rolloffMode,
                 _minDistance: minDistance,
@@ -67,7 +76,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent<PlayerMovement>(out _))
+        if (collision.TryGetComponent<PlayerMovement>(out _) && autoPlay)
         {
             PlaySoundFX();
         }
@@ -80,4 +89,12 @@ public class PlayDistanceBasedSound : MonoBehaviour
             StopSoundFX();
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = MyColors.Violet;
+        Gizmos.DrawWireSphere(transform.position, maxDistance);
+    }
+#endif
 }

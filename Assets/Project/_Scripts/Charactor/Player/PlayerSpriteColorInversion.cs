@@ -138,7 +138,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
         if (m_inputManager.ColorInvertButton.state.currentState == MyInput.ButtonStates.ButtonDown &&
             Time.time >= m_coolTimer)
         {
-            Debug.Log("확인용");
+            //Debug.Log("확인용");
 
             m_inverted = !m_inverted;
             m_invertAmount = m_inverted ? 1 : 0;

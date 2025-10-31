@@ -37,7 +37,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     public bool useTriggerEvent = false;
     [MyConditionalHide("useTriggerEvent", true)]
     public string eventID;
-
+    public PlayDistanceBasedSound playSound;
 
     public Rigidbody2D rb { get; private set; }
     public float jumpTime { get; private set; }
@@ -377,6 +377,11 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     {     
         if (base.CycleOption == CycleOptions.Single)
         {
+            if (playSound != null)
+            {
+                playSound.PlaySoundFX();
+            }
+
             if (invertMoveOnInput)
             {
                 base.ChangeDirection(e.isInvert ? -1 : 1);
