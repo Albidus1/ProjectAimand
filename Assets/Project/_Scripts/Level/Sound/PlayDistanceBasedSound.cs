@@ -44,21 +44,19 @@ public class PlayDistanceBasedSound : MonoBehaviour
 
         if (soundFX != null)
         {
-            if (autoPlay && MyDebug.CircleCast(transform.position, maxDistance, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
+            if (autoPlay || MyDebug.CircleCast(transform.position, maxDistance, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
             {
-                return;
+                m_audioSource = SoundManagerSoundPlayEvent.Trigger
+                  (soundFX,
+                  SoundManager.SoundManagerTracks.SFX,
+                  transform.position,
+                  _loop: loop,
+                  _specialBlend: 1f,
+                  _rolloffMode: rolloffMode,
+                  _minDistance: minDistance,
+                  _maxDistance: maxDistance,
+                  _attachToTransform: attachToTransform);
             }
-
-            m_audioSource = SoundManagerSoundPlayEvent.Trigger
-                (soundFX,
-                SoundManager.SoundManagerTracks.SFX,
-                transform.position,
-                _loop: loop,
-                _specialBlend: 1f,
-                _rolloffMode: rolloffMode,
-                _minDistance: minDistance,
-                _maxDistance: maxDistance,
-                _attachToTransform: attachToTransform);
         }
     }
 
