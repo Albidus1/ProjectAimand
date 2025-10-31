@@ -16,6 +16,7 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
     [MyConditionalHide("useTriggerEvent", true)]
     public string eventID;
 
+    public PlayDistanceBasedSound playSound;
 
     private float m_waitTimer;
 
@@ -32,6 +33,11 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
         if (false == base.Initialized)
         {
             base.Initialization();
+        }
+
+        if (playSound != null)
+        {
+            
         }
 
         base.canMove = false;

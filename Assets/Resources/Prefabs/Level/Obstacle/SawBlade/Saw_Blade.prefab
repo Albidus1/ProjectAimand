@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2964647350347899835}
-  - component: {fileID: 8794122458725621899}
+  - component: {fileID: 3105217355106057897}
   - component: {fileID: 5509568631348187562}
   m_Layer: 0
   m_Name: Saw_Blade
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 1638086126845424040}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8794122458725621899
+--- !u!114 &3105217355106057897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,34 +44,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 1280243835309655917}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e1a6698194ba5f40b50562d04af226f, type: 3}
+  m_Script: {fileID: 11500000, guid: 0901deab1d64bd442ab586acd573ec3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CycleOption: 0
+  CycleOption: 2
   InitialMovementDirection: 0
   pathElements:
   - pathElementPosition: {x: 0, y: 0, z: 0}
     delay: 0
-    speed: 0
-  - pathElementPosition: {x: 19, y: 0, z: 0}
+    speed: 10
+  - pathElementPosition: {x: 0, y: 26.112011, z: 0}
     delay: 0
-    speed: 0
+    speed: 10
   referenceMyPath: {fileID: 0}
   absoluteReferenceMyPath: 0
   minDistanceToGoal: 0.1
-  LockHandlesOnXAxis: 0
-  LockHandlesOnYAxis: 1
+  LockHandlesOnXAxis: 1
+  LockHandlesOnYAxis: 0
   LockHandlesOnZAxis: 1
-  isPlayerSync: 0
-  movementSpeed: 4
-  isRotateAble: 0
-  rotateSpeed: 20
-  rotateDirection: 0
-  isAccelerateAble: 0
-  speedThreshold: 0
-  invertMoveOnInput: 0
-  useTriggerEvent: 1
-  eventID: Room3_01
+  detectBoxSize: {x: 20, y: 20}
+  speedReductionRatio: 0.6
+  speedTransitionTime: 3
+  isObstacleICamera: 0
+  useTriggerEvent: 0
+  eventID: 
   playSound: {fileID: 0}
 --- !u!114 &5509568631348187562
 MonoBehaviour:
@@ -394,10 +390,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 1
-  autoPlay: 0
+  autoPlay: 1
   soundFX: {fileID: 8300000, guid: 307b9fc6f889ec845830f8beae872455, type: 3}
-  id: 0
-  loop: 0
+  id: 201
+  loop: 1
   rolloffMode: 1
   minDistance: 8
   maxDistance: 24
