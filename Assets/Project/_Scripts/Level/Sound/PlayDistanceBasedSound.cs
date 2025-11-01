@@ -11,6 +11,12 @@ public class PlayDistanceBasedSound : MonoBehaviour
     public int id;
     public bool loop;
 
+    [Header("사운드 설정")]
+    [Range(0f, 1f)]
+    public float volume = 1f;
+    [Range(0f, 1f)]
+    public float pitch = 1f;
+
     [Header("거리 설정")]
     public AudioRolloffMode rolloffMode;
     public float minDistance = 8f;
@@ -50,7 +56,10 @@ public class PlayDistanceBasedSound : MonoBehaviour
                   (soundFX,
                   SoundManager.SoundManagerTracks.SFX,
                   transform.position,
+                  _ID: id,
                   _loop: loop,
+                  _volume: volume,
+                  _pitch: pitch,
                   _specialBlend: 1f,
                   _rolloffMode: rolloffMode,
                   _minDistance: minDistance,
