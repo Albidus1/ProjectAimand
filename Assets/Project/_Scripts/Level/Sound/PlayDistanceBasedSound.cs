@@ -35,7 +35,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
         m_circleCollider = GetComponent<CircleCollider2D>();
         if (m_circleCollider != null)
         {
-            m_circleCollider.radius = maxDistance + 2f;
+            m_circleCollider.radius = maxDistance + 5f;
             m_circleCollider.isTrigger = true;
         }
     }
@@ -50,7 +50,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
 
         if (soundFX != null)
         {
-            if (autoPlay || MyDebug.CircleCast(transform.position, maxDistance, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
+            if (MyDebug.CircleCast(transform.position, maxDistance, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
             {
                 m_audioSource = SoundManagerSoundPlayEvent.Trigger
                   (soundFX,

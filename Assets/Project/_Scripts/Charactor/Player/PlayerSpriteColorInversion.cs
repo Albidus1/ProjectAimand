@@ -44,6 +44,7 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     public int initialInvertAmount = 0;
 
     
+    public bool isActive = true;
 
     private InputManager m_inputManager;
     private PlayerMovement m_playerMovement;
@@ -124,6 +125,11 @@ public class PlayerSpriteColorInversion : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance.paused || GameManager.Instance.cameraEventActive)
+        {
+            return;
+        }
+
+        if (false == isActive)
         {
             return;
         }

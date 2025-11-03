@@ -250,7 +250,7 @@ public class PlayerMovement : CharacterMovement
 
                 if (m_spriteColorInversion != null)
                 {
-                    m_spriteColorInversion.enabled = false;
+                    m_spriteColorInversion.isActive = false;
                 }
 
                 return;
@@ -261,7 +261,7 @@ public class PlayerMovement : CharacterMovement
 
                 if (m_spriteColorInversion != null)
                 {
-                    m_spriteColorInversion.enabled = true;
+                    m_spriteColorInversion.isActive = true;
                 }
             }
         }

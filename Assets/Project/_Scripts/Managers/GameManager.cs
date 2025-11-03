@@ -9,9 +9,12 @@ public enum MainEventTypes
     LevelStart,
     LevelComplete,
     LevelEnd,
+    GameOver,
+    LoadNextLevel,
     Pause,
     UnPause,
     TogglePause,
+    SpawnPlayer,
     PlayerDeath,
     PlayerRespawn,
     CameraEventEnabled,
@@ -72,10 +75,16 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
         Instance.paused = true;
 
-        if (GUIManager.HasInstance)
+
+        if (Time.timeScale > 0f)
         {
-            GUIManager.Instance.SetPause(true);
-            m_pauseMenuOpen = true;
+            Time.timeScale = 0f;
+
+            if (GUIManager.HasInstance)
+            {
+                GUIManager.Instance.SetPause(true);
+                m_pauseMenuOpen = true;
+            }
         }
     }
 
@@ -84,6 +93,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         //Debug.Log("퍼즈 해제");
 
         Instance.paused = false;
+        Time.timeScale = 1f;
 
         if (GUIManager.HasInstance)
         {

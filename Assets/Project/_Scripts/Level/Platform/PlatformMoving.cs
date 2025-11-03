@@ -123,7 +123,6 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     private void ExecuteUpdate()
     {
         //Debug.Log(m_direction);
-
         if (base.pathElements == null 
             || base.pathElements.Count < 1
             || base.m_endReached
@@ -375,9 +374,19 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
 
     public void OnEvent(ColorInvertEvent e)
     {     
+        if (m_detectColorInversion == null)
+        {
+            return;
+        }
+
+        if (m_detectColorInversion.currentInvertState != e.isInvert)
+        {
+            return;
+        }
+
         if (base.CycleOption == CycleOptions.Single)
         {
-            if (playSound != null)
+            if (playSound != null && InputManager.Instance.ColorInvertButton.state.currentState == MyInput.ButtonStates.ButtonDown)
             {
                 playSound.PlaySoundFX();
             }
