@@ -70,12 +70,19 @@ public class LevelManager : MySingleton<LevelManager>
         InstantiatePlayableCharacters();
 
         if (player == null)
-            return;
+        {
+            return; 
+        }
 
         Initialization();
+
+        MainEvent.Trigger(MainEventTypes.SpawnPlayer);
         SpawnPlayer();
 
         CheckpointAssignment();
+
+        MainEvent.Trigger(MainEventTypes.LevelStart, player);
+        GameManager.Instance.SetCursorVisible(false);
 
         CameraEvent2D.Trigger(CameraEventType.SetConfiner, null, boundsCollider2D);
         CameraEvent2D.Trigger(CameraEventType.SetTargetCharacter, player);

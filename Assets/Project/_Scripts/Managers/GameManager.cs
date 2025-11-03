@@ -86,6 +86,8 @@ public class GameManager : MyPersistentSingleton<GameManager>,
                 m_pauseMenuOpen = true;
             }
         }
+
+        SetCursorVisible(true);
     }
 
     public virtual void UnPause()
@@ -100,6 +102,16 @@ public class GameManager : MyPersistentSingleton<GameManager>,
             GUIManager.Instance.SetPause(false);
             m_pauseMenuOpen = false;
         }
+
+        SetCursorVisible(false);
+    }
+
+    public virtual void SetCursorVisible(bool _visible)
+    {
+        Debug.Log("커서 상태 변경: " + _visible);
+
+        Cursor.visible = _visible;
+        Cursor.lockState = _visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
     public virtual void OnEvent(GameEvent _gameEvent)
