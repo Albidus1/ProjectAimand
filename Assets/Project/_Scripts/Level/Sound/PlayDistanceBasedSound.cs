@@ -21,6 +21,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
     public AudioRolloffMode rolloffMode;
     public float minDistance = 8f;
     public float maxDistance = 24f;
+    public float extraRange = 5f;
 
     [Header("특수 설정")]
     public Transform attachToTransform;
@@ -35,7 +36,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
         m_circleCollider = GetComponent<CircleCollider2D>();
         if (m_circleCollider != null)
         {
-            m_circleCollider.radius = maxDistance + 5f;
+            m_circleCollider.radius = maxDistance + extraRange;
             m_circleCollider.isTrigger = true;
         }
     }
@@ -50,7 +51,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
 
         if (soundFX != null)
         {
-            if (MyDebug.CircleCast(transform.position, maxDistance, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
+            if (MyDebug.CircleCast(transform.position, maxDistance + extraRange, Vector2.zero, 0f, LayerManager.playerLayerMask, MyColors.Violet))
             {
                 m_audioSource = SoundManagerSoundPlayEvent.Trigger
                   (soundFX,
