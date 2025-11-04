@@ -108,7 +108,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
     public virtual void SetCursorVisible(bool _visible)
     {
-        Debug.Log("커서 상태 변경: " + _visible);
+        //Debug.Log("커서 상태 변경: " + _visible);
 
         Cursor.visible = _visible;
         Cursor.lockState = _visible ? CursorLockMode.None : CursorLockMode.Locked;
