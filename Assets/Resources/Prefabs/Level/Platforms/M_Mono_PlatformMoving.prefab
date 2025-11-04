@@ -45,14 +45,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1a6698194ba5f40b50562d04af226f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startAt: 0
+  moveStart:
+    m_PersistentCalls:
+      m_Calls: []
+  moveEnd:
+    m_PersistentCalls:
+      m_Calls: []
   CycleOption: 2
   InitialMovementDirection: 0
   pathElements:
   - pathElementPosition: {x: 0, y: 0, z: 0}
     delay: 0
+    speed: 0
   - pathElementPosition: {x: 12.3783, y: 0, z: 0}
     delay: 0
+    speed: 0
   referenceMyPath: {fileID: 0}
   absoluteReferenceMyPath: 0
   minDistanceToGoal: 0.1
@@ -69,6 +76,7 @@ MonoBehaviour:
   invertMoveOnInput: 0
   useTriggerEvent: 1
   eventID: 0
+  playSound: {fileID: 0}
 --- !u!1 &8875799721006762563
 GameObject:
   m_ObjectHideFlags: 0

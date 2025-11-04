@@ -125,6 +125,7 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
     public override void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
         Initialization();
+        moveEnd?.Invoke();
     }
 
     public void OnEvent(TriggerEvent e)
