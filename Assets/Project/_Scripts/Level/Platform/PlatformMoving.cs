@@ -351,6 +351,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     public override void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
         Initialization();
+        base.m_endReached = false;
         base.canMove = true;
     }
 
@@ -389,6 +390,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
             if (invertMoveOnInput)
             {
                 base.ChangeDirection(e.isInvert ? -1 : 1);
+                base.m_endReached = false;
                 base.canMove = true;
 
                 //Debug.Log(m_direction);
