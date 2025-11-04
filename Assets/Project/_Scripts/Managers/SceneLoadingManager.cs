@@ -76,7 +76,11 @@ public class SceneLoadingManager : MonoBehaviour
     private void Start()
     {
         m_tween = m_tween.SetEase(Ease.OutCubic);
-        m_loadingTextValue = loadingText.text;
+
+        if (loadingText != null)
+        {
+            m_loadingTextValue = loadingText.text;
+        }
 
         if (false == string.IsNullOrEmpty(m_sceneToLoad))
         {
@@ -118,7 +122,10 @@ public class SceneLoadingManager : MonoBehaviour
 
     private void LoadingSetup()
     {
-        loadingText.text = m_loadingTextValue;
+        if (loadingText != null)
+        {
+            loadingText.text = m_loadingTextValue;
+        }
     }
 
     private void LoadingComplete()
