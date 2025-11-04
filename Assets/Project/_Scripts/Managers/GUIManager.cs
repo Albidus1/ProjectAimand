@@ -12,11 +12,15 @@ public class GUIManager : MySingleton<GUIManager>
     public MyProgressBar healthBar;
     public HealthCellUI healthCell;
     public GameObject pauseScreen;
+    public GameObject settingPopup;
     public GameObject quitPopUp;
 
     [Header("버튼")]
     public Button resumeButton;
     public Button restartButton;
+    public Button settingButton;
+    public Button quitButton;
+
 
     public bool enableQuitPopUp
     {
@@ -42,7 +46,32 @@ public class GUIManager : MySingleton<GUIManager>
         }
     }
 
+    public bool enableSettingPopup
+    {
+        get => m_settingPopupEnabled;
+
+        set
+        {
+            if (m_settingPopupEnabled == value)
+            {
+                return;
+            }
+
+            if (value)
+            {
+                EnableSettingPopUp();
+            }
+            else
+            {
+                DisableSettingPopUp();
+            }
+
+            m_settingPopupEnabled = value;
+        }
+    }
+
     private List<Button> m_buttons = new List<Button>();
+    private bool m_settingPopupEnabled;
     private bool m_quitPopUpEnabled;
 
 
@@ -69,6 +98,14 @@ public class GUIManager : MySingleton<GUIManager>
             restartButton.onClick.AddListener(GameManager.Instance.UnPause);
             restartButton.onClick.AddListener(LevelManager.Instance.KillPlayer);
             m_buttons.Add(restartButton);
+        }
+        if (settingButton != null)
+        {
+            m_buttons.Add(settingButton);
+        }
+        if (quitButton != null)
+        {
+            m_buttons.Add(quitButton);
         }
     }
 
@@ -132,10 +169,44 @@ public class GUIManager : MySingleton<GUIManager>
         healthCell.UpdateHealthUI(_currentHealth, _maxHealth);
     }
 
+    public void EnableSettingPopUp()
+    {
+        m_settingPopupEnabled = true;
+        settingPopup.SetActive(true);
+
+        if (quitPopUp.activeSelf)
+        {
+            m_quitPopUpEnabled = false;
+            quitPopUp.SetActive(false);
+        }
+
+        for (int i = 0; i < m_buttons.Count; i++)
+        {
+            m_buttons[i].enabled = false;
+        }
+    }
+
+    public void DisableSettingPopUp()
+    {
+        m_settingPopupEnabled = false;
+        settingPopup.SetActive(false);
+
+        for (int i = 0; i < m_buttons.Count; i++)
+        {
+            m_buttons[i].enabled = true;
+        }
+    }
+
     public void EnableQuitPopUp()
     {
         m_quitPopUpEnabled = true;
         quitPopUp.SetActive(true);
+
+        if (settingPopup.activeSelf)
+        {
+            m_settingPopupEnabled = false;
+            settingPopup.SetActive(false);
+        }
 
         for (int i = 0; i < m_buttons.Count; i++)
         {
@@ -153,4 +224,6 @@ public class GUIManager : MySingleton<GUIManager>
             m_buttons[i].enabled = true;
         }
     }
+
+
 }

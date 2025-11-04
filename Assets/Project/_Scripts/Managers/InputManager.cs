@@ -73,9 +73,10 @@ public class InputManager : MySingleton<InputManager>
         {
             if (GUIManager.HasInstance)
             {
-                if (GUIManager.Instance.enableQuitPopUp)
+                if (GUIManager.Instance.enableQuitPopUp || GUIManager.Instance.enableSettingPopup)
                 {
                     GUIManager.Instance.enableQuitPopUp = false;
+                    GUIManager.Instance.enableSettingPopup = false;
                     return;
                 }
             }
