@@ -391,7 +391,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
                 base.ChangeDirection(e.isInvert ? -1 : 1);
                 base.canMove = true;
 
-                Debug.Log(m_direction);
+                //Debug.Log(m_direction);
             }
             else
             {
