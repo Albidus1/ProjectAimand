@@ -26,6 +26,9 @@ public class PlayDistanceBasedSound : MonoBehaviour
     [Header("특수 설정")]
     public Transform attachToTransform;
 
+    [Header("디버깅")]
+    public bool gridOn = false;
+
     protected AudioSource m_audioSource;
     protected CircleCollider2D m_circleCollider;
 
@@ -101,8 +104,11 @@ public class PlayDistanceBasedSound : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Gizmos.color = MyColors.Violet;
-        Gizmos.DrawWireSphere(transform.position, maxDistance);
+        if (gridOn)
+        {
+            Gizmos.color = MyColors.Violet;
+            Gizmos.DrawWireSphere(transform.position, maxDistance);
+        }
     }
 #endif
 }
