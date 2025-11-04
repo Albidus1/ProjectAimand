@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 
@@ -16,6 +17,10 @@ public class MyPath : MonoBehaviour, Respawnable
 {
     public enum CycleOptions { Single, Loop, PingPong }
     public enum MovementDirection { Ascending, Descending }
+
+    [Header("이벤트")]
+    public UnityEvent moveStart;
+    public UnityEvent moveEnd;
 
     [Header("경로")]
     public CycleOptions CycleOption = CycleOptions.Single;
@@ -149,29 +154,15 @@ public class MyPath : MonoBehaviour, Respawnable
             {
                 m_endReached = false;
 
-                if (index <= 0)
+                if (index <= 0 && m_direction == -1)
                 {
-                    if (m_direction == 1)
-                    {
-                        m_direction = 1;
-                    }
-                    else
-                    {
-                        index = 0;
-                        m_endReached = true;
-                    }
+                    index = 0;
+                    m_endReached = true;
                 }
-                else if (index > pathElements.Count - 1)
+                else if (index >= pathElements.Count - 1 && m_direction == 1)
                 {
-                    if (m_direction == -1)
-                    {
-                        m_direction = -1;
-                    }
-                    else
-                    {
-                        index = pathElements.Count - 1;
-                        m_endReached = true;
-                    }
+                    index = pathElements.Count - 1;
+                    m_endReached = true;
                 }
 
                 index += m_direction;
@@ -252,7 +243,7 @@ public class MyPath : MonoBehaviour, Respawnable
 
     public virtual void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     #region GIZMOS

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+
+
+
 public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
 {
     [Header("레이캐스트 설정")]
@@ -16,10 +19,11 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
     [MyConditionalHide("useTriggerEvent", true)]
     public string eventID;
 
+    [Header("사운드")]
     public PlayDistanceBasedSound playSound;
 
     private float m_waitTimer;
-
+    
 
 
 
@@ -40,6 +44,7 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
             
         }
 
+        base.m_endReached = false;
         base.canMove = false;
     }
 
@@ -99,9 +104,15 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
 
             base.m_previousPoint = base.m_currentPoint.Current;
             base.m_previousIndex = base.currentIndex;
-            m_currentPoint.MoveNext();
+            bool endReached = m_currentPoint.MoveNext();
 
             transform.position = position;
+
+            if (m_endReached)
+            {
+                Debug.Log("확인용");
+                moveEnd?.Invoke();
+            }
         }
     }
 
@@ -114,7 +125,6 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
     public override void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
         Initialization();
-        base.canMove = false;
     }
 
     public void OnEvent(TriggerEvent e)
@@ -125,6 +135,7 @@ public class ObstacleMoving : MyPath, IEventListener<TriggerEvent>
         }
 
         base.canMove = true;
+        moveStart?.Invoke();
     }
 
     protected virtual void OnEnable()
