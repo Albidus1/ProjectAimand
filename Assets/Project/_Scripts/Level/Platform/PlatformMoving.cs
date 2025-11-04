@@ -245,7 +245,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     #region CHECK METHODES
     private bool PlatformCanMove()
     {
-        if (m_detectColorInversion != null)
+        if (m_detectColorInversion != null && m_detectColorInversion.state != DetectColorInversion.ColorState.Half)
         {
             if (useTriggerEvent)
             {
@@ -364,12 +364,12 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
 
         m_eventSetting = e.setting;
 
-        if (m_eventSetting != null)
+        if (m_eventSetting != null && m_eventSetting.isTrigger)
         {
-            if (m_eventSetting.isTrigger)
-            {
-                return;
-            }           
+            base.m_endReached = false;
+            base.canMove = true;
+
+            return;
         }
     }
 
