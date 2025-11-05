@@ -106,7 +106,7 @@ public class SceneLoadingManager : MonoBehaviour
 
         while (m_asyncOperation.progress < 0.9f)
         {
-            Debug.Log(m_asyncOperation.progress);
+            //Debug.Log(m_asyncOperation.progress);
             yield return null;
         }
 

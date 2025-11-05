@@ -46,6 +46,10 @@ public class GameManager : MyPersistentSingleton<GameManager>,
     IEventListener<GameEvent>,
     IEventListener<MainEvent>
 {
+    public float MaxHP;
+    public float currentHP;
+    public GameObject persistentCharacter;
+
     public bool paused { get; set; }
     public bool cameraEventActive { get; private set; }
 

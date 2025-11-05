@@ -16,14 +16,15 @@ using UnityEngine.SceneManagement;
 //}
 
 [AddComponentMenu("게임/Managers/LevelManager")]
-public class LevelManager : MySingleton<LevelManager>
+public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
 {
     public enum CheckpointsAxis { x, y, checkpointOrder }
     public enum CheckpointDirection { Asending, Descending }
 
 
     [Header("플레이어")]
-    public GameObject playerPrefab;
+    public GameObject playerCharacter;
+    public bool storePlayerHP = true;
 
     [Header("빛")]
     public MyFollowTarget light2D;
@@ -58,7 +59,8 @@ public class LevelManager : MySingleton<LevelManager>
     private int m_savedPoints;
     private BoxCollider2D m_collider2D;
     private Bounds m_bounds;
-    
+    private Health m_playerHealth;
+    private float m_currentPlayerHealth;
 
 
     protected override void Awake()
@@ -146,14 +148,23 @@ public class LevelManager : MySingleton<LevelManager>
 
     private void InstantiatePlayableCharacters()
     {
-        if (playerPrefab == null)
+        if (GameManager.Instance.persistentCharacter != null)
+        {
+            GameObject newCharacter = GameManager.Instance.persistentCharacter;
+
+            playerCharacter = Instantiate(newCharacter, new Vector3(0, 0, 0), Quaternion.identity);
+            playerCharacter.name = newCharacter.name;
+
+            m_playerHealth = playerCharacter.GetComponent<Health>();
+            player = playerCharacter.GetComponent<PlayerMovement>();
+
+            m_playerHealth.maxHP = GameManager.Instance.MaxHP;
+        }
+        else
         {
             Debug.LogError("플레이어 프리팹이 없습니다.");
             return;
         }
-
-        player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity).GetComponent<PlayerMovement>();
-        player.name = playerPrefab.name;
 
         if (light2D != null)
         {
@@ -295,6 +306,11 @@ public class LevelManager : MySingleton<LevelManager>
         yield return new WaitForSeconds(0.5f);
         yield return new WaitForSeconds(respawnDelay);
 
+        if (m_playerHealth != null)
+        {
+            m_playerHealth.initialHP = GameManager.Instance.MaxHP;
+        }
+
         if (currentCheckPoint != null)
         {
             player.gameObject.SetActive(true);
@@ -382,5 +398,51 @@ public class LevelManager : MySingleton<LevelManager>
 #else
         Application.Quit();
 #endif
+    }
+
+    private void StorePlayerHealth()
+    {
+        if (m_playerHealth != null)
+        {
+            GameManager.Instance.currentHP = m_playerHealth.currentHP;
+            Debug.Log("저장: " + GameManager.Instance.currentHP);
+        }
+    }
+
+    private void ApplyPlayerHealth()
+    {
+        if (false == storePlayerHP)
+        {
+            return;
+        }
+
+        if (m_playerHealth != null && GameManager.Instance.currentHP > 0)
+        {
+            m_playerHealth.initialHP = GameManager.Instance.currentHP;
+        }
+    }
+
+    public void OnEvent(MainEvent _eventType)
+    {
+        switch (_eventType.eventType)
+        {
+            case MainEventTypes.LevelStart:
+                ApplyPlayerHealth();
+                break;
+
+            case MainEventTypes.LevelEnd:
+                StorePlayerHealth();
+                break;
+        }
+    }
+
+    protected virtual void OnEnable()
+    {
+        this.EventStartListening<MainEvent>();
+    }
+
+    protected virtual void OnDisable()
+    {
+        this.EventStopListening<MainEvent>();
     }
 }
