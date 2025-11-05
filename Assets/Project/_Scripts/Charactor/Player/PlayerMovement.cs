@@ -242,6 +242,11 @@ public class PlayerMovement : CharacterMovement
 
     private void Update()
     {
+        if (Time.timeScale <= 0f)
+        {
+            return;
+        }
+
         if (GameManager.HasInstance)
         {
             if (GameManager.Instance.paused)
@@ -724,6 +729,11 @@ public class PlayerMovement : CharacterMovement
 
     private void FixedUpdate()
     {
+        if (Time.timeScale <= 0f)
+        {
+            return;
+        }
+
         if (movementState.currentState == PlayerStates.MovementStates.Die)
         {
             return;

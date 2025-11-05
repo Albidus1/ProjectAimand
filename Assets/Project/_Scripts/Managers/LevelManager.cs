@@ -162,7 +162,7 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
         }
         else
         {
-            Debug.LogError("플레이어 프리팹이 없습니다.");
+            Debug.LogError("GameManager:PersistentCharacter - 플레이어 프리팹이 없습니다.");
             return;
         }
 

@@ -14,13 +14,18 @@ public class InputManager : MySingleton<InputManager>
     public bool smoothMovement = true;
 
     [Header("버튼")]
-    public string JumpButtonID = "Jump";
-    public string ColorInvertButtonID = "ColorInvert";
-    public string PauseButtonID = "Pause";
+    public string cancleButtonID = "Cancle";
+    public string jumpButtonID = "Jump";
+    public string colorInvertButtonID = "ColorInvert";
+    public string pauseButtonID = "Pause";
 
-    public MyInput.IMButton JumpButton      { get; protected set; }
+    public MyInput.IMButton HorizontalButton    { get; protected set; }
+    public MyInput.IMButton VerticalButton      { get; protected set; }
+    public MyInput.IMButton CancleButton        { get; protected set; }
+    public MyInput.IMButton JumpButton          { get; protected set; }
     public MyInput.IMButton ColorInvertButton   { get; protected set; }
-    public MyInput.IMButton PauseButton     { get; protected set; }
+    public MyInput.IMButton PauseButton         { get; protected set; }
+
     public Vector2 primaryMovement
     {
         get 
@@ -56,9 +61,12 @@ public class InputManager : MySingleton<InputManager>
     protected virtual void InitializeButton()
     {
         m_buttonList = new List<MyInput.IMButton>();
-        m_buttonList.Add(JumpButton = new MyInput.IMButton(JumpButtonID, JumpButtonDown, JumpButtonPressed, JumpButtonUp));
-        m_buttonList.Add(ColorInvertButton = new MyInput.IMButton(ColorInvertButtonID, ColorInvertButtonDown, ColorInvertButtonPressed, ColorInvertButtonUp));
-        m_buttonList.Add(PauseButton = new MyInput.IMButton(PauseButtonID, PauseButtonDown, PauseButtonPressed, PauseButtonUp));
+        m_buttonList.Add(HorizontalButton = new MyInput.IMButton("Horizontal", HorizontalButtonDown, HorizontalButtonPressed, HorizontalButtonUp));
+        m_buttonList.Add(VerticalButton = new MyInput.IMButton("Vertical", VerticalButtonDown, VerticalButtonPressed, VerticalButtonUp));
+        m_buttonList.Add(CancleButton = new MyInput.IMButton(cancleButtonID, CancleButtonDown, CancleButtonPressed, CancleButtonUp));
+        m_buttonList.Add(JumpButton = new MyInput.IMButton(jumpButtonID, JumpButtonDown, JumpButtonPressed, JumpButtonUp));
+        m_buttonList.Add(ColorInvertButton = new MyInput.IMButton(colorInvertButtonID, ColorInvertButtonDown, ColorInvertButtonPressed, ColorInvertButtonUp));
+        m_buttonList.Add(PauseButton = new MyInput.IMButton(pauseButtonID, PauseButtonDown, PauseButtonPressed, PauseButtonUp));
     }
 
     protected virtual void InitializeAxis()
@@ -174,9 +182,25 @@ public class InputManager : MySingleton<InputManager>
 
 
     #region BUTTON ASSIGNMENT METHODS
+    //public virtual void ButtonDown() { Button.state.StateChange(MyInput.ButtonStates.ButtonDown); }
+    //public virtual void ButtonPressed() { Button.state.StateChange(MyInput.ButtonStates.ButtonPressed); }
+    //public virtual void ButtonUp() { Button.state.StateChange(MyInput.ButtonStates.ButtonUp); }
+
+    public virtual void HorizontalButtonDown()      { HorizontalButton.state.StateChange(MyInput.ButtonStates.ButtonDown); }
+    public virtual void HorizontalButtonPressed()   { HorizontalButton.state.StateChange(MyInput.ButtonStates.ButtonPressed); }
+    public virtual void HorizontalButtonUp()        { HorizontalButton.state.StateChange(MyInput.ButtonStates.ButtonUp); }
+
+    public virtual void VerticalButtonDown()        { VerticalButton.state.StateChange(MyInput.ButtonStates.ButtonDown); }
+    public virtual void VerticalButtonPressed()     { VerticalButton.state.StateChange(MyInput.ButtonStates.ButtonPressed); }
+    public virtual void VerticalButtonUp()          { VerticalButton.state.StateChange(MyInput.ButtonStates.ButtonUp); }
+
+    public virtual void CancleButtonDown()          { CancleButton.state.StateChange(MyInput.ButtonStates.ButtonDown); }
+    public virtual void CancleButtonPressed()       { CancleButton.state.StateChange(MyInput.ButtonStates.ButtonPressed); }
+    public virtual void CancleButtonUp()            { CancleButton.state.StateChange(MyInput.ButtonStates.ButtonUp); }
+
     public virtual void JumpButtonDown()            { JumpButton.state.StateChange(MyInput.ButtonStates.ButtonDown); }
     public virtual void JumpButtonPressed()         { JumpButton.state.StateChange(MyInput.ButtonStates.ButtonPressed); }
-    public virtual void JumpButtonUp()              {JumpButton.state.StateChange(MyInput.ButtonStates.ButtonUp); }
+    public virtual void JumpButtonUp()              { JumpButton.state.StateChange(MyInput.ButtonStates.ButtonUp); }
 
     public virtual void ColorInvertButtonDown()     { ColorInvertButton.state.StateChange(MyInput.ButtonStates.ButtonDown); }
     public virtual void ColorInvertButtonPressed()  { ColorInvertButton.state.StateChange(MyInput.ButtonStates.ButtonPressed); }

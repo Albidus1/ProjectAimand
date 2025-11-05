@@ -28,7 +28,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     private Collider2D m_collider2D;
     private DamageOnTouch m_damageOnTouch;
     private SpriteRenderer m_spriteRenderer;
-
+    private bool isPlayerInCollider;
 
 
 
@@ -60,6 +60,20 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         SetMaterial();
         SetCollider(currentInvertState);
+    }
+
+    private void Update()
+    {
+        if (isPlayerInCollider)
+        {
+            RaycastHit2D hit = MyDebug.BoxCast(transform.position, m_collider2D.bounds.size, 0f, Vector2.zero, 0f, LayerManager.playerLayerMask, Color.yellow, true);
+
+            if (false == hit)
+            {
+                EnableSettings();
+                isPlayerInCollider = false;
+            }
+        }
     }
 
     private void SetMaterial()
@@ -116,7 +130,16 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if ((state == ColorState.Normal && false == _invert)
             || (state == ColorState.Invert && _invert))
         {
-            EnableSettings();
+            RaycastHit2D hit = MyDebug.BoxCast(transform.position, m_collider2D.bounds.size, 0f, Vector2.zero, 0f, LayerManager.playerLayerMask, Color.yellow, true);
+
+            if (hit)
+            {
+                isPlayerInCollider = true;
+            }
+            else
+            {
+                EnableSettings();
+            }
         }
         else
         {
@@ -133,7 +156,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         if (disableCollider && m_collider2D != null)
         {
-            m_collider2D.enabled = true;
+            m_collider2D.isTrigger = false;
         }
 
         if (false == disableSpriteRenderer &&
@@ -147,6 +170,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
     private void DisableSettings()
     {
+        isPlayerInCollider = false;
+
         if (disableSpriteRenderer && m_spriteRenderer != null)
         {
             m_spriteRenderer.enabled = false;
@@ -154,7 +179,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
 
         if (disableCollider && m_collider2D != null)
         {
-            m_collider2D.enabled = false;
+            m_collider2D.isTrigger = true;
         }
 
         if (false == disableSpriteRenderer &&

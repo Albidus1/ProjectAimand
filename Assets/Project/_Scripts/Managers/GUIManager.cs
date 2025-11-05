@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,6 +21,9 @@ public class GUIManager : MySingleton<GUIManager>
     public Button restartButton;
     public Button settingButton;
     public Button quitButton;
+
+    public Image buttonImage;
+    public Image selectImage;
 
 
     public bool enableQuitPopUp
@@ -70,9 +74,12 @@ public class GUIManager : MySingleton<GUIManager>
         }
     }
 
+    public bool isPaused { get; private set; }
+
     private List<Button> m_buttons = new List<Button>();
     private bool m_settingPopupEnabled;
     private bool m_quitPopUpEnabled;
+    private int buttonIndex = 0;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -88,37 +95,35 @@ public class GUIManager : MySingleton<GUIManager>
 
     private void Start()
     {
-        if (resumeButton != null)
-        {
-            resumeButton.onClick.AddListener(GameManager.Instance.UnPause);
-            m_buttons.Add(resumeButton);
-        }
-        if (restartButton != null)
-        {
-            restartButton.onClick.AddListener(GameManager.Instance.UnPause);
-            restartButton.onClick.AddListener(LevelManager.Instance.KillPlayer);
-            m_buttons.Add(restartButton);
-        }
-        if (settingButton != null)
-        {
-            m_buttons.Add(settingButton);
-        }
-        if (quitButton != null)
-        {
-            m_buttons.Add(quitButton);
-        }
+
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        if (resumeButton != null)
+        if (InputManager.HasInstance)
         {
-            restartButton.onClick.RemoveAllListeners();
+            if (InputManager.Instance.CancleButton.IsDown)
+            {
+                isPaused = GameManager.Instance.paused;
+
+                buttonIndex = 0;
+            }
         }
 
-        if (restartButton != null)
+        if (isPaused)
         {
-            restartButton.onClick.RemoveAllListeners();
+            if (InputManager.Instance.primaryMovement.y > 0)
+            {
+                buttonIndex--;
+                buttonIndex = Mathf.Clamp(buttonIndex, 0, m_buttons.Count - 1);
+            }
+            if (InputManager.Instance.primaryMovement.y < 0)
+            {
+                buttonIndex++;
+                buttonIndex = Mathf.Clamp(buttonIndex, 0, m_buttons.Count - 1);
+            }
+
+            m_buttons[buttonIndex].Select();
         }
     }
 
@@ -225,5 +230,39 @@ public class GUIManager : MySingleton<GUIManager>
         }
     }
 
+    private void OnEnable()
+    {
+        if (resumeButton != null)
+        {
+            resumeButton.onClick.AddListener(GameManager.Instance.UnPause);
+            m_buttons.Add(resumeButton);
+        }
+        if (restartButton != null)
+        {
+            restartButton.onClick.AddListener(GameManager.Instance.UnPause);
+            restartButton.onClick.AddListener(LevelManager.Instance.KillPlayer);
+            m_buttons.Add(restartButton);
+        }
+        if (settingButton != null)
+        {
+            m_buttons.Add(settingButton);
+        }
+        if (quitButton != null)
+        {
+            m_buttons.Add(quitButton);
+        }
+    }
 
+    private void OnDisable()
+    {
+        if (resumeButton != null)
+        {
+            restartButton.onClick.RemoveAllListeners();
+        }
+
+        if (restartButton != null)
+        {
+            restartButton.onClick.RemoveAllListeners();
+        }
+    }
 }

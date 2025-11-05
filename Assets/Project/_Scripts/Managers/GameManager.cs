@@ -115,7 +115,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         //Debug.Log("커서 상태 변경: " + _visible);
 
         Cursor.visible = _visible;
-        Cursor.lockState = _visible ? CursorLockMode.None : CursorLockMode.Locked;
+        //Cursor.lockState = _visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
     public virtual void OnEvent(GameEvent _gameEvent)
