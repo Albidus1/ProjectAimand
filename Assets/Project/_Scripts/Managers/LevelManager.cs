@@ -47,6 +47,8 @@ public class LevelManager : MySingleton<LevelManager>
     [Header("레벨 바운드")] 
     public Bounds levelBounds = new Bounds(Vector3.zero, Vector3.one * 10);
 
+    [Header("로딩씬")]
+    public string loadingSceneName = "LoadingScreen";
 
     public virtual CameraController levelCameraController { get; set; }
     public virtual PlayerMovement player { get; private set; }
@@ -308,7 +310,9 @@ public class LevelManager : MySingleton<LevelManager>
     }
 
     public void GoToLevel(string _levelName, bool _fadeOut = true)
-    { 
+    {
+        MainEvent.Trigger(MainEventTypes.LevelEnd);
+
         if (_fadeOut)
         {
             if (player != null)
@@ -333,16 +337,27 @@ public class LevelManager : MySingleton<LevelManager>
 
         if (_fadeOut)
         {
-            yield return new WaitForSeconds(1f);
+            if (Time.timeScale > 0f)
+            {
+                yield return new WaitForSeconds(1f);
+            }
+            else
+            {
+                yield return new WaitForSecondsRealtime(1f);
+            }
+
         }
 
-        string destinationScene = (string.IsNullOrEmpty(_levelName)) ? "StartScreen" : _levelName;
-        LoadScene(_levelName);
+        MainEvent.Trigger(MainEventTypes.UnPause);
+        MainEvent.Trigger(MainEventTypes.LoadNextLevel);
+
+        string destinationScene = (string.IsNullOrEmpty(_levelName)) ? "Title" : _levelName;
+        LoadScene(destinationScene);
     }
 
     private void LoadScene(string _destinationScene)
     {
-        SceneLoadingManager.LoadScene(_destinationScene);
+        SceneLoadingManager.LoadScene(_destinationScene, loadingSceneName);
     }
 
     public void RestartScene()

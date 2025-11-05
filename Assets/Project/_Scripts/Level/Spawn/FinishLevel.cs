@@ -22,6 +22,7 @@ public class FinishLevel : MonoBehaviour
     {
         if (LevelManager.HasInstance)
         {
+            Debug.Log("레벨 이동");
             LevelManager.Instance.GoToLevel(levelName);
         }
     }

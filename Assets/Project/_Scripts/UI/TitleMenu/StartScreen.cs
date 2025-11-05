@@ -15,7 +15,8 @@ public class StartScreen : MonoBehaviour
 
     private void Start()
     {
-
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     private void Update()
@@ -32,7 +33,7 @@ public class StartScreen : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(nextLevel))
         {
-            SceneLoadingManager.LoadScene(nextLevel, loadingSceneName);
+            SceneLoadingManager.LoadScene(nextLevel);
         }
     }
 
