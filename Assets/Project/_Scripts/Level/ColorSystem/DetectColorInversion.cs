@@ -130,7 +130,13 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if ((state == ColorState.Normal && false == _invert)
             || (state == ColorState.Invert && _invert))
         {
-            RaycastHit2D hit = MyDebug.BoxCast(transform.position, m_collider2D.bounds.size, 0f, Vector2.zero, 0f, LayerManager.playerLayerMask, Color.yellow, true);
+            Vector2 size = Vector2.zero;
+            if (m_collider2D != null)
+            {
+                size = m_collider2D.bounds.size;
+            }
+
+            RaycastHit2D hit = MyDebug.BoxCast(transform.position, size, 0f, Vector2.zero, 0f, LayerManager.playerLayerMask, Color.yellow, true);
 
             if (hit)
             {

@@ -112,7 +112,8 @@ public class GUIManager : MySingleton<GUIManager>
 
         if (isPaused)
         {
-            if (InputManager.Instance.primaryMovement.y > 0)
+            if (InputManager.Instance.primaryMovement.y > 0 &&
+                InputManager.Instance.HorizontalButton.IsDown)
             {
                 buttonIndex--;
                 buttonIndex = Mathf.Clamp(buttonIndex, 0, m_buttons.Count - 1);
