@@ -29,7 +29,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
     private DamageOnTouch m_damageOnTouch;
     private SpriteRenderer m_spriteRenderer;
     private bool isPlayerInCollider;
-
+    private int m_layer;
+    private int m_ignoreRaycastLayer;
 
 
 
@@ -38,11 +39,14 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         m_collider2D = GetComponent<Collider2D>();
         m_damageOnTouch = GetComponent<DamageOnTouch>();
         m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        m_layer = this.gameObject.layer;
     }
 
     private void Start()
     {
         Initialization();
+        m_ignoreRaycastLayer = 2;
     }
 
     private void Initialization()
@@ -141,18 +145,18 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             if (hit)
             {
                 isPlayerInCollider = true;
-                this.gameObject.layer = 2;
+                this.gameObject.layer = m_ignoreRaycastLayer;
             }
             else
             {
                 EnableSettings();
-                this.gameObject.layer = 11;
+                this.gameObject.layer = m_layer;
             }
         }
         else
         {
             DisableSettings();
-            this.gameObject.layer = 2;
+            this.gameObject.layer = m_ignoreRaycastLayer;
         }
     }
 
