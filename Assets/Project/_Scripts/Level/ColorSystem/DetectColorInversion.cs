@@ -141,15 +141,18 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             if (hit)
             {
                 isPlayerInCollider = true;
+                this.gameObject.layer = 2;
             }
             else
             {
                 EnableSettings();
+                this.gameObject.layer = 11;
             }
         }
         else
         {
             DisableSettings();
+            this.gameObject.layer = 2;
         }
     }
 
