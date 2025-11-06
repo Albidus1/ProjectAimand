@@ -79,7 +79,7 @@ public class GUIManager : MySingleton<GUIManager>
     private List<Button> m_buttons = new List<Button>();
     private bool m_settingPopupEnabled;
     private bool m_quitPopUpEnabled;
-    private int buttonIndex = 0;
+
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -100,31 +100,21 @@ public class GUIManager : MySingleton<GUIManager>
 
     private void Update()
     {
-        if (InputManager.HasInstance)
+        if (InputManager.HasInstance && InputManager.Instance.CancleButton.IsDown)
         {
-            if (InputManager.Instance.CancleButton.IsDown)
+            if (GameManager.HasInstance)
             {
-                isPaused = GameManager.Instance.paused;
+                MainEvent.Trigger(MainEventTypes.TogglePause);
 
-                buttonIndex = 0;
-            }
-        }
-
-        if (isPaused)
-        {
-            if (InputManager.Instance.primaryMovement.y > 0 &&
-                InputManager.Instance.HorizontalButton.IsDown)
-            {
-                buttonIndex--;
-                buttonIndex = Mathf.Clamp(buttonIndex, 0, m_buttons.Count - 1);
-            }
-            if (InputManager.Instance.primaryMovement.y < 0)
-            {
-                buttonIndex++;
-                buttonIndex = Mathf.Clamp(buttonIndex, 0, m_buttons.Count - 1);
+                resumeButton.Select();
+                EventSystem.current.SetSelectedGameObject(resumeButton.gameObject);
             }
 
-            m_buttons[buttonIndex].Select();
+            if (enableQuitPopUp || enableSettingPopup)
+            {
+                enableQuitPopUp = false;
+                enableSettingPopup = false;
+            }
         }
     }
 

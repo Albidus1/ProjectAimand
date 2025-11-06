@@ -14,6 +14,9 @@ public class InputManager : MySingleton<InputManager>
     public bool smoothMovement = true;
 
     [Header("버튼")]
+    public const string horizontalID = "Horizontal";
+    public const string verticalID = "Vertical";
+
     public string cancleButtonID = "Cancle";
     public string jumpButtonID = "Jump";
     public string colorInvertButtonID = "ColorInvert";
@@ -33,12 +36,17 @@ public class InputManager : MySingleton<InputManager>
             return m_primaryMovement; 
         }
     }
+    public Vector2 seconaryMovement
+    {
+        get
+        {
+            return m_secondaryMovement;
+        }
+    }
 
     protected List<MyInput.IMButton> m_buttonList;
     protected Vector2 m_primaryMovement;
-    protected string m_axisHorizontal;
-    protected string m_axisVertical;
-
+    protected Vector2 m_secondaryMovement;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -55,72 +63,47 @@ public class InputManager : MySingleton<InputManager>
     protected virtual void Initialization()
     {
         InitializeButton();
-        InitializeAxis();
     }
 
     protected virtual void InitializeButton()
     {
         m_buttonList = new List<MyInput.IMButton>();
-        m_buttonList.Add(HorizontalButton = new MyInput.IMButton("Horizontal", HorizontalButtonDown, HorizontalButtonPressed, HorizontalButtonUp));
-        m_buttonList.Add(VerticalButton = new MyInput.IMButton("Vertical", VerticalButtonDown, VerticalButtonPressed, VerticalButtonUp));
+        m_buttonList.Add(HorizontalButton = new MyInput.IMButton(horizontalID, HorizontalButtonDown, HorizontalButtonPressed, HorizontalButtonUp));
+        m_buttonList.Add(VerticalButton = new MyInput.IMButton(verticalID, VerticalButtonDown, VerticalButtonPressed, VerticalButtonUp));
         m_buttonList.Add(CancleButton = new MyInput.IMButton(cancleButtonID, CancleButtonDown, CancleButtonPressed, CancleButtonUp));
         m_buttonList.Add(JumpButton = new MyInput.IMButton(jumpButtonID, JumpButtonDown, JumpButtonPressed, JumpButtonUp));
         m_buttonList.Add(ColorInvertButton = new MyInput.IMButton(colorInvertButtonID, ColorInvertButtonDown, ColorInvertButtonPressed, ColorInvertButtonUp));
         m_buttonList.Add(PauseButton = new MyInput.IMButton(pauseButtonID, PauseButtonDown, PauseButtonPressed, PauseButtonUp));
     }
 
-    protected virtual void InitializeAxis()
-    {
-        m_axisHorizontal = "Horizontal";
-        m_axisVertical = "Vertical";
-    }
-
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (GUIManager.HasInstance)
-            {
-                if (GUIManager.Instance.enableQuitPopUp || GUIManager.Instance.enableSettingPopup)
-                {
-                    GUIManager.Instance.enableQuitPopUp = false;
-                    GUIManager.Instance.enableSettingPopup = false;
-                    return;
-                }
-            }
-
-            if (GameManager.HasInstance)
-            {
-                if (false == GUIManager.Instance.enableQuitPopUp)
-                {
-                    //Debug.Log("키 입력");
-                    MainEvent.Trigger(MainEventTypes.TogglePause);
-                }
-            }
-        }
-
         if (inputDetectionActive)
         {
             SetMovement();
+            SetSecondaryMovement();
             GetInputButtons();
         }
     }
 
     protected virtual void SetMovement()
     {
-        if (inputDetectionActive)
+        if (smoothMovement)
         {
-            if (smoothMovement)
-            {
-                m_primaryMovement.x = Input.GetAxis(m_axisHorizontal);
-                m_primaryMovement.y = Input.GetAxis(m_axisVertical);
-            }
-            else
-            {
-                m_primaryMovement.x = Input.GetAxisRaw(m_axisHorizontal);
-                m_primaryMovement.y = Input.GetAxisRaw(m_axisVertical);
-            }
+            m_primaryMovement.x = Input.GetAxis(horizontalID);
+            m_primaryMovement.y = Input.GetAxis(verticalID);
         }
+        else
+        {
+            m_primaryMovement.x = Input.GetAxisRaw(horizontalID);
+            m_primaryMovement.y = Input.GetAxisRaw(verticalID);
+        }
+    }
+
+    protected virtual void SetSecondaryMovement()
+    {
+        m_secondaryMovement.x = Input.GetAxis(horizontalID);
+        m_secondaryMovement.y = Input.GetAxis(verticalID);
     }
 
     protected virtual void GetInputButtons()

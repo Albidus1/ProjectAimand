@@ -27,6 +27,11 @@ public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<Trigge
     [Tooltip("흔들림 속도")]
     public float shakeSpeed = 50f;
 
+    [Header("카메라 쉐이킹 효과")]
+    public float shakeTime = 0.2f;
+    public float shakeAmplitude = 1f;
+    public float shakeFrequency = 30f;
+
     [Header("레이캐스트")]
     public LayerMask groundLayer;
     public int numberOfVerticalRays = 5;
@@ -123,7 +128,7 @@ public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<Trigge
         if (m_endPosition.y >= transform.position.y)
         {
             isFalling = false;
-            CameraShakeEvent.Trigger("MainCamera", 0.2f, 1f, 30f);
+            CameraShakeEvent.Trigger("MainCamera", shakeTime, shakeAmplitude, shakeFrequency);
         }
     }
 
