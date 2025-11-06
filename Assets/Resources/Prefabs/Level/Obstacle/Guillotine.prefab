@@ -152,7 +152,7 @@ MonoBehaviour:
   killPlayer: 0
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2147483648
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
   damage: 10
@@ -177,6 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   isActive: 1
+  initialCooldownTime: 0
   preparationTime: 1
   waitAtBottomTime: 2
   cooldownTime: 3
@@ -187,6 +188,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  useTriggerEvent: 0
+  eventID: default
 --- !u!114 &576562188577747385
 MonoBehaviour:
   m_ObjectHideFlags: 0

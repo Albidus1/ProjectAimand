@@ -189,11 +189,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05c625fda44ca204eaa4709184b903f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActive: 1
   swingAngle: 45
   startAngleOffset: 0
   swingSpeed: 2
   pivotPoint: {fileID: 0}
   distanceFromPivot: 5
+  useTriggerEvent: 0
+  eventID: default
 --- !u!114 &4264338065737255781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,7 +212,7 @@ MonoBehaviour:
   killPlayer: 0
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2147483648
   applyDamageOnTriggerEnter: 1
   applyDamageOnTriggerStay: 1
   damage: 10
