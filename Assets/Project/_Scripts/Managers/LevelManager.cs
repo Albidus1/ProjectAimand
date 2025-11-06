@@ -273,7 +273,7 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
             return;
         }
 
-        if (currentCheckPoint.checkpointOrder >= _newCheckPoint.checkpointOrder)
+        if (currentCheckPoint.checkpointOrder <= _newCheckPoint.checkpointOrder)
         {
             currentCheckPoint = _newCheckPoint;
             return;

@@ -351,6 +351,7 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     public override void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
         Initialization();
+
         base.m_endReached = false;
         base.canMove = true;
     }
