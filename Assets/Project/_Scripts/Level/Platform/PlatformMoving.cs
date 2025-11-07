@@ -43,6 +43,9 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
     public float jumpTime { get; private set; }
     public bool isMoving { get; private set; }
 
+
+    private bool m_wasMoving;
+    private float m_movementDelta;
     private Quaternion m_initialRotation;
     private float m_waitTimer;
     private Vector3 m_lastPosition;
@@ -134,17 +137,27 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
                 RotatePlatform();
             }
 
+            CheckMoveEvents(false);
             return;
         }
 
-        if (PlatformCanMove())
+        bool canMoveNow = PlatformCanMove();
+        if (canMoveNow)
         {
+            m_lastPosition = transform.position;
+
             CheckAccelerateAble();
             RotatePlatform();
             Move();
-        }
 
-        m_lastPosition = transform.position;
+            m_movementDelta = Vector3.Distance(transform.position, m_lastPosition);
+            bool moving = m_movementDelta > 0.001f;
+            CheckMoveEvents(moving);
+        }
+        else
+        {
+            CheckMoveEvents(false);
+        }
     }
 
     #region MOVE
@@ -314,6 +327,26 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
         else
         {
             m_player.isJumpingOnMovingPlatform = false;
+        }
+    }
+
+    private void CheckMoveEvents(bool m_currentlyMoving)
+    {
+        if (m_currentlyMoving != m_wasMoving)
+        {
+            if (m_currentlyMoving)
+            {
+                Debug.Log("이동");
+                moveStart?.Invoke();
+            }
+            else
+            {
+                Debug.Log("정지");
+                moveEnd?.Invoke();
+            }
+
+            m_wasMoving = m_currentlyMoving;
+            isMoving = m_currentlyMoving;
         }
     }
     #endregion
