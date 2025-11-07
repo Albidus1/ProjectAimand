@@ -139,10 +139,8 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             {
                 size = m_collider2D.bounds.size;
             }
-
-            RaycastHit2D hit = MyDebug.BoxCast(transform.position, size, 0f, Vector2.zero, 0f, LayerManager.playerLayerMask, Color.yellow, true);
-
-            if (hit)
+           
+            if (disableSpriteRenderer && MyDebug.BoxCast(transform.position, size, 0f, Vector2.zero, 0f, LayerManager.playerLayerMask, Color.yellow, true))
             {
                 isPlayerInCollider = true;
                 this.gameObject.layer = m_ignoreRaycastLayer;
@@ -150,13 +148,11 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
             else
             {
                 EnableSettings();
-                this.gameObject.layer = m_layer;
             }
         }
         else
         {
             DisableSettings();
-            this.gameObject.layer = m_ignoreRaycastLayer;
         }
     }
 
@@ -165,6 +161,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if (disableSpriteRenderer && m_spriteRenderer != null)
         {
             m_spriteRenderer.enabled = true;
+            this.gameObject.layer = m_layer;
         }
 
         if (disableCollider && m_collider2D != null)
@@ -188,6 +185,7 @@ public class DetectColorInversion : MonoBehaviour, IEventListener<ColorInvertEve
         if (disableSpriteRenderer && m_spriteRenderer != null)
         {
             m_spriteRenderer.enabled = false;
+            this.gameObject.layer = m_ignoreRaycastLayer;
         }
 
         if (disableCollider && m_collider2D != null)
