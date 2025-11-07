@@ -26,6 +26,9 @@ public class CinemachineSequenceTrigger : MonoBehaviour, Respawnable
     public float startDelay = 0f;
     public float endDelay = 1f;
 
+    [Header("설정")]
+    public bool ignoreAutoRespawn;
+
     [MyReadOnly]
     public bool isSequencePlaying = false;
     [MyReadOnly]
@@ -190,6 +193,11 @@ public class CinemachineSequenceTrigger : MonoBehaviour, Respawnable
 
     public void OnPlayerRespawn(CheckPoint _checkPoint, PlayerMovement _player)
     {
+        if (ignoreAutoRespawn)
+        {
+            return;
+        }
+
         Initialization();
     }
 
