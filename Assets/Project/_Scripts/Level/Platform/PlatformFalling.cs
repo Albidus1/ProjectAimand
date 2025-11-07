@@ -1,10 +1,14 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 
 
 
 public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<TriggerEvent>
 {
+    public UnityEvent fall;
+
+    [Tooltip("스프라이트 흔들림용 트랜스폼")]
     public Transform spriteTransform;
 
     [Header("낙하 설정")]
@@ -128,7 +132,9 @@ public class PlatformFalling : MonoBehaviour, Respawnable, IEventListener<Trigge
         if (m_endPosition.y >= transform.position.y)
         {
             isFalling = false;
+
             CameraShakeEvent.Trigger("MainCamera", shakeTime, shakeAmplitude, shakeFrequency);
+            fall?.Invoke();
         }
     }
 
