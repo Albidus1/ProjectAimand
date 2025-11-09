@@ -336,12 +336,12 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
         {
             if (m_currentlyMoving)
             {
-                Debug.Log("이동");
+                //Debug.Log("이동");
                 moveStart?.Invoke();
             }
             else
             {
-                Debug.Log("정지");
+                //Debug.Log("정지");
                 moveEnd?.Invoke();
             }
 

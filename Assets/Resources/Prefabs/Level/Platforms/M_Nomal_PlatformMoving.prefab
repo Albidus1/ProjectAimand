@@ -121,14 +121,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1a6698194ba5f40b50562d04af226f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startAt: 0
+  moveStart:
+    m_PersistentCalls:
+      m_Calls: []
+  moveEnd:
+    m_PersistentCalls:
+      m_Calls: []
   CycleOption: 0
   InitialMovementDirection: 0
   pathElements:
   - pathElementPosition: {x: 0, y: 0, z: 0}
     delay: 0
+    speed: 0
   - pathElementPosition: {x: 0, y: 15, z: 0}
     delay: 0
+    speed: 0
   referenceMyPath: {fileID: 0}
   absoluteReferenceMyPath: 0
   minDistanceToGoal: 0.1
@@ -145,6 +152,7 @@ MonoBehaviour:
   invertMoveOnInput: 1
   useTriggerEvent: 1
   eventID: Room3_02
+  playSound: {fileID: 0}
 --- !u!114 &536397705630429214
 MonoBehaviour:
   m_ObjectHideFlags: 0

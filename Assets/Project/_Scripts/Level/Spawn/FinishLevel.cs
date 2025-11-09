@@ -18,6 +18,14 @@ public class FinishLevel : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            GoToLevel();
+        }
+    }
+
     public void GoToLevel()
     {
         if (LevelManager.HasInstance)

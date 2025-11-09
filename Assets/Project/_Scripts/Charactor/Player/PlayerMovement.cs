@@ -388,14 +388,36 @@ public class PlayerMovement : CharacterMovement
         #region COLLISION CHECKS
         SetRaysParameters();
 
-        Vector3 position = m_boundsBottomRightCorner;
-        float gap = 0.02f;
-        RaycastHit2D hit = MyDebug.Raycast(new Vector2(position.x, position.y - (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
-        RaycastHit2D hit2 = MyDebug.Raycast(new Vector2(position.x, position.y + (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+        //Vector3 position = m_boundsBottomRightCorner;
+        //float gap = 0.02f;
+        //RaycastHit2D hit = MyDebug.Raycast(new Vector2(position.x, position.y - (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
+        //RaycastHit2D hit2 = MyDebug.Raycast(new Vector2(position.x, position.y + (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
 
-        if (hit && false == hit2)
+        //if (hit && false == hit2)
+        //{
+        //    transform.position = new Vector2(transform.position.x + (float)(0.1f * m_direction), transform.position.y + 0.05f);
+        //}
+
+        Vector2 origin = m_boundsBottomRightCorner;
+        Vector2 frontOrigin = origin + new Vector2(0.01f * m_direction, -0.01f);
+        RaycastHit2D hitForward = MyDebug.Raycast(frontOrigin, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.IndianRed, true);
+
+        if (hitForward)
         {
-            transform.position = new Vector2(transform.position.x + (float)(0.1f * m_direction), transform.position.y + 0.05f);
+            for (float y = 0.02f; y <= 0.1f; y += 0.02f)
+            {
+                Vector2 step = origin + new Vector2(0.01f * m_direction, y);
+                RaycastHit2D hitStep = MyDebug.Raycast(step, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.Orange, true);
+
+                if (false == hitStep)
+                {
+                    if (MyDebug.Raycast(step + new Vector2(0.05f * m_direction, -0.1f), Vector2.down, 0.1f, groundLayer, MyColors.Orange, true))
+                    {
+                        transform.position = new Vector2(transform.position.x + (0.05f * m_direction), transform.position.y + y);
+                        break;
+                    }
+                }
+            }
         }
 
         if (false == isDashing)
