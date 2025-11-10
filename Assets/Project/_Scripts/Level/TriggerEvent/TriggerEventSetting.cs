@@ -32,6 +32,7 @@ public class TriggerEventSetting : MonoBehaviour, Respawnable
     [Space(5)]
 
     public UnityEvent OnTrigger;
+    public UnityEvent OutTrigger;
 
     [Header("기본 설정")]
     public bool triggerOnce;
@@ -70,6 +71,15 @@ public class TriggerEventSetting : MonoBehaviour, Respawnable
         if (collision.CompareTag("Player"))
         {
             Trigger();
+            OnTrigger?.Invoke();
+        }
+    }
+
+    protected virtual void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            OutTrigger?.Invoke();
         }
     }
 
