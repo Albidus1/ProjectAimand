@@ -77,17 +77,21 @@ public class GameManager : MyPersistentSingleton<GameManager>,
     {
         //Debug.Log("퍼즈");
 
-        Instance.paused = true;
-
+        paused = true;
 
         if (Time.timeScale > 0f)
         {
             Time.timeScale = 0f;
 
-            if (GUIManager.HasInstance)
+            if (GUIManager.HasInstance && false == GUIManager.Instance.locked)
             {
                 GUIManager.Instance.SetPause(true);
                 m_pauseMenuOpen = true;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+                paused = false;
             }
         }
 

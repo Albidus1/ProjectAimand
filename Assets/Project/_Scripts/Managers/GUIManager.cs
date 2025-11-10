@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class GUIManager : MySingleton<GUIManager>
 {
+    public bool locked { get; set; } = false;
+
     [Header("바인딩")]
     public GameObject HUD;
     public MyProgressBar healthBar;
@@ -100,6 +102,11 @@ public class GUIManager : MySingleton<GUIManager>
 
     private void Update()
     {
+        if (locked)
+        {
+            return;
+        }
+
         if (InputManager.HasInstance && InputManager.Instance.CancleButton.IsDown)
         {
             if (GameManager.HasInstance)

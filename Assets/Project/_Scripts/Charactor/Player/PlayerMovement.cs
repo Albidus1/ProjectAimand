@@ -389,15 +389,6 @@ public class PlayerMovement : CharacterMovement
         #region COLLISION CHECKS
         SetRaysParameters();
 
-        //Vector3 position = m_boundsBottomRightCorner;
-        //float gap = 0.02f;
-        //RaycastHit2D hit = MyDebug.Raycast(new Vector2(position.x, position.y - (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
-        //RaycastHit2D hit2 = MyDebug.Raycast(new Vector2(position.x, position.y + (gap * 0.5f)), -transform.right, 0.05f, LayerManager.platformsLayerMask, MyColors.AliceBlue, true);
-
-        //if (hit && false == hit2)
-        //{
-        //    transform.position = new Vector2(transform.position.x + (float)(0.1f * m_direction), transform.position.y + 0.05f);
-        //}
         if (false == checkOneWayPlatformBelow && false == m_downJumping)
         {
             Vector2 origin = m_boundsBottomRightCorner;
@@ -411,13 +402,10 @@ public class PlayerMovement : CharacterMovement
                     Vector2 step = origin + new Vector2(0.01f * m_direction, y);
                     RaycastHit2D hitStep = MyDebug.Raycast(step, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.Orange, true);
 
-                    if (false == hitStep)
+                    if (false == hitStep && MyDebug.Raycast(step + new Vector2(0.05f * m_direction, -0.1f), Vector2.down, 0.1f, groundLayer, MyColors.Orange, true))
                     {
-                        if (MyDebug.Raycast(step + new Vector2(0.05f * m_direction, -0.1f), Vector2.down, 0.1f, groundLayer, MyColors.Orange, true))
-                        {
-                            transform.position = new Vector2(transform.position.x + (0.05f * m_direction), transform.position.y + y);
-                            break;
-                        }
+                        transform.position = new Vector2(transform.position.x + (0.05f * m_direction), transform.position.y + y);
+                        break;
                     }
                 }
             }
@@ -827,24 +815,17 @@ public class PlayerMovement : CharacterMovement
     public IEnumerator PerformSleep(float _duration)
     {
         Time.timeScale = 0;
+        GUIManager.Instance.locked = true;
 
         yield return new WaitForSecondsRealtime(_duration);
 
         Time.timeScale = 1;
+        GUIManager.Instance.locked = false;
     }
 
     private void ControllSleep(float _duration)
     {
         StartCoroutine(nameof(PerformControllSleep), _duration);
-    }
-
-    private IEnumerator DownJump(Collider2D _col)
-    {
-        m_downJumping = true;
-        Physics2D.IgnoreCollision(boxCollider, _col, true);
-        yield return new WaitForSeconds(0.25f);
-        m_downJumping = false;
-        Physics2D.IgnoreCollision(boxCollider, _col, false);
     }
 
     private IEnumerator PerformControllSleep(float _duration)
@@ -1250,6 +1231,15 @@ public class PlayerMovement : CharacterMovement
         }
 
         rb.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    private IEnumerator DownJump(Collider2D _col)
+    {
+        m_downJumping = true;
+        Physics2D.IgnoreCollision(boxCollider, _col, true);
+        yield return new WaitForSeconds(0.25f);
+        m_downJumping = false;
+        Physics2D.IgnoreCollision(boxCollider, _col, false);
     }
     #endregion
 
