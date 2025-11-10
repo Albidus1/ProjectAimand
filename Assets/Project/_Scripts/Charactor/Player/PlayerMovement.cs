@@ -397,24 +397,26 @@ public class PlayerMovement : CharacterMovement
         //{
         //    transform.position = new Vector2(transform.position.x + (float)(0.1f * m_direction), transform.position.y + 0.05f);
         //}
-
-        Vector2 origin = m_boundsBottomRightCorner;
-        Vector2 frontOrigin = origin + new Vector2(0.01f * m_direction, -0.01f);
-        RaycastHit2D hitForward = MyDebug.Raycast(frontOrigin, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.IndianRed, true);
-
-        if (hitForward)
+        if (movementState.currentState == PlayerStates.MovementStates.Running)
         {
-            for (float y = 0.02f; y <= 0.1f; y += 0.02f)
-            {
-                Vector2 step = origin + new Vector2(0.01f * m_direction, y);
-                RaycastHit2D hitStep = MyDebug.Raycast(step, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.Orange, true);
+            Vector2 origin = m_boundsBottomRightCorner;
+            Vector2 frontOrigin = origin + new Vector2(0.01f * m_direction, -0.01f);
+            RaycastHit2D hitForward = MyDebug.Raycast(frontOrigin, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.IndianRed, true);
 
-                if (false == hitStep)
+            if (hitForward)
+            {
+                for (float y = 0.02f; y <= 0.1f; y += 0.02f)
                 {
-                    if (MyDebug.Raycast(step + new Vector2(0.05f * m_direction, -0.1f), Vector2.down, 0.1f, groundLayer, MyColors.Orange, true))
+                    Vector2 step = origin + new Vector2(0.01f * m_direction, y);
+                    RaycastHit2D hitStep = MyDebug.Raycast(step, Vector2.right * m_direction, 0.1f, groundLayer, MyColors.Orange, true);
+
+                    if (false == hitStep)
                     {
-                        transform.position = new Vector2(transform.position.x + (0.05f * m_direction), transform.position.y + y);
-                        break;
+                        if (MyDebug.Raycast(step + new Vector2(0.05f * m_direction, -0.1f), Vector2.down, 0.1f, groundLayer, MyColors.Orange, true))
+                        {
+                            transform.position = new Vector2(transform.position.x + (0.05f * m_direction), transform.position.y + y);
+                            break;
+                        }
                     }
                 }
             }
