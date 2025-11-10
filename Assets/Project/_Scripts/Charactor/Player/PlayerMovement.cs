@@ -174,6 +174,7 @@ public class PlayerMovement : CharacterMovement
     public float m_belowSlopeAngle;
     public Vector2 m_currentSlopeDirection;
     private RaycastHit2D m_stickRaycast;
+    private bool m_downJumping;
 
     private PlayerSpriteColorInversion m_spriteColorInversion;
     private bool m_playSFX;
@@ -397,7 +398,7 @@ public class PlayerMovement : CharacterMovement
         //{
         //    transform.position = new Vector2(transform.position.x + (float)(0.1f * m_direction), transform.position.y + 0.05f);
         //}
-        if (movementState.currentState == PlayerStates.MovementStates.Running)
+        if (false == checkOneWayPlatformBelow && false == m_downJumping)
         {
             Vector2 origin = m_boundsBottomRightCorner;
             Vector2 frontOrigin = origin + new Vector2(0.01f * m_direction, -0.01f);
@@ -427,16 +428,6 @@ public class PlayerMovement : CharacterMovement
             if (Time.time > m_jumpEndIgnoreGroundUntil)
             {
                 CastRaysBelow();
-
-                if (checkOneWayPlatformBelow)
-                {
-                    //Collider2D oneway = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, onewayPlatform);
-
-                    //if (oneway != null)
-                    //{
-                    //    StartCoroutine(DownJump(oneway));
-                    //}
-                }
             }
 
             //if (((Physics2D.OverlapBox(frontWallCheckPoint.position, wallCheckSize, 0, groundLayer & ~onewayPlatform) && true == isFacingRight)
@@ -849,8 +840,10 @@ public class PlayerMovement : CharacterMovement
 
     private IEnumerator DownJump(Collider2D _col)
     {
+        m_downJumping = true;
         Physics2D.IgnoreCollision(boxCollider, _col, true);
         yield return new WaitForSeconds(0.25f);
+        m_downJumping = false;
         Physics2D.IgnoreCollision(boxCollider, _col, false);
     }
 
