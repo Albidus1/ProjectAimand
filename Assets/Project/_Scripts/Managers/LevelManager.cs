@@ -290,6 +290,8 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
 
     public void PlayerDead()
     {
+        MainEvent.Trigger(MainEventTypes.UnPause);
+        GUIManager.Instance.locked = true;
         StartCoroutine(Restart());
     }
 
@@ -320,6 +322,7 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
             MainEvent.Trigger(MainEventTypes.PlayerRespawn, player);
             CameraEvent2D.Trigger(CameraEventType.StartFollowing);
         }
+        GUIManager.Instance.locked = false;
 
         MyFadeOutEvent.Trigger(0.5f, Ease.Linear);
         yield return new WaitForSeconds(0.5f);
