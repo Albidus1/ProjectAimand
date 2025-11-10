@@ -27,11 +27,20 @@ public class CheckPoint : MonoBehaviour
 
     private bool m_reached = false;
     private List<Respawnable> m_listeners;
-
+    private SpriteRenderer m_spriteRenderer;
 
     private void Awake()
     {
         m_listeners = new List<Respawnable>();
+        m_spriteRenderer = GetComponent<SpriteRenderer>();
+
+#if UNITY_EDITOR
+#else
+        if (m_spriteRenderer != null)
+        {
+            m_spriteRenderer.enabled = false;
+        }
+#endif
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

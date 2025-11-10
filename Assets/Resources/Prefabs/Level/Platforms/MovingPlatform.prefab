@@ -96,10 +96,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 378996799116226215}
-  - component: {fileID: 4678555556031825757}
   - component: {fileID: 7916520521061767794}
   - component: {fileID: 5057551354091597917}
   - component: {fileID: 1278676468425913526}
+  - component: {fileID: 1754103188421390}
   m_Layer: 12
   m_Name: MovingPlatform
   m_TagString: Untagged
@@ -115,71 +115,16 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5058981010093206992}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 15.5, y: 2.45, z: 0}
   m_LocalScale: {x: 4, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6868244349480694954}
   - {fileID: 8715767960666170276}
   - {fileID: 5700257273935848768}
-  - {fileID: 6868244349480694954}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &4678555556031825757
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5058981010093206992}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!61 &7916520521061767794
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -244,13 +189,13 @@ MonoBehaviour:
   moveEnd:
     m_PersistentCalls:
       m_Calls: []
-  CycleOption: 2
+  CycleOption: 1
   InitialMovementDirection: 0
   pathElements:
   - pathElementPosition: {x: 0, y: 0, z: 0}
-    delay: 0
+    delay: 2
     speed: 0
-  - pathElementPosition: {x: 84, y: 0.2, z: 0}
+  - pathElementPosition: {x: 0, y: 12.26, z: 0}
     delay: 4
     speed: 0
   referenceMyPath: {fileID: 0}
@@ -268,7 +213,7 @@ MonoBehaviour:
   speedThreshold: 0
   invertMoveOnInput: 0
   useTriggerEvent: 1
-  eventID: 1
+  eventID: 3
   playSound: {fileID: 0}
 --- !u!114 &1278676468425913526
 MonoBehaviour:
@@ -289,6 +234,23 @@ MonoBehaviour:
   autoRespawnRemainingAmount: 0
   ignoreCheckPointsAlwaysRespawn: 1
   associatedCheckpoints: []
+--- !u!114 &1754103188421390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5058981010093206992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ec07c2df7caf5c4c85133bb29348150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentInvertState: 0
+  state: 2
+  disableSpriteRenderer: 0
+  disableCollider: 0
+  disableDamageOnTouch: 0
 --- !u!1 &7861667267657218908
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +328,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -453,7 +415,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
