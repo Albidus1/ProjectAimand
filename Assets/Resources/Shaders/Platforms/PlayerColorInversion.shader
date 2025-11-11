@@ -50,7 +50,7 @@ Shader "Sprites/PlayerDotInvert"
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
             fixed4 _Color;
-            int _InvertAmount;
+            float _InvertAmount;
             float _PixelSize;
             float _PreserveOutline;
             float _OutlineThreshold;
