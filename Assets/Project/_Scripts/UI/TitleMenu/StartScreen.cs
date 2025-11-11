@@ -20,17 +20,6 @@ public class StartScreen : MonoBehaviour
     {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-
-        if (startButton != null )
-        {
-            startButton.Select();
-            EventSystem.current.SetSelectedGameObject(startButton.gameObject);
-        }
-    }
-
-    private void Update()
-    {
-        //ButtonPressed();
     }
 
     public void ButtonPressed()
