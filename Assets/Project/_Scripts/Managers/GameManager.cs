@@ -50,11 +50,17 @@ public class GameManager : MyPersistentSingleton<GameManager>,
     public float currentHP;
     public GameObject persistentCharacter;
 
+    [MyReadOnly]
+    public int deathCount = 0;
+    [MyReadOnly]
+    public float playTime = 0f;
+
     public bool paused { get; set; }
     public bool cameraEventActive { get; private set; }
 
     protected bool m_pauseMenuOpen = false;
-
+    protected bool m_checkPlaytime;
+    protected float m_recordPlayTime;
 
 
     protected override void Awake()
@@ -67,11 +73,14 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
     }
 
-    public void Reset()
+    private void Update()
     {
-        paused = false;
+        if (m_checkPlaytime)
+        {
+            playTime += Time.deltaTime;
+        }
     }
-    
+
 
     public virtual void Pause()
     {
@@ -131,6 +140,18 @@ public class GameManager : MyPersistentSingleton<GameManager>,
     {
         switch (_mainEvent.eventType)
         {
+            case MainEventTypes.LevelStart:
+                m_checkPlaytime = true;
+                break;
+
+            case MainEventTypes.LevelEnd:
+                m_checkPlaytime = false;
+                break;
+
+            case MainEventTypes.LevelComplete:
+                m_recordPlayTime = playTime;
+                break;
+
             case MainEventTypes.TogglePause:
                 if (paused)
                 { 

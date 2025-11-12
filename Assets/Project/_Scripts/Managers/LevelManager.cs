@@ -292,6 +292,8 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
     {
         MainEvent.Trigger(MainEventTypes.UnPause);
         GUIManager.Instance.locked = true;
+        GameManager.Instance.deathCount += 1;
+
         StartCoroutine(Restart());
     }
 
