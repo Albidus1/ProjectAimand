@@ -349,6 +349,25 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
         StartCoroutine(GotoLevelCoroutine(_levelName, _fadeOut));
     }
 
+    public void LevelComplete(string _levelName = "Title",  bool _fadeOut = true)
+    {
+        MainEvent.Trigger(MainEventTypes.LevelComplete);
+
+        if (_fadeOut)
+        {
+            if (player != null)
+            {
+                MyFadeInEvent.Trigger(1f, DG.Tweening.Ease.Linear, true, player.transform.position);
+            }
+            else
+            {
+                MyFadeInEvent.Trigger(1f, DG.Tweening.Ease.Linear, true, Vector3.zero);
+            }
+        }
+
+        StartCoroutine(GotoLevelCoroutine(_levelName, _fadeOut));
+    }
+
     private IEnumerator GotoLevelCoroutine(string _levelName, bool _fadeOut = true)
     {
         if (player != null)

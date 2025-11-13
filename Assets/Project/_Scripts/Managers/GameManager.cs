@@ -150,6 +150,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
             case MainEventTypes.LevelComplete:
                 m_recordPlayTime = playTime;
+                currentHP = MaxHP;
                 break;
 
             case MainEventTypes.TogglePause:

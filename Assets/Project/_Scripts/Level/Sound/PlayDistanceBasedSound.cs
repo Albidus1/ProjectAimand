@@ -16,6 +16,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
     public float volume = 1f;
     [Range(0f, 1f)]
     public float pitch = 1f;
+    public float playbackDuration;
 
     [Header("거리 설정")]
     public AudioRolloffMode rolloffMode;
@@ -68,6 +69,7 @@ public class PlayDistanceBasedSound : MonoBehaviour
                   _rolloffMode: rolloffMode,
                   _minDistance: minDistance,
                   _maxDistance: maxDistance,
+                  _playbackDuration: playbackDuration,
                   _attachToTransform: attachToTransform);
             }
         }
