@@ -65,7 +65,7 @@ public class CheckPoint : MonoBehaviour
     {
         _player.RespawnAt(transform, isFacingRight);
 
-        foreach(Respawnable listener in m_listeners)
+        foreach (Respawnable listener in m_listeners)
         {
             listener.OnPlayerRespawn(this, _player);
         }

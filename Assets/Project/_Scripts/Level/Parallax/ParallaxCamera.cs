@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class ParallaxCamera : MonoBehaviour
 {
     public delegate void ParallaxCameraDelegate(float _deltaMovement);
@@ -49,9 +49,7 @@ public class ParallaxCamera : MonoBehaviour
         }
 
         m_currentPositionX = transform.position.x;
-
         HandleCameraTranslation();
-
         m_previousPositionX = m_currentPositionX;
     }
 
@@ -64,15 +62,12 @@ public class ParallaxCamera : MonoBehaviour
 
         float deltaPositionX = m_previousPositionX - m_currentPositionX;
 
-        if (Mathf.Abs(deltaPositionX) < 0.1f)
+        if (Mathf.Abs(deltaPositionX) < 0.01f)
         {
             return;
         }
 
-        if (onCameraTranslate != null)
-        {
-            //Debug.Log(m_currentPositionX + " " + m_previousPositionX);
-            onCameraTranslate(deltaPositionX);
-        }
+        //Debug.Log(m_currentPositionX + " " + m_previousPositionX);
+        onCameraTranslate?.Invoke(deltaPositionX);
     }
 }

@@ -9,7 +9,7 @@ public class ParallaxBackground : MonoBehaviour
     public ParallaxCamera parallaxCamera;
     
 
-    private List<ParallaxLayer> parallaxLayers = new List<ParallaxLayer>();
+    private List<ParallaxLayer> m_parallaxLayers = new List<ParallaxLayer>();
 
 
 
@@ -30,7 +30,7 @@ public class ParallaxBackground : MonoBehaviour
 
     private void SetLayers()
     {
-        parallaxLayers.Clear();
+        m_parallaxLayers.Clear();
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -39,14 +39,14 @@ public class ParallaxBackground : MonoBehaviour
             if (layer != null)
             {
                 layer.name = "Layer_" + i;
-                parallaxLayers.Add(layer);
+                m_parallaxLayers.Add(layer);
             }
         }
     }
 
     private void MoveLayers(float _delta)
     {
-        foreach (var layer in parallaxLayers)
+        foreach (var layer in m_parallaxLayers)
         {
             layer.MoveLayer(_delta);
         }

@@ -349,7 +349,7 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
         StartCoroutine(GotoLevelCoroutine(_levelName, _fadeOut));
     }
 
-    public void LevelComplete(string _levelName = "Title",  bool _fadeOut = true)
+    public void LevelComplete(string _levelName = "End",  bool _fadeOut = true)
     {
         MainEvent.Trigger(MainEventTypes.LevelComplete);
 
@@ -459,7 +459,7 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
                 break;
         }
     }
-
+    
     protected virtual void OnEnable()
     {
         this.EventStartListening<MainEvent>();

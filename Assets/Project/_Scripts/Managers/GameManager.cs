@@ -63,14 +63,10 @@ public class GameManager : MyPersistentSingleton<GameManager>,
     protected float m_recordPlayTime;
 
 
+
     protected override void Awake()
     {
         base.Awake();
-    }
-
-    private void Start()
-    {
-
     }
 
     private void Update()
@@ -81,6 +77,24 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         }
     }
 
+    public void ResetStatus()
+    {
+        playTime = 0f;
+        deathCount = 0;
+        currentHP = MaxHP;
+
+        m_checkPlaytime = false;
+        m_recordPlayTime = 0f;
+    }
+
+    public string GetPlayTime()
+    {
+        System.TimeSpan timeSpan = System.TimeSpan.FromSeconds(m_recordPlayTime);
+        return string.Format("{0:D2}:{1:D2}:{2:D2}",
+                                    timeSpan.Hours,
+                                    timeSpan.Minutes,
+                                    timeSpan.Seconds);
+    }
 
     public virtual void Pause()
     {
@@ -141,6 +155,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         switch (_mainEvent.eventType)
         {
             case MainEventTypes.LevelStart:
+                Debug.Log("레벨 시작");
                 m_checkPlaytime = true;
                 break;
 
@@ -149,8 +164,8 @@ public class GameManager : MyPersistentSingleton<GameManager>,
                 break;
 
             case MainEventTypes.LevelComplete:
+                m_checkPlaytime = false;
                 m_recordPlayTime = playTime;
-                currentHP = MaxHP;
                 break;
 
             case MainEventTypes.TogglePause:

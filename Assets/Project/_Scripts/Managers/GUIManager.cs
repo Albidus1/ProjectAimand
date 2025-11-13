@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -95,11 +96,6 @@ public class GUIManager : MySingleton<GUIManager>
         base.Awake();
     }
 
-    private void Start()
-    {
-
-    }
-
     private void Update()
     {
         if (locked)
@@ -109,12 +105,15 @@ public class GUIManager : MySingleton<GUIManager>
 
         if (InputManager.HasInstance && InputManager.Instance.CancleButton.IsDown)
         {
-            if (GameManager.HasInstance)
+            if (GameManager.HasInstance && false == RankingManager.HasInstance)
             {
                 MainEvent.Trigger(MainEventTypes.TogglePause);
 
-                resumeButton.Select();
-                EventSystem.current.SetSelectedGameObject(resumeButton.gameObject);
+                if (restartButton != null)
+                {
+                    resumeButton.Select();
+                    EventSystem.current.SetSelectedGameObject(resumeButton.gameObject);
+                }
             }
 
             if (enableQuitPopUp || enableSettingPopup)

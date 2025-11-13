@@ -24,4 +24,13 @@ public class ParallaxLayer : MonoBehaviour
 
         transform.position = newPosition;
     }
+
+    //public void MoveLayer(float _deltaPosition)
+    //{
+    //    Vector3 targetPosition = new Vector3(_deltaPosition * parallaxFactor * -1, transform.position.y, transform.position.z);
+    //    float lerpSpeed = 5f;
+    //    Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, lerpSpeed * Time.deltaTime);
+
+    //    transform.position = newPosition;
+    //}
 }

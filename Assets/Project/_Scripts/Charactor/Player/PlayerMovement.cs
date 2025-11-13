@@ -1,9 +1,5 @@
 using System.Collections;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.PlayerLoop;
-using UnityEngine.Splines;
 
 
 
@@ -840,7 +836,7 @@ public class PlayerMovement : CharacterMovement
     public void RespawnAt(Transform _spawnPoint, bool _facingDirection)
     {
         ControllSleep(0.5f);
-
+        
         Vector3 scale = transform.localScale;
         scale.x = _facingDirection ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
         transform.localScale = scale;
@@ -848,6 +844,7 @@ public class PlayerMovement : CharacterMovement
         isFacingRight = _facingDirection;
 
         transform.position = _spawnPoint.position;
+        rb.linearVelocity = Vector3.zero;
 
         m_health.ResetHealthToMaxHealth();
         m_health.Revive();

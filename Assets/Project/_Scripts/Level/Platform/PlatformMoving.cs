@@ -387,6 +387,8 @@ public class PlatformMoving : MyPath, IEventListener<TriggerEvent>, IEventListen
 
         base.m_endReached = false;
         base.canMove = true;
+
+        base.moveEnd?.Invoke();
     }
 
     public void OnEvent(TriggerEvent e)

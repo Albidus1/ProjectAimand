@@ -21,7 +21,7 @@ public class FinishLevel : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Backspace))
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Backspace))
         {
             GoToLevel();
         }
@@ -31,8 +31,6 @@ public class FinishLevel : MonoBehaviour
     {
         if (LevelManager.HasInstance)
         {
-            Debug.Log("레벨 이동");
-
             if (completeLevel)
             {
                 LevelManager.Instance.LevelComplete();

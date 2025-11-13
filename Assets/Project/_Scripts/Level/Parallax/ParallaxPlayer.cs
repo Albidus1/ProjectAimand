@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class ParallaxPlayer : MonoBehaviour
 {
     public delegate void ParallaxCameraDelegate(float _deltaMovement);
