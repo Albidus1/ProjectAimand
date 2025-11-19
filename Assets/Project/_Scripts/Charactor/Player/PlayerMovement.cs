@@ -48,6 +48,7 @@ public class PlayerMovement : CharacterMovement
     public PlaySound jumpSound;
     public PlaySound landingSound;
 
+    public bool infinityJump = false;
     public bool isAttacking { get; set; }
     public bool isFacingRight { get; private set; }
     public bool isJumping { get; private set; }
@@ -85,7 +86,7 @@ public class PlayerMovement : CharacterMovement
     private bool isJumpFalling;
     private float m_jumpDisableGroundCheckTime = 0.1f;
     private float m_jumpEndIgnoreGroundUntil = -1f;
-    public float jumpsLeft { get; private set; }
+    public int jumpsLeft { get; private set; }
     private bool jumpRefilling;
 
     // 벽 점프
@@ -223,6 +224,10 @@ public class PlayerMovement : CharacterMovement
         if (movementState != null)
         {
             movementState.StateChange(PlayerStates.MovementStates.Idle);
+        }
+        if (boxCollider != null)
+        {
+            boxCollider.enabled = true;
         }
 
         SetGravityScale(data.gravityScale);
@@ -506,7 +511,7 @@ public class PlayerMovement : CharacterMovement
             isJumping = true;
             isJumpFalling = false;
 
-            jumpsLeft = data.jumpAmount;
+            jumpsLeft = infinityJump ? 9999999 : data.jumpAmount;
             StartCoroutine(nameof(RefillDash), 1);
 
             lastOnJumpPadTime = data.jumpInputBufferTime;
@@ -578,7 +583,8 @@ public class PlayerMovement : CharacterMovement
         #endregion
 
         #region DASH CHECK
-        if (true == CanDash() &&
+        if (CanDasing &&
+            true == CanDash() &&
             lastPressedDashTime > 0)
         {
             if (true == isWallGrabbing)
@@ -833,7 +839,7 @@ public class PlayerMovement : CharacterMovement
         isControlSleep = false;
     }
 
-    public void RespawnAt(Transform _spawnPoint, bool _facingDirection)
+    public void RespawnAt(Vector2 _spawnPoint, bool _facingDirection, bool _reset)
     {
         ControllSleep(0.5f);
         
@@ -843,11 +849,14 @@ public class PlayerMovement : CharacterMovement
 
         isFacingRight = _facingDirection;
 
-        transform.position = _spawnPoint.position;
+        transform.position = _spawnPoint;
         rb.linearVelocity = Vector3.zero;
 
-        m_health.ResetHealthToMaxHealth();
-        m_health.Revive();
+        if (_reset)
+        {
+            m_health.ResetHealthToMaxHealth();
+            m_health.Revive();
+        }
 
         Initialization();
     }
@@ -1393,7 +1402,8 @@ public class PlayerMovement : CharacterMovement
 
         if (m_health != null)
         {
-            if (false == m_health.postDamageInvulnerable)
+            if (false == m_health.postDamageInvulnerable &&
+                false == m_health.immuneToKnockback)
             {
                 StartCoroutine(nameof(StartKnockBack), _dir);
             }
@@ -1483,7 +1493,7 @@ public class PlayerMovement : CharacterMovement
             false == isWallJumping &&
             lastOnGroundTime > 0)
         {
-            jumpsLeft = Mathf.Min(data.jumpAmount, jumpsLeft + 1);
+            jumpsLeft = infinityJump ? 9999999 : Mathf.Min(data.jumpAmount, jumpsLeft + 1);
         }
 
         return jumpsLeft > 0;

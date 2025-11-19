@@ -24,6 +24,6 @@ public class ReSpawner : MonoBehaviour
 
     public virtual void OnReSpawn()
     {
-        LevelManager.Instance.PlayerDead();
+        LevelManager.Instance.currentCheckPoint.SpawnPlayer(LevelManager.Instance.player);
     }
 }

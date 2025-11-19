@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -27,6 +25,11 @@ public class GUIManager : MySingleton<GUIManager>
 
     public Image buttonImage;
     public Image selectImage;
+
+    [Header("응애모드")]
+    public Image assistModeImage;
+    public Toggle immuneToDamageMode;
+    public Toggle infinityJumpMode;
 
 
     public bool enableQuitPopUp
@@ -248,6 +251,24 @@ public class GUIManager : MySingleton<GUIManager>
         {
             m_buttons.Add(quitButton);
         }
+
+        if (immuneToDamageMode != null)
+        {
+            immuneToDamageMode.isOn = false;
+            immuneToDamageMode.onValueChanged.AddListener(GameManager.Instance.OnImmuneToDamage);
+        }
+        if (infinityJumpMode != null)
+        {
+            infinityJumpMode.isOn = false;  
+            infinityJumpMode.onValueChanged.AddListener(GameManager.Instance.OnInfinityJump);
+        }
+        if (assistModeImage != null)
+        {
+            if (GameManager.HasInstance)
+            {
+                assistModeImage.enabled = GameManager.Instance.onBabyMode;
+            }
+        }
     }
 
     private void OnDisable()
@@ -260,6 +281,15 @@ public class GUIManager : MySingleton<GUIManager>
         if (restartButton != null)
         {
             restartButton.onClick.RemoveAllListeners();
+        }
+
+        if (immuneToDamageMode != null)
+        {
+            immuneToDamageMode?.onValueChanged.RemoveAllListeners();
+        }
+        if (infinityJumpMode != null)
+        {
+            infinityJumpMode?.onValueChanged.RemoveAllListeners();
         }
     }
 }

@@ -52,14 +52,14 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
     public string loadingSceneName = "LoadingScreen";
 
     public virtual CameraController levelCameraController { get; set; }
-    public virtual PlayerMovement player { get; private set; }
+    public PlayerMovement player { get; private set; }
+    public Health playerHealth { get; private set; }
     public Collider2D boundsCollider2D { get; private set; }
     public virtual List<CheckPoint> checkPoints { get; private set; }
 
     private int m_savedPoints;
     private BoxCollider2D m_collider2D;
     private Bounds m_bounds;
-    private Health m_playerHealth;
     private float m_currentPlayerHealth;
 
 
@@ -155,10 +155,10 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
             playerCharacter = Instantiate(newCharacter, new Vector3(0, 0, 0), Quaternion.identity);
             playerCharacter.name = newCharacter.name;
 
-            m_playerHealth = playerCharacter.GetComponent<Health>();
+            playerHealth = playerCharacter.GetComponent<Health>();
             player = playerCharacter.GetComponent<PlayerMovement>();
 
-            m_playerHealth.maxHP = GameManager.Instance.MaxHP;
+            playerHealth.maxHP = GameManager.Instance.MaxHP;
         }
         else
         {
@@ -307,12 +307,11 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
         yield return new WaitForSeconds(0.2f);
 
         MyFadeInEvent.Trigger(0.5f, Ease.Linear, true, Vector2.zero);
-        yield return new WaitForSeconds(0.5f);
         yield return new WaitForSeconds(respawnDelay);
 
-        if (m_playerHealth != null)
+        if (playerHealth != null)
         {
-            m_playerHealth.initialHP = GameManager.Instance.MaxHP;
+            playerHealth.initialHP = GameManager.Instance.MaxHP;
         }
 
         if (currentCheckPoint != null)
@@ -426,10 +425,10 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
 
     private void StorePlayerHealth()
     {
-        if (m_playerHealth != null)
+        if (playerHealth != null)
         {
-            GameManager.Instance.currentHP = m_playerHealth.currentHP;
-            Debug.Log("저장: " + GameManager.Instance.currentHP);
+            GameManager.Instance.currentHP = playerHealth.currentHP;
+            //Debug.Log("저장: " + GameManager.Instance.currentHP);
         }
     }
 
@@ -440,9 +439,9 @@ public class LevelManager : MySingleton<LevelManager>, IEventListener<MainEvent>
             return;
         }
 
-        if (m_playerHealth != null && GameManager.Instance.currentHP > 0)
+        if (playerHealth != null && GameManager.Instance.currentHP > 0)
         {
-            m_playerHealth.initialHP = GameManager.Instance.currentHP;
+            playerHealth.initialHP = GameManager.Instance.currentHP;
         }
     }
 

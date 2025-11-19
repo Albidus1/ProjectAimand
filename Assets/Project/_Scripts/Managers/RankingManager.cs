@@ -31,7 +31,7 @@ public class RankingManager : MySingleton<RankingManager>
         {
             m_recordedPlaytime = GameManager.Instance.GetPlayTime();
             m_recordedDeathCount = GameManager.Instance.deathCount.ToString();
-            Debug.Log(m_recordedPlaytime + " " + m_recordedDeathCount);
+            //Debug.Log(m_recordedPlaytime + " " + m_recordedDeathCount);
 
             if (playTime != null)
             {

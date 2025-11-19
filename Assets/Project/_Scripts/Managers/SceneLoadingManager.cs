@@ -84,7 +84,7 @@ public class SceneLoadingManager : MonoBehaviour
 
         if (false == string.IsNullOrEmpty(m_sceneToLoad))
         {
-            Debug.Log("로딩중");
+            //Debug.Log("로딩중");
             StartCoroutine(LoadAsynchronously());
         }
     }

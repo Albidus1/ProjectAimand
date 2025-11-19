@@ -57,6 +57,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
 
     public bool paused { get; set; }
     public bool cameraEventActive { get; private set; }
+    public bool onBabyMode { get; private set; } = false;
 
     protected bool m_pauseMenuOpen = false;
     protected bool m_checkPlaytime;
@@ -83,6 +84,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         deathCount = 0;
         currentHP = MaxHP;
 
+        onBabyMode = false;
         m_checkPlaytime = false;
         m_recordPlayTime = 0f;
     }
@@ -145,6 +147,31 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         //Cursor.lockState = _visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
+    public void OnImmuneToDamage(bool _flag)
+    {
+        if (LevelManager.HasInstance && LevelManager.Instance.playerHealth != null)
+        {
+            LevelManager.Instance.playerHealth.immuneToDamage = _flag;
+            LevelManager.Instance.playerHealth.immuneToKnockback = _flag;
+
+            onBabyMode = true;
+
+            Debug.Log(_flag ? "무적 활성화" : "무적 비활성화");
+        }
+    }
+
+    public void OnInfinityJump(bool _flag)
+    {
+        if (LevelManager.HasInstance)
+        {
+            LevelManager.Instance.player.infinityJump = _flag;
+
+            onBabyMode = true;
+
+            Debug.Log(_flag ? "무한 점프 활성화" : "무한 점프 비활성화");
+        }
+    }
+
     public virtual void OnEvent(GameEvent _gameEvent)
     {
         
@@ -155,7 +182,7 @@ public class GameManager : MyPersistentSingleton<GameManager>,
         switch (_mainEvent.eventType)
         {
             case MainEventTypes.LevelStart:
-                Debug.Log("레벨 시작");
+                //Debug.Log("레벨 시작");
                 m_checkPlaytime = true;
                 break;
 

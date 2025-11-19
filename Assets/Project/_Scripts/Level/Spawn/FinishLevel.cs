@@ -5,6 +5,7 @@ using UnityEngine;
 public class FinishLevel : MonoBehaviour
 {
     public string levelName;
+   
     public bool completeLevel;
 
     protected PlayerMovement m_player;
@@ -37,6 +38,11 @@ public class FinishLevel : MonoBehaviour
             }
             else
             {
+                if (levelName == "Title")
+                {
+                    GameManager.Instance.ResetStatus();
+                }
+
                 LevelManager.Instance.GoToLevel(levelName);
             }
         }

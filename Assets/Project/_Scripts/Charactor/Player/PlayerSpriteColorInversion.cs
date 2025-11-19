@@ -141,7 +141,8 @@ public class PlayerSpriteColorInversion : MonoBehaviour
         }
 
 
-        if (m_inputManager.ColorInvertButton.state.currentState == MyInput.ButtonStates.ButtonDown &&
+        if ((m_inputManager.ColorInvertButton.state.currentState == MyInput.ButtonStates.ButtonDown ||
+            Input.GetMouseButtonDown(0)) &&
             Time.time >= m_coolTimer)
         {
             //Debug.Log("확인용");
