@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 
-public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISaveLoadManagerMethods
+public class PlatformDoor : ButtonObjectActivate, ISaveLoadManagerMethods
 {
     public Rigidbody2D rb { get; private set; }
 
@@ -218,31 +218,14 @@ public class PlatformDoor : ButtonObjectActivate, IEventListener<WaveEvent>, ISa
     #endregion
 
     #region EVENT METHODS
-    public void OnEvent(WaveEvent _event)
-    {
-        if (triggerWaveID != _event.waveID)
-        {
-            return;
-        }
-
-        Debug.Log("웨이브 감지됨");
-
-        isMoving = true;
-        isReturning = false;
-        m_waitTime = startWaitTime;
-        DirectionCalculate();
-    }
-
     protected override void OnEnable()
     {
         base.OnEnable();
-        this.EventStartListening<WaveEvent>();
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
-        this.EventStopListening<WaveEvent>();
     }
     #endregion
 

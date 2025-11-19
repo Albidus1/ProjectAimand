@@ -256,13 +256,6 @@ public class DamageOnTouch : MonoBehaviour
             m_knockbackForce.y = damageCausedKnockbackForce.y;
             p.ApplyKnockback(m_knockbackForce);
         }
-        else if (m_collideingCollider.TryGetComponent<EnemyMovementControl>(out var e))
-        {
-            Vector2 relativePosition = e.transform.position - owner.transform.position;
-            m_knockbackForce.x *= Mathf.Sign(relativePosition.x);
-            m_knockbackForce.y = damageCausedKnockbackForce.y;
-            e.ApplyKnockback(m_knockbackForce);
-        }
 
         m_startTime = invincibilityDuration;
         m_doKnockback = true;

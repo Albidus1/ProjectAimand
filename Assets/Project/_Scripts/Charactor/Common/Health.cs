@@ -77,7 +77,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
 
     private Collider2D m_collider;
     private PlayerMovement m_playerMovement;
-    private EnemyMovementControl m_enemyMovement;
     private HealthBar m_healthBar;
     private HealthCellUI m_healthCell;
     private AutoRespawn m_autoRespawn;
@@ -105,7 +104,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
     {
         m_collider = GetComponent<Collider2D>();
         m_playerMovement = GetComponent<PlayerMovement>();
-        m_enemyMovement = GetComponent<EnemyMovementControl>();
         m_healthBar = GetComponentInChildren<HealthBar>();
         m_autoRespawn = GetComponent<AutoRespawn>();
 
@@ -297,10 +295,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         {
             m_playerMovement.ApplyKnockback(knockbackForce);
         }
-        else if (m_enemyMovement != null)
-        {
-            m_enemyMovement.ApplyKnockback(knockbackForce);
-        }
     }
 
     public void ApplyStun(GameObject _instigator, float _stunTime)
@@ -309,10 +303,6 @@ public class Health : MonoBehaviour, IEventListener<HealthDeathEvent>
         {
             m_playerMovement.ApplyStun(_stunTime);
 
-        }
-        else if (m_enemyMovement != null)
-        {
-            m_enemyMovement.ApplyStun(_stunTime);
         }
     }
 
